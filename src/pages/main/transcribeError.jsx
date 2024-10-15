@@ -9,7 +9,7 @@ const TranscribeError = () => {
 	const navigate = useNavigate();
 
 	const handleGoBack = () => {
-		navigate('/QuickEase/home');
+		navigate('/home');
 	};
 
 	return (

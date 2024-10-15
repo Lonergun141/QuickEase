@@ -16,7 +16,7 @@ const Navbar = () => {
 					</div>
 					<div className="hidden sm:flex sm:items-center space-x-4">
 						<Link
-							to="/QuickEase/SignIn"
+							to="/SignIn"
 							className="px-3 py-2 rounded-md text-lg sm:text-xl text-white font-pregular hover:bg-white hover:bg-opacity-20 transition duration-300">
 							Sign In
 							
@@ -44,12 +44,12 @@ const Navbar = () => {
 				<div className="sm:hidden absolute top-16 left-0 w-full bg-white shadow-md rounded-md">
 					<div className="px-2 pt-2 pb-3 space-y-1">
 						<Link
-							to="/QuickEase/SignIn"
+							to="/SignIn"
 							className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
 							Sign In
 						</Link>
 						<Link
-							to="/QuickEase/SignUp"
+							to="/SignUp"
 							className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
 							Join Now
 						</Link>

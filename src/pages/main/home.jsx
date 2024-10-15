@@ -12,7 +12,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import LoadingScreen from '../../components/loader';
-import { generateSummary, generateSummaryFromImages } from '../../features/Summarizer/openAiServices';
+import {
+	generateSummary,
+	generateSummaryFromImages,
+} from '../../features/Summarizer/openAiServices';
 import { fetchUserInfo } from '../../features/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../components/Modals/Modal';
@@ -146,7 +149,7 @@ export default function Home() {
 
 		if (activeTab === 'text') {
 			if (characterCount < 200 || characterCount > 10000) {
-				navigate('/QuickEase/TranscribeError');
+				navigate('/TranscribeError');
 				setLoading(false);
 				return;
 			}
@@ -156,17 +159,17 @@ export default function Home() {
 					notecontents: inputText,
 					user: userInfo.id,
 				};
-			
+
 				const response = await generateSummary(data);
 				refreshUserStats();
 				if (response && response.id) {
-					navigate(`/QuickEase/Notes/${response.id}`);
+					navigate(`/Notes/${response.id}`);
 				} else {
 					throw new Error('Invalid response from generateSummary');
 				}
 			} catch (error) {
 				console.error('Error generating summary:', error);
-				navigate('/QuickEase/TranscribeError');
+				navigate('/TranscribeError');
 			} finally {
 				setLoading(false);
 			}
@@ -174,19 +177,23 @@ export default function Home() {
 			const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
 
 			if (filesToProcess.length === 0) {
-				navigate('/QuickEase/TranscribeError');
+				navigate('/TranscribeError');
 				setLoading(false);
 			} else {
 				try {
-					const response = await generateSummaryFromImages(filesToProcess, navigate, userInfo.id);
+					const response = await generateSummaryFromImages(
+						filesToProcess,
+						navigate,
+						userInfo.id
+					);
 					if (response && response.id) {
-						navigate(`/QuickEase/Notes/${response.id}`);
+						navigate(`/Notes/${response.id}`);
 					} else {
 						throw new Error('Invalid response from generateSummaryFromImages');
 					}
 				} catch (error) {
 					console.error('Error generating summary from files:', error);
-					navigate('/QuickEase/TranscribeError');
+					navigate('/TranscribeError');
 				} finally {
 					setLoading(false);
 				}
@@ -215,14 +222,24 @@ export default function Home() {
 										key={tab}
 										onClick={() => handleTabChange(tab)}
 										className={`flex-1 p-2 ${
-											activeTab === tab ? 'bg-highlights dark:bg-darkS text-white' : 'bg-white dark:bg-darken dark:text-secondary'
+											activeTab === tab
+												? 'bg-highlights dark:bg-darkS text-white'
+												: 'bg-white dark:bg-darken dark:text-secondary'
 										} rounded-md mx-1 flex items-center justify-center transition-transform transform hover:scale-105`}>
 										<FontAwesomeIcon
-											icon={tab === 'text' ? faPenToSquare : tab === 'documents' ? faFileAlt : faImage}
+											icon={
+												tab === 'text'
+													? faPenToSquare
+													: tab === 'documents'
+													? faFileAlt
+													: faImage
+											}
 											className="mr-2 text-sm sm:text-base"
 										/>
 										{/* Hide text on extra small screens */}
-										<span className="hidden sm:inline text-xs sm:text-sm">{tab === 'text' ? 'Input text' : `Upload ${tab}`}</span>
+										<span className="hidden sm:inline text-xs sm:text-sm">
+											{tab === 'text' ? 'Input text' : `Upload ${tab}`}
+										</span>
 									</button>
 								))}
 							</div>
@@ -236,10 +253,17 @@ export default function Home() {
 										onChange={handleTextChange}
 									/>
 									<div className="mt-2 flex justify-between items-center text-sm">
-										<span className={`${characterCount > 10000 || characterCount < 200 ? 'text-gray-400' : 'text-gray-500'}`}>
+										<span
+											className={`${
+												characterCount > 10000 || characterCount < 200
+													? 'text-gray-400'
+													: 'text-gray-500'
+											}`}>
 											{characterCount}/10000 characters
 										</span>
-										{textError && <span className="text-red-500 font-pmedium">{textError}</span>}
+										{textError && (
+											<span className="text-red-500 font-pmedium">{textError}</span>
+										)}
 									</div>
 								</div>
 							)}
@@ -254,21 +278,32 @@ export default function Home() {
 									onDrop={handleDrop}>
 									{isDragOver ? (
 										<>
-											<FontAwesomeIcon icon={faUpload} className="text-3xl md:text-4xl text-gray-400 mb-4 animate-bounce" />
-											<h2 className="text-lg md:text-xl font-semibold mb-2 dark:text-secondary">Drop your files here</h2>
+											<FontAwesomeIcon
+												icon={faUpload}
+												className="text-3xl md:text-4xl text-gray-400 mb-4 animate-bounce"
+											/>
+											<h2 className="text-lg md:text-xl font-semibold mb-2 dark:text-secondary">
+												Drop your files here
+											</h2>
 										</>
 									) : filesToDisplay.length === 0 ? (
 										<>
-											<FontAwesomeIcon icon={faUpload} className="text-3xl md:text-4xl text-gray-400 mb-4" />
+											<FontAwesomeIcon
+												icon={faUpload}
+												className="text-3xl md:text-4xl text-gray-400 mb-4"
+											/>
 											<h1 className="text-lg md:text-xl font-semibold mb-2 dark:text-secondary">
 												Upload from your computer or drag files here
 											</h1>
 											<p className="text-xs md:text-sm text-gray-500 mb-4">
-												Supported file types: {activeTab === 'images' ? 'jpg, jpeg, png' : 'pdf, doc, docx, ppt, pptx'}
+												Supported file types:{' '}
+												{activeTab === 'images'
+													? 'jpg, jpeg, png'
+													: 'pdf, doc, docx, ppt, pptx'}
 											</p>
 											<p className="text-xs text-gray-400 mb-4">
-												Make sure your document contains at least 200 words, but no more than 10,000 characters and not more than
-												10MB of file size
+												Make sure your document contains at least 200 words, but no more
+												than 10,000 characters and not more than 10MB of file size
 											</p>
 											<div className="flex justify-center">
 												<button
@@ -285,7 +320,9 @@ export default function Home() {
 												<div
 													key={index}
 													className="flex items-center justify-between bg-white dark:bg-darken p-4 rounded-md hover:border hover:cursor-pointer">
-													<span className="text-sm md:text-base truncate dark:text-secondary">{file.name}</span>
+													<span className="text-sm md:text-base truncate dark:text-secondary">
+														{file.name}
+													</span>
 													<button
 														onClick={() => handleFileDelete(index)}
 														className="text-primary dark:text-naeg hover:text-red-700 ml-2">
@@ -307,7 +344,9 @@ export default function Home() {
 								ref={fileInputRef}
 								type="file"
 								multiple
-								accept={activeTab === 'images' ? '.jpg,.jpeg,.png' : '.pdf,.doc,.docx,.ppt,.pptx'}
+								accept={
+									activeTab === 'images' ? '.jpg,.jpeg,.png' : '.pdf,.doc,.docx,.ppt,.pptx'
+								}
 								onChange={handleFileUpload}
 								className="hidden"
 							/>
@@ -316,7 +355,8 @@ export default function Home() {
 									onClick={handleGenerate}
 									className="w-full lg:w-2/3"
 									disabled={
-										(activeTab === 'text' && (characterCount < 200 || characterCount > 10000)) ||
+										(activeTab === 'text' &&
+											(characterCount < 200 || characterCount > 10000)) ||
 										(activeTab === 'documents' && uploadedDocuments.length === 0) ||
 										(activeTab === 'images' && uploadedImages.length === 0)
 									}>
@@ -331,10 +371,18 @@ export default function Home() {
 										key={tab}
 										onClick={() => handleTabChange(tab)}
 										className={`w-full p-4 md:p-6 text-left dark:text-secondary ${
-											activeTab === tab ? 'bg-highlights dark:bg-darkS text-white' : 'bg-white dark:bg-darken'
+											activeTab === tab
+												? 'bg-highlights dark:bg-darkS text-white'
+												: 'bg-white dark:bg-darken'
 										} rounded flex items-center`}>
 										<FontAwesomeIcon
-											icon={tab === 'text' ? faPenToSquare : tab === 'documents' ? faFileAlt : faImage}
+											icon={
+												tab === 'text'
+													? faPenToSquare
+													: tab === 'documents'
+													? faFileAlt
+													: faImage
+											}
 											className="mr-2"
 										/>
 										{tab === 'text' ? 'Input text' : `Upload ${tab}`}
@@ -344,7 +392,9 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<h2 className="text-2xl font-pbold mb-4 mt-12 text-primary dark:text-secondary">How to Upload Your Materials</h2>
+				<h2 className="text-2xl font-pbold mb-4 mt-12 text-primary dark:text-secondary">
+					How to Upload Your Materials
+				</h2>
 				<Instructions />
 				{loading && <LoadingScreen />}
 				{isModalOpen && (

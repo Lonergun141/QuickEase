@@ -33,7 +33,7 @@ const ActivateAccount = () => {
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
-		navigate('/QuickEase/SignIn');
+		navigate('/SignIn');
 	};
 
 	return (

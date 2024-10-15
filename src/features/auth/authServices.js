@@ -1,7 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-mixed-spaces-and-tabs */
-
 import axios from 'axios';
 
 const BACKEND_DOMAIN = `https://d4ngk.pythonanywhere.com`;

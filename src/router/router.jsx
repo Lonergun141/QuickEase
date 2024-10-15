@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
         element: <ErrorPage />,
     },
     {
-        path: '/QuickEase/',
+        path: '/',
         element: <App/>,
     },
     {
@@ -38,75 +38,75 @@ export const router = createBrowserRouter([
         element: <LoadingScreen />,
     },
     {
-        path: '/QuickEase/SignIn',
+        path: '/SignIn',
         element: <SignIn />,
     },
     {
-        path: '/QuickEase/SignUp',
+        path: '/SignUp',
         element: <SignUp />,
     },
     {
-        path: '/QuickEase/ForgotPass',
+        path: '/ForgotPass',
         element: <ForgotPass />,
     },
     {
-        path: '/QuickEase/activate/:uid/:token',
+        path: '/activate/:uid/:token',
         element: <ActivateAccount />,
     },
     {
-        path: '/QuickEase/password/reset/confirm/:uid/:token',
+        path: '/password/reset/confirm/:uid/:token',
         element: <ResetPass />,
     },
     {
-        path: '/QuickEase/Home',
+        path: '/Home',
         element: <Home />
     },
     {
-        path: '/QuickEase/QuizHistory',
+        path: '/QuizHistory',
         element:<QuizHistory />
     },
     {
-        path: '/QuickEase/MyNotes',
+        path: '/MyNotes',
         element: <MyNotes />
     },
     {
-        path: '/QuickEase/FlashCardhistory',
+        path: '/FlashCardhistory',
         element: <FlashCardHistory />
     },
     {
-        path: '/QuickEase/PomodoroSettings',
+        path: '/PomodoroSettings',
         element:<PomodoroSettings />
     },
     {
-        path: '/QuickEase/Settings',
+        path: '/Settings',
         element: <Settings />,
     },
     {
-        path: '/QuickEase/Notes/:id',
+        path: '/Notes/:id',
         element: <Notes />,
     },
     {
-        path: '/QuickEase/Profile',
+        path: '/Profile',
         element: <Profile />,
     },
     {
-        path: '/QuickEase/Flashcards/:noteId',
+        path: '/Flashcards/:noteId',
         element: <Flashcards />,
     },
     {
-        path: '/QuickEase/Quiz/:id',  
+        path: '/Quiz/:id',  
         element: <Quiz />,
     },
     {
-        path: '/QuickEase/Results/:id', 
+        path: '/Results/:id', 
         element: <Results />,
     },
     {
-        path: '/QuickEase/Review/:id',  
+        path: '/Review/:id',  
         element: <Review />,
     },
     {
-        path: '/QuickEase/TranscribeError',
+        path: '/TranscribeError',
         element:<TranscribeError />,
     },
 ]);

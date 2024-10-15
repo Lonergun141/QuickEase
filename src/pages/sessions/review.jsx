@@ -30,7 +30,7 @@ const Review = () => {
 	}, [id]);
 
 	const handleTakeTest = () => {
-		navigate(`/QuickEase/Quiz/${id}`);
+		navigate(`/Quiz/${id}`);
 	};
 
 	const handleToggleSidebar = () => {
@@ -83,7 +83,7 @@ const Review = () => {
 					/>
 				</div>
 				<div className='py-6'>
-					<span className="text-xl font-inc cursor-pointer" onClick={() => navigate('/QuickEase/Home')}>
+					<span className="text-xl font-inc cursor-pointer" onClick={() => navigate('/Home')}>
 						<span className="text-black dark:text-gray-100">QUICK</span>
 						<span className="text-primary dark:text-naeg">EASE</span>
 					</span>

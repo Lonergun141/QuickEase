@@ -102,7 +102,7 @@ export default function Flashcards() {
 			await Promise.all(cards.map((card) => deleteFlashcard(card.id)));
 			setCards([]);
 			setIsDeleteAllModalOpen(false);
-			navigate(`/QuickEase/notes/${noteId}`);
+			navigate(`/notes/${noteId}`);
 		} catch (error) {
 			console.error('Error deleting all flashcards:', error);
 		} finally {

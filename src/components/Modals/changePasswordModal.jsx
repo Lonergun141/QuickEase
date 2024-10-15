@@ -29,7 +29,7 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
       setEmail('');
       setTimeout(() => {
         handleReset();
-        navigate('/QuickEase/');
+        navigate('/');
         onClose();
       }, 2000);
     }

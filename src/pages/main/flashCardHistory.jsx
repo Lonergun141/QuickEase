@@ -119,7 +119,7 @@ export default function FlashCardHistory() {
 		};
 		localStorage.setItem('flashcardDates', JSON.stringify(storedDates));
 
-		navigate(`/QuickEase/Flashcards/${noteId}`);
+		navigate(`/Flashcards/${noteId}`);
 	};
 
 	const handlePageChange = (newPage) => {

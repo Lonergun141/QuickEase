@@ -134,7 +134,7 @@ export default function Notes() {
 	const handleQuiz = async () => {
 		setIsLoading(true);
 		if (quizExists) {
-			navigate(`/QuickEase/Review/${id}`);
+			navigate(`/Review/${id}`);
 		} else {
 			setIsGeneratingQuiz(true);
 			try {
@@ -142,7 +142,7 @@ export default function Notes() {
 				await createQuiz(id, generatedQuiz);
 				setQuizExists(true);
 				refreshUserStats();
-				navigate(`/QuickEase/Quiz/${id}`);
+				navigate(`/Quiz/${id}`);
 			} catch (error) {
 				console.error('Error generating quiz:', error);
 				let userFriendlyMessage = 'Failed to generate the quiz. Please try again later.';
@@ -194,7 +194,7 @@ export default function Notes() {
 	//ditso
 	const handleFlashcardsClick = () => {
 		if (flashcardsExist) {
-			navigate(`/QuickEase/Flashcards/${id}`);
+			navigate(`/Flashcards/${id}`);
 		} else {
 			setModalAction('flashcards');
 			setIsModalOpen(true);
@@ -203,7 +203,7 @@ export default function Notes() {
 
 	const handleQuizClick = () => {
 		if (quizExists) {
-			navigate(`/QuickEase/Review/${id}`);
+			navigate(`/Review/${id}`);
 		} else {
 			setModalAction('quiz');
 			setIsModalOpen(true);
@@ -224,7 +224,7 @@ export default function Notes() {
 				console.log('Flashcards creation response:', response);
 			}
 			refreshUserStats();
-			navigate(`/QuickEase/Flashcards/${id}`);
+			navigate(`/Flashcards/${id}`);
 		} catch (error) {
 			console.error('Error with flashcards:', error);
 		} finally {

@@ -26,7 +26,7 @@ export default function SignIn() {
 
 	useEffect(() => {
 		if (isSuccess || user) {
-			navigate('/QuickEase/Home');
+			navigate('/Home');
 		}
 
 		if (isError) {
@@ -123,7 +123,7 @@ export default function SignIn() {
 						{formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
 
 						<div className="text-right">
-							<Link to="/QuickEase/ForgotPass" className="text-primary font-pregular dark:text-secondary">
+							<Link to="/ForgotPass" className="text-primary font-pregular dark:text-secondary">
 								Forgot password?
 							</Link>
 						</div>
@@ -139,7 +139,7 @@ export default function SignIn() {
 					</form>
 					<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
 						Don't have an account?{' '}
-						<Link to="/QuickEase/SignUp" className="text-primary dark:text-secondary">
+						<Link to="/SignUp" className="text-primary dark:text-secondary">
 							Register Now!
 						</Link>
 					</p>
