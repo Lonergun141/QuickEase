@@ -117,13 +117,13 @@ export const generateSummaryFromImages = async (files, navigate, userId) => {
 		const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
 		if (wordCount < 100) {
 			console.log('Extracted text is less than 100 words.');
-			navigate('/TranscribeError');
+			navigate('/QuickEase/TranscribeError');
 			return null;
 		}
 
 		if (combinedText.length === 0) {
 			console.log('No text extracted from images');
-			navigate('/TranscribeError');
+			navigate('/QuickEase/TranscribeError');
 			return null;
 		}
 		const formData = {
@@ -135,6 +135,7 @@ export const generateSummaryFromImages = async (files, navigate, userId) => {
 		return response;
 	} catch (error) {
 		console.error('Error in generateSummaryFromImages:', error);
+		navigate('/QuickEase/TranscribeError');
 		throw new Error(`Failed to generate summary: ${error.message}`);
 	}
 };

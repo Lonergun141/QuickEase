@@ -1,44 +1,57 @@
-import ConvertApi from 'convertapi-js';
 import axios from 'axios';
 
 const CONVERT_API_SECRET = import.meta.env.VITE_Convert_API;
-const convertApi = ConvertApi.auth(CONVERT_API_SECRET);
-
-const blobToBase64 = (blob) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-};
 
 export const convertFileToPng = async (file) => {
-  const params = convertApi.createParams();
-  params.add('file', file);
+  let convertApiUrl;
 
-  let result;
+  // Determine the correct ConvertAPI endpoint based on the file type
   switch (file.type) {
     case 'application/pdf':
-      result = await convertApi.convert('pdf', 'png', params);
+      convertApiUrl = `https://v2.convertapi.com/convert/pdf/to/png?Secret=${CONVERT_API_SECRET}`;
       break;
     case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
     case 'application/vnd.ms-powerpoint':
-      result = await convertApi.convert('ppt', 'png', params);
+      convertApiUrl = `https://v2.convertapi.com/convert/ppt/to/png?Secret=${CONVERT_API_SECRET}`;
       break;
     case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
     case 'application/msword':
-      result = await convertApi.convert('doc', 'png', params);
+      convertApiUrl = `https://v2.convertapi.com/convert/doc/to/png?Secret=${CONVERT_API_SECRET}`;
       break;
     default:
       throw new Error('Unsupported file type');
   }
 
-  const pngFiles = await Promise.all(result.files.map(async (file) => {
-    const response = await axios.get(file.Url, { responseType: 'blob' });
-    const base64 = await blobToBase64(response.data);
-    return base64;
-  }));
+  // Use FormData to handle file upload in a multipart form
+  const formData = new FormData();
+  formData.append('File', file); // Note the uppercase 'F'
 
-  return pngFiles;
+  try {
+    // Send the request to ConvertAPI
+    const response = await axios.post(convertApiUrl, formData);
+
+    // Log the response data
+    console.log('ConvertAPI Response:', response.data);
+
+    // Extract the files from the response
+    const resultFiles = response.data.Files;
+
+    if (!resultFiles) {
+      throw new Error('Conversion failed. No files returned from ConvertAPI.');
+    }
+
+    // Extract the base64 data from FileData and prepend the data URL prefix
+    const pngFiles = resultFiles.map((file) => {
+      if (!file.FileData) {
+        throw new Error(`FileData is missing in the response for file: ${file.FileName}`);
+      }
+      const base64Data = `data:image/png;base64,${file.FileData}`;
+      return base64Data;
+    });
+
+    return pngFiles;
+  } catch (error) {
+    console.error('Error during file conversion:', error);
+    throw error;
+  }
 };
