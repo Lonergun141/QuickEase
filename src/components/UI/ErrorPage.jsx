@@ -14,7 +14,7 @@ const ErrorPage = () => {
             </div>
 
             <a
-                href="/"
+                href="/QuickEase/"
                 className="mt-8 bg-black text-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-800 transition-colors duration-300"
             >
                 Go to Homepage
