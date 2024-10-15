@@ -19,94 +19,147 @@ import Quiz from '../pages/sessions/quiz';
 import Results from '../pages/sessions/results';
 import Review from '../pages/sessions/review';
 
-
 import LoadingScreen from '../components/loader';
 import TranscribeError from '../pages/main/transcribeError';
 import ErrorPage from '../components/UI/ErrorPage';
 
+import ProtectedRoute from '../features/auth/ProtectedRoute';
+
 export const router = createBrowserRouter([
-    {
-        path: '*',
-        element: <ErrorPage />,
-    },
-    {
-        path: '/',
-        element: <App/>,
-    },
-    {
-        path: '/Loader',
-        element: <LoadingScreen />,
-    },
-    {
-        path: '/SignIn',
-        element: <SignIn />,
-    },
-    {
-        path: '/SignUp',
-        element: <SignUp />,
-    },
-    {
-        path: '/ForgotPass',
-        element: <ForgotPass />,
-    },
-    {
-        path: '/activate/:uid/:token',
-        element: <ActivateAccount />,
-    },
-    {
-        path: '/password/reset/confirm/:uid/:token',
-        element: <ResetPass />,
-    },
-    {
-        path: '/Home',
-        element: <Home />
-    },
-    {
-        path: '/QuizHistory',
-        element:<QuizHistory />
-    },
-    {
-        path: '/MyNotes',
-        element: <MyNotes />
-    },
-    {
-        path: '/FlashCardhistory',
-        element: <FlashCardHistory />
-    },
-    {
-        path: '/PomodoroSettings',
-        element:<PomodoroSettings />
-    },
-    {
-        path: '/Settings',
-        element: <Settings />,
-    },
-    {
-        path: '/Notes/:id',
-        element: <Notes />,
-    },
-    {
-        path: '/Profile',
-        element: <Profile />,
-    },
-    {
-        path: '/Flashcards/:noteId',
-        element: <Flashcards />,
-    },
-    {
-        path: '/Quiz/:id',  
-        element: <Quiz />,
-    },
-    {
-        path: '/Results/:id', 
-        element: <Results />,
-    },
-    {
-        path: '/Review/:id',  
-        element: <Review />,
-    },
-    {
-        path: '/TranscribeError',
-        element:<TranscribeError />,
-    },
+	{
+		path: '*',
+		element: <ErrorPage />,
+	},
+	{
+		path: '/',
+		element: <App />,
+	},
+	{
+		path: '/Loader',
+		element: <LoadingScreen />,
+	},
+	{
+		path: '/SignIn',
+		element: <SignIn />,
+	},
+	{
+		path: '/SignUp',
+		element: <SignUp />,
+	},
+	{
+		path: '/ForgotPass',
+		element: <ForgotPass />,
+	},
+	{
+		path: '/activate/:uid/:token',
+		element: <ActivateAccount />,
+	},
+	{
+		path: '/password/reset/confirm/:uid/:token',
+		element: <ResetPass />,
+	},
+	{
+		path: '/Home',
+		element: (
+			<ProtectedRoute>
+				<Home />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/QuizHistory',
+		element: (
+			<ProtectedRoute>
+				<QuizHistory />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/MyNotes',
+		element: (
+			<ProtectedRoute>
+				<MyNotes />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/FlashCardhistory',
+		element: (
+			<ProtectedRoute>
+				<FlashCardHistory />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/PomodoroSettings',
+		element: (
+			<ProtectedRoute>
+				<PomodoroSettings />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Settings',
+		element: (
+			<ProtectedRoute>
+				<Settings />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Notes/:id',
+		element: (
+			<ProtectedRoute>
+				<Notes />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Profile',
+		element: (
+			<ProtectedRoute>
+				<Profile />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Flashcards/:noteId',
+		element: (
+			<ProtectedRoute>
+				<Flashcards />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Quiz/:id',
+		element: (
+			<ProtectedRoute>
+				<Quiz />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Results/:id',
+		element: (
+			<ProtectedRoute>
+				<Results />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/Review/:id',
+		element: (
+			<ProtectedRoute>
+				<Review />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: '/TranscribeError',
+		element: (
+			<ProtectedRoute>
+				<TranscribeError />
+			</ProtectedRoute>
+		),
+	},
 ]);
