@@ -146,7 +146,7 @@ export default function SignUp() {
 					<div>
 					<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
 						Already have an account?{' '}
-						<Link to="/SignIn" className="text-primary dark:text-secondary">
+						<Link to="/QuickEase/SignIn" className="text-primary dark:text-secondary">
 							Sign In Now!
 						</Link>
 					</p>
