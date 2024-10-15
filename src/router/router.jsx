@@ -24,8 +24,6 @@ import LoadingScreen from '../components/loader';
 import TranscribeError from '../pages/main/transcribeError';
 import ErrorPage from '../components/UI/ErrorPage';
 
-import ProtectedRoute from '../features/auth/ProtectedRoute';
-
 export const router = createBrowserRouter([
     {
         path: '*',
@@ -61,54 +59,54 @@ export const router = createBrowserRouter([
     },
     {
         path: '/QuickEase/Home',
-        element: <ProtectedRoute><Home /></ProtectedRoute>,
+        element: <Home />
     },
     {
         path: '/QuickEase/QuizHistory',
-        element: <ProtectedRoute><QuizHistory /></ProtectedRoute>,
+        element:<QuizHistory />
     },
     {
         path: '/QuickEase/MyNotes',
-        element: <ProtectedRoute><MyNotes /></ProtectedRoute>,
+        element: <MyNotes />
     },
     {
         path: '/QuickEase/FlashCardhistory',
-        element: <ProtectedRoute><FlashCardHistory /></ProtectedRoute>,
+        element: <FlashCardHistory />
     },
     {
         path: '/QuickEase/PomodoroSettings',
-        element: <ProtectedRoute><PomodoroSettings /></ProtectedRoute>,
+        element:<PomodoroSettings />
     },
     {
         path: '/QuickEase/Settings',
-        element: <ProtectedRoute><Settings /></ProtectedRoute>,
+        element: <Settings />,
     },
     {
         path: '/QuickEase/Notes/:id',
-        element: <ProtectedRoute><Notes /></ProtectedRoute>,
+        element: <Notes />,
     },
     {
         path: '/QuickEase/Profile',
-        element: <ProtectedRoute><Profile /></ProtectedRoute>,
+        element: <Profile />,
     },
     {
         path: '/QuickEase/Flashcards/:noteId',
-        element: <ProtectedRoute><Flashcards /></ProtectedRoute>,
+        element: <Flashcards />,
     },
     {
         path: '/QuickEase/Quiz/:id',  
-        element: <ProtectedRoute><Quiz /></ProtectedRoute>,
+        element: <Quiz />,
     },
     {
         path: '/QuickEase/Results/:id', 
-        element: <ProtectedRoute><Results /></ProtectedRoute>,
+        element: <Results />,
     },
     {
         path: '/QuickEase/Review/:id',  
-        element: <ProtectedRoute><Review /></ProtectedRoute>,
+        element: <Review />,
     },
     {
         path: '/QuickEase/TranscribeError',
-        element: <ProtectedRoute><TranscribeError /></ProtectedRoute>,
+        element:<TranscribeError />,
     },
 ]);
