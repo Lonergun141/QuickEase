@@ -21,7 +21,7 @@ export default function App() {
               Where even procrastination takes the express route to knowledge!
             </h3>
             <Link
-              to="/QuickEase/SignUp"
+              to="/SignUp"
               className="mt-9 px-6 sm:px-9 py-2 rounded-md text-lg sm:text-xl font-pregular text-white border border-white hover:bg-white hover:text-gray-800 transition duration-300 cursor-pointer">
               Join Now
             </Link>
