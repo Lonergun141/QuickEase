@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
         element: <ForgotPass />,
     },
     {
-        path: 'QuickEase/activate/:uid/:token',
+        path: '/QuickEase/activate/:uid/:token',
         element: <ActivateAccount />,
     },
     {
