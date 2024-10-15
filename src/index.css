@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Define your custom font classes within a layer */
+@layer components {
+    .font-pBold {
+        font-family: 'pBold', sans-serif; /* Use your custom font family */
+        font-weight: bold; /* Set the font weight */
+    }
+    .font-pRegular {
+        font-family: 'pRegular', sans-serif;
+    }
+    .font-pMedium {
+        font-family: 'pMedium', sans-serif;
+        font-weight: 500; /* Adjust based on your design */
+    }
+    .font-Regular {
+        font-family: 'Regular', sans-serif;
+    }
+}
+
+:root {
+	--flashcard-front-bg: #ffffff;
+	--flashcard-back-bg: #f8f8f8;
+	--flashcard-text-color: #000000;
+}
+
+.dark {
+	--flashcard-front-bg: #212121;
+	--flashcard-back-bg: #212121;
+	--flashcard-text-color: #f6f7fb;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@font-face {
+  font-family: "Regular";
+  src: local("IncompleetaRegular"),
+  url('./assets/fonts/Incompleeta/IncompleetaRegular.ttf') format("truetype");
+}
+
+@font-face {
+  font-family: "pRegular";
+  src: local("Poppins-Regular"),
+  url('./assets/fonts/Poppins/Poppins-Regular.ttf') format("truetype");
+}
+
+@font-face {
+  font-family: "pBold";
+  src: local("Poppins-Bold"),
+  url('./assets/fonts/Poppins/Poppins-Bold.ttf') format("truetype");
+}
+
+@font-face {
+  font-family: "pMedium";
+  src: local("Poppins-Medium"),
+  url('./assets/fonts/Poppins/Poppins-Medium.ttf') format("truetype");
+}
+
+/* Custom default styles */
+body{
+
+    @apply bg-white dark:bg-dark
+}
+
+h2 {
+  @apply text-3xl font-pBold mb-4 text-gray-900 dark:text-secondary; /* Bigger and bold */
+}
+
+ul {
+  @apply list-inside list-disc; /* Padding for bullet points */
+}
+
+ol {
+  @apply list-inside list-decimal pl-5; /* Ensure ordered lists show numbers */
+}
+
+ul li, ol li {
+  @apply mb-2 text-gray-800 dark:text-gray-300; /* Spacing and text color for list items */
+}
+
+/* Define sliding animation */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Initial hidden state */
+.slide-out {
+  transform: translateX(-100%);
+}
+
+/* Slide in when triggered */
+.slide-in {
+  animation: slideInFromLeft 0.7s forwards;
+}
+
+@keyframes lyrics {
+  0% {
+      opacity: 0.5;
+      transform: scale(1);
+  }
+  50% {
+      opacity: 1;
+      transform: scale(1.1);
+  }
+  100% {
+      opacity: 0.5;
+      transform: scale(1);
+  }
+}
+
+.animate-lyrics {
+  animation: lyrics 1.5s infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+  }
+  40% {
+      transform: translateY(-15px);
+  }
+  60% {
+      transform: translateY(-7px);
+  }
+}
