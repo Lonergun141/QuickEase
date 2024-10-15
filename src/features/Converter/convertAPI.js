@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const CONVERT_API_SECRET = import.meta.env.VITE_Convert_API;
+const CONVERT_API_SECRET = import.meta.env.VITE_CONVERT_API;
 
 export const convertFileToPng = async (file) => {
   let convertApiUrl;
