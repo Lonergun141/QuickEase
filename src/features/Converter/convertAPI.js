@@ -8,15 +8,15 @@ export const convertFileToPng = async (file) => {
   // Determine the correct ConvertAPI endpoint based on the file type
   switch (file.type) {
     case 'application/pdf':
-      convertApiUrl = `https://v2.convertapi.com/convert/pdf/to/png?Secret=${CONVERT_API_SECRET}`;
+      convertApiUrl = `https://v2.convertapi.com/convert/pdf/to/png`;
       break;
     case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
     case 'application/vnd.ms-powerpoint':
-      convertApiUrl = `https://v2.convertapi.com/convert/ppt/to/png?Secret=${CONVERT_API_SECRET}`;
+      convertApiUrl = `https://v2.convertapi.com/convert/ppt/to/png`;
       break;
     case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
     case 'application/msword':
-      convertApiUrl = `https://v2.convertapi.com/convert/doc/to/png?Secret=${CONVERT_API_SECRET}`;
+      convertApiUrl = `https://v2.convertapi.com/convert/doc/to/png`;
       break;
     default:
       throw new Error('Unsupported file type');
@@ -27,8 +27,13 @@ export const convertFileToPng = async (file) => {
   formData.append('File', file); // Note the uppercase 'F'
 
   try {
-    // Send the request to ConvertAPI
-    const response = await axios.post(convertApiUrl, formData);
+    // Send the request to ConvertAPI with the Authorization header
+    const response = await axios.post(convertApiUrl, formData, {
+      headers: {
+        'Authorization': `Bearer ${CONVERT_API_SECRET}`,
+        // No need to set 'Content-Type'; axios will handle it automatically
+      },
+    });
 
     // Log the response data
     console.log('ConvertAPI Response:', response.data);
