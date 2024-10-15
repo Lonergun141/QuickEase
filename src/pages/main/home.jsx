@@ -146,7 +146,7 @@ export default function Home() {
 
 		if (activeTab === 'text') {
 			if (characterCount < 200 || characterCount > 10000) {
-				navigate('/QuickEase-Web/TranscribeError');
+				navigate('/QuickEase/TranscribeError');
 				setLoading(false);
 				return;
 			}
@@ -160,13 +160,13 @@ export default function Home() {
 				const response = await generateSummary(data);
 				refreshUserStats();
 				if (response && response.id) {
-					navigate(`/QuickEase-Web/Notes/${response.id}`);
+					navigate(`/QuickEase/Notes/${response.id}`);
 				} else {
 					throw new Error('Invalid response from generateSummary');
 				}
 			} catch (error) {
 				console.error('Error generating summary:', error);
-				navigate('/QuickEase-Web/TranscribeError');
+				navigate('/QuickEase/TranscribeError');
 			} finally {
 				setLoading(false);
 			}
@@ -174,19 +174,19 @@ export default function Home() {
 			const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
 
 			if (filesToProcess.length === 0) {
-				navigate('/QuickEase-Web/TranscribeError');
+				navigate('/QuickEase/TranscribeError');
 				setLoading(false);
 			} else {
 				try {
 					const response = await generateSummaryFromImages(filesToProcess, navigate, userInfo.id);
 					if (response && response.id) {
-						navigate(`/QuickEase-Web/Notes/${response.id}`);
+						navigate(`/QuickEase/Notes/${response.id}`);
 					} else {
 						throw new Error('Invalid response from generateSummaryFromImages');
 					}
 				} catch (error) {
 					console.error('Error generating summary from files:', error);
-					navigate('/QuickEase-Web/TranscribeError');
+					navigate('/QuickEase/TranscribeError');
 				} finally {
 					setLoading(false);
 				}

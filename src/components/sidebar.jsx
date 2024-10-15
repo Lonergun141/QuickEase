@@ -73,11 +73,11 @@ const Sidebar = ({ onToggle }) => {
 	const handleLogout = () => {
 		dispatch(logout());
 		dispatch(resetPomodoroState());
-		navigate('/QuickEase-Web/');
+		navigate('/QuickEase/');
 	};
 
 	const gotoProfile = () => {
-		navigate('/QuickEase-Web/Profile');
+		navigate('/QuickEase/Profile');
 		if (isMobile) {
 			setIsOpen(false);
 		}
@@ -91,21 +91,21 @@ const Sidebar = ({ onToggle }) => {
 	};
 
 	const handleTimerClick = () => {
-		navigate('/QuickEase-Web/PomodoroSettings');
+		navigate('/QuickEase/PomodoroSettings');
 	};
 
 	const menuItems = [
-		{ icon: faCompass, text: 'Explore', path: '/QuickEase-Web/Home' },
-		{ icon: faStickyNote, text: 'My notes', path: '/QuickEase-Web/MyNotes' },
-		{ icon: faClone, text: 'Flashcards', path: '/QuickEase-Web/FlashCardhistory' },
-		{ icon: faLightbulb, text: 'Quiz history', path: '/QuickEase-Web/QuizHistory' },
-		{ icon: faClock, text: 'Pomodoro', path: '/QuickEase-Web/PomodoroSettings' },
-		{ icon: faCog, text: 'Settings', path: '/QuickEase-Web/Settings' },
-		{ icon: faUserCircle, text: 'Profile', path: '/QuickEase-Web/Profile' },
+		{ icon: faCompass, text: 'Explore', path: '/QuickEase/Home' },
+		{ icon: faStickyNote, text: 'My notes', path: '/QuickEase/MyNotes' },
+		{ icon: faClone, text: 'Flashcards', path: '/QuickEase/FlashCardhistory' },
+		{ icon: faLightbulb, text: 'Quiz history', path: '/QuickEase/QuizHistory' },
+		{ icon: faClock, text: 'Pomodoro', path: '/QuickEase/PomodoroSettings' },
+		{ icon: faCog, text: 'Settings', path: '/QuickEase/Settings' },
+		{ icon: faUserCircle, text: 'Profile', path: '/QuickEase/Profile' },
 	];
 
 	const renderLogo = () => (
-		<span className="text-xl font-inc cursor-pointer" onClick={() => navigate('/QuickEase-Web/Home')}>
+		<span className="text-xl font-inc cursor-pointer" onClick={() => navigate('/QuickEase/Home')}>
 			<span className="text-black dark:text-gray-100">QUICK</span>
 			<span className="text-primary dark:text-naeg">EASE</span>
 		</span>

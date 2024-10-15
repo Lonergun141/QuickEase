@@ -29,7 +29,7 @@ export default function ResetPass() {
 		if (isSuccess) {
 			setModalMessage('Your password has been reset successfully. You can now log in with your new password.');
 			setIsModalOpen(true);
-			navigate('/QuickEase-Web/SignIn');
+			navigate('/QuickEase/SignIn');
 		}
 
 		dispatch(reset());

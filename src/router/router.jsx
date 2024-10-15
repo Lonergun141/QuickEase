@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
         element: <ErrorPage />,
     },
     {
-        path: '/QuickEase-Web/',
+        path: '/QuickEase/',
         element: <App/>,
     },
     {
@@ -40,75 +40,75 @@ export const router = createBrowserRouter([
         element: <LoadingScreen />,
     },
     {
-        path: '/QuickEase-Web/SignIn',
+        path: '/QuickEase/SignIn',
         element: <SignIn />,
     },
     {
-        path: '/QuickEase-Web/SignUp',
+        path: '/QuickEase/SignUp',
         element: <SignUp />,
     },
     {
-        path: '/QuickEase-Web/ForgotPass',
+        path: '/QuickEase/ForgotPass',
         element: <ForgotPass />,
     },
     {
-        path: 'QuickEase-Web/activate/:uid/:token',
+        path: 'QuickEase/activate/:uid/:token',
         element: <ActivateAccount />,
     },
     {
-        path: '/QuickEase-Web/password/reset/confirm/:uid/:token',
+        path: '/QuickEase/password/reset/confirm/:uid/:token',
         element: <ResetPass />,
     },
     {
-        path: '/QuickEase-Web/Home',
+        path: '/QuickEase/Home',
         element: <ProtectedRoute><Home /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/QuizHistory',
+        path: '/QuickEase/QuizHistory',
         element: <ProtectedRoute><QuizHistory /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/MyNotes',
+        path: '/QuickEase/MyNotes',
         element: <ProtectedRoute><MyNotes /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/FlashCardhistory',
+        path: '/QuickEase/FlashCardhistory',
         element: <ProtectedRoute><FlashCardHistory /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/PomodoroSettings',
+        path: '/QuickEase/PomodoroSettings',
         element: <ProtectedRoute><PomodoroSettings /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Settings',
+        path: '/QuickEase/Settings',
         element: <ProtectedRoute><Settings /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Notes/:id',
+        path: '/QuickEase/Notes/:id',
         element: <ProtectedRoute><Notes /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Profile',
+        path: '/QuickEase/Profile',
         element: <ProtectedRoute><Profile /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Flashcards/:noteId',
+        path: '/QuickEase/Flashcards/:noteId',
         element: <ProtectedRoute><Flashcards /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Quiz/:id',  
+        path: '/QuickEase/Quiz/:id',  
         element: <ProtectedRoute><Quiz /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Results/:id', 
+        path: '/QuickEase/Results/:id', 
         element: <ProtectedRoute><Results /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/Review/:id',  
+        path: '/QuickEase/Review/:id',  
         element: <ProtectedRoute><Review /></ProtectedRoute>,
     },
     {
-        path: '/QuickEase-Web/TranscribeError',
+        path: '/QuickEase/TranscribeError',
         element: <ProtectedRoute><TranscribeError /></ProtectedRoute>,
     },
 ]);

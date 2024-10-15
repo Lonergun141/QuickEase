@@ -26,15 +26,15 @@ const Results = () => {
 	}, [noteId, score, total]);
 
 	const handleRetake = () => {
-		navigate(`/QuickEase-Web/Quiz/${noteId}`);
+		navigate(`/QuickEase/Quiz/${noteId}`);
 	};
 
 	const handleClose = () => {
-		navigate(`/QuickEase-Web/Notes/${noteId}`);
+		navigate(`/QuickEase/Notes/${noteId}`);
 	};
 
 	const handleReview = () => {
-		navigate(`/QuickEase-Web/Review/${noteId}`);
+		navigate(`/QuickEase/Review/${noteId}`);
 	};
 
 	return (

@@ -81,7 +81,7 @@ export default function MyNotes() {
 	};
 
 	const handleNoteClick = (id) => {
-		navigate(`/QuickEase-Web/Notes/${id}`);
+		navigate(`/QuickEase/Notes/${id}`);
 	};
 
 	const openDeleteModal = (note) => {
@@ -183,7 +183,7 @@ export default function MyNotes() {
 								<img src={SVG} alt="No notes available" className="w-64 h-64" />
 								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">No notes created yet!</h1>
 								<button
-									onClick={() => navigate('/QuickEase-Web/home')}
+									onClick={() => navigate('/QuickEase/home')}
 									className="mt-4 px-6 py-2 bg-highlights dark:bg-secondary text-white dark:text-dark rounded-full font-semibold hover:bg-opacity-90 transition-all">
 									Go to Home
 								</button>

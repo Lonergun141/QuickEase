@@ -149,7 +149,7 @@ const Quiz = () => {
 			localStorage.removeItem(`quiz-answers-${id}`);
 			localStorage.removeItem(`quiz-flags-${id}`);
 			refreshUserStats()
-			navigate(`/QuickEase-Web/Results/${id}`, {
+			navigate(`/QuickEase/Results/${id}`, {
 				state: { score: calculatedScore, total: questions.length, noteId: id },
 			});
 		} catch (error) {
@@ -169,7 +169,7 @@ const Quiz = () => {
 		if (modalAction === 'submit') {
 			submitQuiz();
 		} else if (modalAction === 'cancel') {
-			navigate(`/QuickEase-Web/notes/${id}`);
+			navigate(`/QuickEase/notes/${id}`);
 		}
 	};
 
@@ -185,7 +185,7 @@ const Quiz = () => {
 		return (
 			<div className="flex flex-col items-center justify-center h-screen">
 				<p className="text-xl text-red-500 mb-4">{error}</p>
-				<Button onClick={() => navigate('/QuickEase-Web/home')} className="w-48">
+				<Button onClick={() => navigate('/QuickEase/home')} className="w-48">
 					Go Back to Home
 				</Button>
 			</div>

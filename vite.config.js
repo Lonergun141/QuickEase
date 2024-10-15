@@ -12,5 +12,5 @@ import dns from 'dns'
 
 export default defineConfig({
 	plugins: [react()],
-	base: "/QuickEase-Web/"
+	base: "/QuickEase/"
 });

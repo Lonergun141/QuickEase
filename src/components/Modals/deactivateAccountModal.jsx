@@ -25,7 +25,7 @@ const DeactivateAccountModal = ({ isOpen, onClose }) => {
       setMessage('Account deactivated successfully. Logging out in 5 seconds...');
       setTimeout(() => {
         dispatch(logout());
-        navigate('/QuickEase-Web/');
+        navigate('/QuickEase/');
       }, 5000);
     }
 

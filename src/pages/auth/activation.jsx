@@ -33,7 +33,7 @@ export default function ActivateAccount() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    navigate("/QuickEase-Web/SignIn");
+    navigate("/QuickEase/SignIn");
   };
 
   return (

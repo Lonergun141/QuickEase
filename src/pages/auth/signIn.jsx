@@ -26,7 +26,7 @@ export default function SignIn() {
 
 	useEffect(() => {
 		if (isSuccess || user) {
-			navigate('/QuickEase-Web/Home');
+			navigate('/QuickEase/Home');
 		}
 
 		if (isError) {

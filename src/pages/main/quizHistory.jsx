@@ -76,7 +76,7 @@ export default function QuizHistory() {
 
 	const handleQuizClick = (quizNote) => {
 		if (quizNote) {
-			navigate(`/QuickEase-Web/Review/${quizNote}`);
+			navigate(`/QuickEase/Review/${quizNote}`);
 		} else {
 			console.error('Quiz note ID is undefined:', quizNote);
 		}
