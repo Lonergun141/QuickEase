@@ -45,17 +45,22 @@ const ActivateAccount = () => {
 				</h1>
 			</div>
 			<div className="w-full md:w-1/2 lg:w-1/3 text-center flex flex-col items-center justify-center flex-grow">
-				<h1 className="font-pmedium text-2xl md:text-3xl lg:text-4xl mb-4 dark:text-secondary">Activate Account</h1>
+				<h1 className="font-pmedium text-2xl md:text-3xl lg:text-4xl mb-4 dark:text-secondary">
+					Activate Account
+				</h1>
 				<p className="text-gray- font-pregular mb-6 dark:text-slate-500">
-					Activate and elevate your experience with our web app QuickEase. A single click is all it takes to unlock a
-					seamless learning experience.
+					Activate and elevate your experience with our web app QuickEase. A single click is
+					all it takes to unlock a seamless learning experience.
 				</p>
 				<Button type="button" onClick={handleActivate} isLoading={isLoading}>
 					Activate
 				</Button>
 			</div>
 
-			<Modal isOpen={isModalOpen} onClose={handleCloseModal} title={isError ? 'Error' : 'Success'}>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+				title={isError ? 'Error' : 'Success'}>
 				<p className="text-center mb-4 font-pregular">
 					{isError
 						? message || 'An error occurred during activation. Please try again.'

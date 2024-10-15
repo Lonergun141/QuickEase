@@ -4,7 +4,7 @@ import App from '../App';
 import SignIn from '../pages/auth/signIn';
 import SignUp from '../pages/auth/signUp';
 import ForgotPass from '../pages/auth/forgotPass';
-import ActivateAccount from '../pages/auth/activation';
+import ActivateAccount from '../pages/auth/activateAccount';
 import ResetPass from '../pages/auth/resetPass';
 import Home from '../pages/main/home';
 import QuizHistory from '../pages/main/quizHistory';
