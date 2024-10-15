@@ -16,7 +16,7 @@ export const convertFileToPng = async (file) => {
       break;
     case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
     case 'application/msword':
-      convertApiUrl = `https://v2.convertapi.com/convert/doc/to/png`;
+      convertApiUrl = `https://v2.convertapi.com/convert/docx/to/png`;
       break;
     default:
       throw new Error('Unsupported file type');
