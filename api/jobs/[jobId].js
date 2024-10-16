@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default async function handler(req, res) {
   const { jobId } = req.query;
-  const API2CONVERT_API_KEY = process.env.VITE_API2CONVERT_API_KEY;
+  const API2CONVERT_API_KEY = process.env.API2CONVERT_API_KEY;
   const apiUrl = `https://api.api2convert.com/v2/jobs/${jobId}`;
 
   try {

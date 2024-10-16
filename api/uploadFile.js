@@ -1,50 +1,32 @@
 import axios from 'axios';
-import Busboy from 'busboy';
+import formidable from 'formidable';
+import FormData from 'form-data';
+import fs from 'fs';
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Disables body parsing so that formidable can handle it
   },
 };
 
 export default async function handler(req, res) {
-  const API2CONVERT_API_KEY = process.env.API2CONVERT_API_KEY;
-
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-
   const { jobId } = req.query;
-
-  if (!jobId) {
-    return res.status(400).json({ error: 'Missing jobId in query parameters' });
-  }
+  const API2CONVERT_API_KEY = process.env.VITE_API2CONVERT_API_KEY;
 
   try {
-    // Use Busboy to parse the incoming form data
-    const busboy = new Busboy({ headers: req.headers });
-    let fileData = null;
-    let fileName = null;
+    // Parse the incoming form data
+    const form = new formidable.IncomingForm();
 
-    busboy.on('file', (fieldname, file, filename) => {
-      fileName = filename;
-
-      const chunks = [];
-
-      file.on('data', (data) => {
-        chunks.push(data);
-      });
-
-      file.on('end', () => {
-        fileData = Buffer.concat(chunks);
-      });
-    });
-
-    busboy.on('finish', async () => {
-      if (!fileData) {
-        return res.status(400).json({ error: 'No file uploaded' });
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error('Error parsing form data:', err);
+        return res.status(500).json({ error: 'Error parsing form data' });
       }
+
+      const file = files.file;
+
+      // Read the file data
+      const fileData = fs.createReadStream(file.filepath);
 
       // Get the job details to retrieve the server URL
       const jobResponse = await axios.get(`https://api.api2convert.com/v2/jobs/${jobId}`, {
@@ -57,7 +39,7 @@ export default async function handler(req, res) {
 
       // Create FormData for the upload
       const formData = new FormData();
-      formData.append('file', fileData, fileName);
+      formData.append('file', fileData, file.originalFilename);
 
       // Upload the file to the API
       const uploadUrl = `${serverUrl}/upload-file/${jobId}`;
@@ -70,15 +52,8 @@ export default async function handler(req, res) {
 
       res.status(uploadResponse.status).json(uploadResponse.data);
     });
-
-    busboy.on('error', (err) => {
-      console.error('Error parsing form data:', err);
-      res.status(500).json({ error: 'Error parsing form data' });
-    });
-
-    req.pipe(busboy);
   } catch (error) {
-    console.error(`Error in /api/uploadFile:`, error.response?.data || error.message);
+    console.error(`Error in /api/upload-file/${jobId}:`, error.response?.data || error.message);
     res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
   }
 }
