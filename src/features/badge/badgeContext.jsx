@@ -68,25 +68,25 @@ export const BadgeProvider = ({ children }) => {
 			const newAchievements = [];
 			for (const [key, badge] of Object.entries(badgeDefinitions)) {
 				if (badge.condition(stats)) {
-					console.log(`Condition met for badge: ${badge.title}`);
+					// console.log(`Condition met for badge: ${badge.title}`);
 					const hasAchievement = achievements.some((a) => a.badge === badge.id);
 					if (!hasAchievement && !shownAchievements.has(badge.id)) {
 						try {
 							const response = await createAchievement(stats.userId, badge.id);
 							if (response) {
-								console.log(`Achievement earned: ${badge.title}`);
+								// console.log(`Achievement earned: ${badge.title}`);
 								newAchievements.push(badge);
 								setAchievements((prevAchievements) => [...prevAchievements, response]);
 								setShownAchievements((prev) => new Set([...prev, badge.id]));
 							}
 						} catch (error) {
-							console.error('Error creating achievement:', error);
+							// console.error('Error creating achievement:', error);
 						}
 					} else {
-						console.log(`Achievement already exists or shown: ${badge.title}`);
+						// console.log(`Achievement already exists or shown: ${badge.title}`);
 					}
 				} else {
-					console.log(`Condition not met for badge: ${badge.title}`);
+					// console.log(`Condition not met for badge: ${badge.title}`);
 				}
 			}
 

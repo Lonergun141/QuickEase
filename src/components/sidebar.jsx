@@ -166,7 +166,7 @@ const Sidebar = ({ onToggle }) => {
 	if (isMobile) {
 		return (
 			<>
-				<div className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-darken shadow-md flex items-center px-4 z-50">
+				<div className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-darken flex items-center px-4 z-50">
 					<button onClick={toggleSidebar} className="p-2 text-gray-600 dark:text-gray-300">
 						<FontAwesomeIcon icon={faBars} size="lg" />
 					</button>
@@ -186,10 +186,10 @@ const Sidebar = ({ onToggle }) => {
 					}`}
 					onClick={toggleSidebar}></div>
 				<div
-					className={`fixed top-0 left-0 w-full h-screen bg-white dark:bg-darken shadow-lg z-50 transition-transform duration-300 ${
+					className={`fixed top-0 left-0 w-full h-screen bg-white dark:bg-darken z-50 transition-transform duration-300 ${
 						isOpen ? 'transform translate-x-0' : 'transform -translate-x-full'
 					}`}>
-					<div className="h-16 bg-white dark:bg-darken shadow-md flex items-center justify-between px-4">
+					<div className="h-16 bg-white dark:bg-darken flex items-center justify-between px-4">
 						{renderLogo()}
 						<button onClick={toggleSidebar} className="p-2 text-gray-600 dark:text-gray-300">
 							<FontAwesomeIcon icon={faTimes} size="lg" />
@@ -205,7 +205,7 @@ const Sidebar = ({ onToggle }) => {
 		<div
 			className={`fixed top-0 left-0 ${
 				isCollapsed ? 'w-28' : 'w-72'
-			} transition-all duration-300 h-screen bg-white dark:bg-darken shadow-lg z-50`}>
+			} transition-all duration-300 h-screen bg-white dark:bg-darken z-50`}>
 			<div className="flex flex-col justify-between h-full w-full">
 				<div>
 					<div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-4`}>

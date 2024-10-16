@@ -7,6 +7,7 @@ import Modal from '../../components/Modals/Modal';
 import { img } from '../../constants';
 import TermsAndConditionsModal from '../../components/Policies/termsAndConditions';
 import { Link } from 'react-router-dom';
+import PasswordStrengthMeter from '../../components/Security/PasswordStrengthMeter';
 
 export default function SignUp() {
 	const dispatch = useDispatch();
@@ -123,6 +124,7 @@ export default function SignUp() {
 						value={formData.password}
 						onChange={handleChange}
 					/>
+					  <PasswordStrengthMeter password={password} />
 					{formErrors.password && <span className="text-red-500 text-sm">Password must be at least 12 characters</span>}
 
 					<Textfield
@@ -132,6 +134,7 @@ export default function SignUp() {
 						value={formData.re_password}
 						onChange={handleChange}
 					/>
+					
 					{formErrors.cpassword && <span className="text-red-500 text-sm">Passwords do not match</span>}
 
 					<div className="flex items-center">

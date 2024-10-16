@@ -1,62 +1,97 @@
+// src/Converter/convertAPI.js
 import axios from 'axios';
 
-const CONVERT_API_SECRET = import.meta.env.VITE_CONVERT_API;
-
-export const convertFileToPng = async (file) => {
-  let convertApiUrl;
-
-  // Determine the correct ConvertAPI endpoint based on the file type
-  switch (file.type) {
-    case 'application/pdf':
-      convertApiUrl = `https://v2.convertapi.com/convert/pdf/to/png`;
-      break;
-    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-    case 'application/vnd.ms-powerpoint':
-      convertApiUrl = `https://v2.convertapi.com/convert/ppt/to/png`;
-      break;
-    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-    case 'application/msword':
-      convertApiUrl = `https://v2.convertapi.com/convert/docx/to/png`;
-      break;
-    default:
-      throw new Error('Unsupported file type');
+export const convertFilesToPng = async (files) => {
+  if (!files || files.length === 0) {
+    throw new Error('No files provided for conversion');
   }
-
-  // Use FormData to handle file upload in a multipart form
-  const formData = new FormData();
-  formData.append('File', file); // Note the uppercase 'F'
 
   try {
-    // Send the request to ConvertAPI with the Authorization header
-    const response = await axios.post(convertApiUrl, formData, {
-      headers: {
-        'Authorization': `Bearer ${CONVERT_API_SECRET}`,
-        // No need to set 'Content-Type'; axios will handle it automatically
-      },
+    // Step 1: Create a new job without any input files
+    const jobResponse = await axios.post('/api/jobs', {
+      conversion: [
+        {
+          target: 'png',
+          options: {
+            allow_multiple_outputs: true,
+          },
+        },
+      ],
+      process: false,
     });
 
-    // Log the response data
-    console.log('ConvertAPI Response:', response.data);
+    const { id: jobId } = jobResponse.data;
 
-    // Extract the files from the response
-    const resultFiles = response.data.Files;
+    // Step 2: Upload all files to the job via your serverless function
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
 
-    if (!resultFiles) {
-      throw new Error('Conversion failed. No files returned from ConvertAPI.');
+      try {
+        await axios.post(`/api/upload-file/${jobId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } catch (uploadError) {
+        console.error(`Error uploading file ${file.name}:`, uploadError);
+        throw new Error(`Failed to upload file ${file.name}: ${uploadError.message}`);
+      }
     }
 
-    // Extract the base64 data from FileData and prepend the data URL prefix
-    const pngFiles = resultFiles.map((file) => {
-      if (!file.FileData) {
-        throw new Error(`FileData is missing in the response for file: ${file.FileName}`);
-      }
-      const base64Data = `data:image/png;base64,${file.FileData}`;
-      return base64Data;
-    });
+    // Step 3: Start processing the job
+    await axios.patch(`/api/jobs/${jobId}`, { process: true });
 
-    return pngFiles;
+    // Step 4: Poll for job completion
+    let result;
+    let attempts = 0;
+    const maxAttempts = 30; // Adjust as needed
+    while (!result || (result.status.code !== 'completed' && result.status.code !== 'failed')) {
+      if (attempts >= maxAttempts) {
+        throw new Error('Job processing timed out');
+      }
+
+      const jobStatus = await axios.get(`/api/jobs/${jobId}`);
+      result = jobStatus.data;
+
+      if (result.status.code === 'failed') {
+        throw new Error('Conversion failed: ' + JSON.stringify(result.errors));
+      }
+
+      // Wait for 2 seconds before polling again
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      attempts++;
+    }
+
+    // Step 5: Fetch all converted PNG files
+    const pngFiles = await Promise.all(
+      result.output.map(async (output) => {
+        try {
+          const response = await axios.get(`/api/download`, {
+            params: { uri: output.uri },
+            responseType: 'blob',
+          });
+          return blobToBase64(response.data);
+        } catch (downloadError) {
+          console.error(`Error downloading converted file:`, downloadError);
+          throw new Error(`Failed to download converted file: ${downloadError.message}`);
+        }
+      })
+    );
+
+    return pngFiles; // Return an array of base64 strings
   } catch (error) {
     console.error('Error during file conversion:', error);
-    throw error;
+    throw new Error('File conversion failed: ' + error.message);
   }
+};
+
+// Helper function to convert blob to base64 (unchanged)
+const blobToBase64 = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 };

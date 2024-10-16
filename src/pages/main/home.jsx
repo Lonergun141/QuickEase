@@ -22,6 +22,7 @@ import Modal from '../../components/Modals/Modal';
 import { Instructions } from '../../components/UI/instructions';
 import { QuickieGreetings } from '../../components/UI/quickieGreetings';
 import { useUserStats } from '../../features/badge/userStatsContext';
+import { handleError } from '../../utils/Errors/handlingError';
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState('text');
@@ -147,14 +148,12 @@ export default function Home() {
 	const handleGenerate = async () => {
 		setLoading(true);
 
-		if (activeTab === 'text') {
-			if (characterCount < 200 || characterCount > 10000) {
-				navigate('/TranscribeError');
-				setLoading(false);
-				return;
-			}
+		try {
+			if (activeTab === 'text') {
+				if (characterCount < 200 || characterCount > 10000) {
+					throw new Error('Character count must be between 200 and 10,000.');
+				}
 
-			try {
 				const data = {
 					notecontents: inputText,
 					user: userInfo.id,
@@ -167,37 +166,27 @@ export default function Home() {
 				} else {
 					throw new Error('Invalid response from generateSummary');
 				}
-			} catch (error) {
-				console.error('Error generating summary:', error);
-				navigate('/TranscribeError');
-			} finally {
-				setLoading(false);
-			}
-		} else if (activeTab === 'images' || activeTab === 'documents') {
-			const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
+			} else if (activeTab === 'images' || activeTab === 'documents') {
+				const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
 
-			if (filesToProcess.length === 0) {
-				navigate('/TranscribeError');
-				setLoading(false);
-			} else {
-				try {
-					const response = await generateSummaryFromImages(
-						filesToProcess,
-						navigate,
-						userInfo.id
+				if (filesToProcess.length === 0) {
+					throw new Error(
+						'No files were uploaded. Please upload images or documents to proceed.'
 					);
-					if (response && response.id) {
-						navigate(`/Notes/${response.id}`);
-					} else {
-						throw new Error('Invalid response from generateSummaryFromImages');
-					}
-				} catch (error) {
-					console.error('Error generating summary from files:', error);
-					navigate('/TranscribeError');
-				} finally {
-					setLoading(false);
+				}
+
+				const response = await generateSummaryFromImages(filesToProcess, navigate, userInfo.id);
+				if (response && response.id) {
+					navigate(`/Notes/${response.id}`);
+				} else {
+					throw new Error('Invalid response from generateSummaryFromImages');
 				}
 			}
+		} catch (error) {
+			console.error('Error generating summary:', error);
+			handleError(navigate, error.message || 'An unexpected error occurred. Please try again.');
+		} finally {
+			setLoading(false);
 		}
 	};
 

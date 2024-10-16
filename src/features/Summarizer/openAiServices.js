@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { convertFileToPng } from '../Converter/convertAPI';
+import { convertFilesToPng } from '../Converter/convertAPI';
 import Tesseract from 'tesseract.js';
+import { handleError } from '../../utils/Errors/handlingError';
 
 const API_BASE_URL = `https://d4ngk.pythonanywhere.com/quickease/api/v1`;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
@@ -87,56 +88,81 @@ export const updateNoteTitle = async (id, notetitle) => {
 
 export const generateSummaryFromImages = async (files, navigate, userId) => {
 	try {
-		const textContents = await Promise.all(
-			files.map(async (file, index) => {
-				if (file.type.startsWith('image/')) {
+		// Separate image files and non-image files
+		const imageFiles = files.filter((file) => file.type.startsWith('image/'));
+		const nonImageFiles = files.filter((file) => !file.type.startsWith('image/'));
+
+		// Process image files with Tesseract
+		const imageTexts = await Promise.all(
+			imageFiles.map(async (file, index) => {
+				try {
 					const {
 						data: { text },
 					} = await Tesseract.recognize(file);
-					console.log(`Tesseract result for image ${index + 1}:`, text);
 					return text;
-				} else {
-					const pngImages = await convertFileToPng(file);
-					const texts = await Promise.all(
-						pngImages.map(async (pngImage, pngIndex) => {
-							const {
-								data: { text },
-							} = await Tesseract.recognize(pngImage);
-							console.log(`Tesseract result for converted image ${index + 1}.${pngIndex + 1}:`, text);
-							return text;
-						})
-					);
-					return texts.join('\n\n');
+				} catch (error) {
+					console.error(`Error processing image file ${index + 1}:`, error);
+					throw new Error(`Failed to process image file ${index + 1}: ${error.message}`);
 				}
 			})
 		);
 
+		// Convert non-image files to PNG and process them
+		let nonImageTexts = [];
+		if (nonImageFiles.length > 0) {
+			// Convert non-image files to PNGs
+			const pngImages = await convertFilesToPng(nonImageFiles);
+
+			// Process the PNG images with Tesseract
+			nonImageTexts = await Promise.all(
+				pngImages.map(async (pngImage, pngIndex) => {
+					try {
+						const {
+							data: { text },
+						} = await Tesseract.recognize(pngImage);
+						return text;
+					} catch (error) {
+						console.error(`Error processing converted PNG file ${pngIndex + 1}:`, error);
+						throw new Error(
+							`Failed to process converted PNG file ${pngIndex + 1}: ${error.message}`
+						);
+					}
+				})
+			);
+		}
+
+		// Combine texts from both image and non-image files
+		const textContents = [...imageTexts, ...nonImageTexts];
+
 		const combinedText = textContents.filter((text) => text.trim() !== '').join('\n\n');
-		console.log('Combined text from all images:', combinedText);
-
 		const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
-		if (wordCount < 100) {
-			console.log('Extracted text is less than 100 words.');
-			navigate('/TranscribeError');
-			return null;
+		const characterCount = combinedText.length;
+
+		if (wordCount < 200) {
+			throw new Error(
+				`Please ensure the images contain at least 200 words of clear and readable text.`
+			);
 		}
 
-		if (combinedText.length === 0) {
-			console.log('No text extracted from images');
-			navigate('/TranscribeError');
-			return null;
+		if (characterCount > 10000) {
+			throw new Error(
+				`Your file contains more than 10000 characters which exceeds the maximum allowed`
+			);
 		}
+
 		const formData = {
 			notecontents: combinedText,
 			user: userId,
 		};
 
 		const response = await generateSummary(formData);
+		if (!response || !response.id) {
+			throw new Error('Invalid response from generateSummary');
+		}
 		return response;
 	} catch (error) {
 		console.error('Error in generateSummaryFromImages:', error);
-		navigate('/TranscribeError');
-		throw new Error(`Failed to generate summary: ${error.message}`);
+		throw error;
 	}
 };
 
@@ -156,7 +182,10 @@ export const generateQuizFromSummary = async (summary) => {
 						role: 'user',
 						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should adapt to the length and detail of the summary, with at least **15 questions** as a minimum. If the summary provides enough content, generate additional questions to cover all major points and details, ensuring an even distribution of topics. 
 
-						Each question should have **1 correct answer** and **3 plausible, but incorrect choices**. The incorrect choices should be believable and not too easy to rule out. Randomize the position of the correct answer among the four choices in each question. Format the response as a JSON array of question objects with the following structure:
+						Each question must have **1 correct answer** and **3 incorrect but realistic options**. 
+						The incorrect choices should not be obviously wrong and should resemble plausible alternatives or common misconceptions based on the content. 
+						Randomize the position of the correct answer among the four choices for each question. Format the response as a JSON array of question objects with the following structure:
+
 						[
 							{
 								"TestQuestion": "Question text here",
@@ -180,12 +209,15 @@ export const generateQuizFromSummary = async (summary) => {
 								]
 							}
 						]
+
+						Use subtle phrasing for incorrect choices to avoid making them easy to rule out. 
+						Include common pitfalls, related concepts, or nuanced differences that might mislead someone unfamiliar with the material.
 						
 						The quiz should be based on the following summary:
 						
 						"${summary}"
 						
-						Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Keep the correct answer randomized in position for each question, and ensure that incorrect answers are plausible. Do not provide any explanation or extra formatting outside the JSON structure.`,
+						Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Do not provide any explanation or extra formatting outside the JSON structure.`,
 					},
 				],
 				max_tokens: 4000,

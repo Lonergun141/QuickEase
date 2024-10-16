@@ -9,7 +9,7 @@ export const Instructions = () => {
 					<li>Select the "Input text" tab</li>
 					<li>Click on the text area</li>
 					<li>Type or paste your text</li>
-					<li>Ensure your text has 100 words (500 characters)</li>
+					<li>Ensure your text has atleast 200 words</li>
 					<li>Click "Generate" when you're ready</li>
 				</ol>
 			</div>
@@ -21,6 +21,7 @@ export const Instructions = () => {
 					<li>Click "Choose Files"</li>
 					<li>Select one or multiple files (docx, pdf, pptx)</li>
 					<li>Each file should be under 10MB</li>
+					<li>Ensure your file has atleast 200 words</li>
 					<li>Click "Generate" to process your documents</li>
 				</ul>
 			</div>

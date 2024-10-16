@@ -14,7 +14,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 export default function MyNotes() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
 	const [notes, setNotes] = useState([]);
-	const [loading, setLoading] = useState(true); // Added loading state
+	const [loading, setLoading] = useState(true); 
 	const [showModal, setShowModal] = useState(false);
 	const [noteToDelete, setNoteToDelete] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -35,14 +35,14 @@ export default function MyNotes() {
 
 	const fetchNotes = async () => {
 		try {
-			setLoading(true); // Set loading to true when fetching starts
+			setLoading(true); 
 			const fetchedNotes = await fetchAllNotes();
 			const sortedNotes = sortNotes(fetchedNotes, sortOption);
 			setNotes(sortedNotes);
 		} catch (error) {
 			console.error('Error fetching notes:', error);
 		} finally {
-			setLoading(false); // Set loading to false when fetching ends
+			setLoading(false);
 		}
 	};
 
