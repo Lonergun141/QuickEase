@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   try {
     // Parse the incoming form data
-    const form = new formidable.IncomingForm();
+    const form = formidable(); // Use formidable directly instead of new formidable.IncomingForm()
 
     form.parse(req, async (err, fields, files) => {
       if (err) {
