@@ -1,101 +1,102 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Textfield from '../textfield';
-import Button from '../button';
 import { resetPassword, logout, reset } from '../../features/auth/authSlice';
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+	const [email, setEmail] = useState('');
+	const [message, setMessage] = useState('');
+	const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isLoading, isError, isSuccess, message: authMessage } = useSelector((state) => state.auth);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const {
+		isLoading,
+		isError,
+		isSuccess,
+		message: authMessage,
+	} = useSelector((state) => state.auth);
 
-  const handleReset = useCallback(() => {
-    dispatch(reset());
-  }, [dispatch]);
+	const handleReset = useCallback(() => {
+		dispatch(reset());
+	}, [dispatch]);
 
-  useEffect(() => {
-    if (isError) {
-      setError(authMessage || 'Failed to send reset email. Please try again.');
-    }
+	useEffect(() => {
+		if (isError) {
+			setError(authMessage || 'Failed to send reset email. Please try again.');
+		}
 
-    if (isSuccess && !isError) {
-      setMessage('Password reset email sent successfully. You will be logged out in 5 seconds');
-      setEmail('');
-      setTimeout(() => {
-        handleReset();
-        navigate('/');
-        onClose();
-      }, 2000);
-    }
+		if (isSuccess && !isError) {
+			setMessage('Password reset email sent successfully. Logging out in 2 seconds...');
+			setEmail('');
+			setTimeout(() => {
+				handleReset();
+				navigate('/');
+				onClose();
+			}, 2000);
+		}
 
-    return handleReset;
-  }, [isError, isSuccess, authMessage, dispatch, navigate, handleReset, onClose]);
+		return handleReset;
+	}, [isError, isSuccess, authMessage, dispatch, navigate, handleReset, onClose]);
 
-  useEffect(() => {
-    let timer;
-    if (message) {
-      timer = setTimeout(() => {
-        setMessage('');
-      }, 5000);
-    }
-    return () => clearTimeout(timer);
-  }, [message]);
+	const handlePasswordReset = async () => {
+		setError('');
+		if (!email) {
+			setError('Please enter your email address.');
+			return;
+		}
+		try {
+			await dispatch(resetPassword({ email })).unwrap();
+		} catch (err) {
+			setError(err.message || 'Failed to send reset email. Please try again.');
+		}
+	};
 
-  const handlePasswordReset = async () => {
-    setError('');
-    if (!email) {
-      setError('Please enter your email address.');
-      return;
-    }
+	if (!isOpen) return null;
 
-    try {
-      await dispatch(resetPassword({ email })).unwrap();
-    } catch (err) {
-      setError(err.message || 'Failed to send reset email. Please try again.');
-    }
-  };
+	return (
+		<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+			<div className="bg-white dark:bg-darken p-8 rounded-lg shadow-lg w-full max-w-lg">
+				{/* Modal Header */}
+				<div className="text-start mb-4">
+					<h2 className="text-3xl font-bold text-gray-800 dark:text-white">Change Password</h2>
+					<p className="text-gray-600 dark:text-gray-300 mt-2">
+						Enter your email to receive a password reset link.
+					</p>
+				</div>
 
-  if (!isOpen) return null;
+				{/* Email Input */}
+				<input
+					type="email"
+					placeholder="Enter your email"
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					className="w-full py-3 px-4 rounded-lg border border-gray-300 dark:bg-dark dark:text-white focus:ring-2 focus:ring-primary outline-none mb-4"
+				/>
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-dark p-8 rounded-lg shadow-2xl w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-secondary">Change Password</h2>
-        <p className="text-gray-600 mb-4">Enter your email address to receive a link to reset your password.</p>
-        <Textfield
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          name="email"
-          borderColor="border-gray-300"
-          focusBorderColor="border-blue-500"
-          paddingY="py-3"
-        />
-        {message && <p className="text-green-600 mt-4">{message}</p>}
-        {error && <p className="text-red-600 mt-4">{error}</p>}
-        <div className="mt-6 flex justify-end space-x-4">
-          <Button onClick={onClose} className="bg-gray-500 hover:bg-gray-700">
-            Close
-          </Button>
-          <Button onClick={handlePasswordReset} isLoading={isLoading} disabled={isLoading}>
-            Send Reset Email
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
+				{/* Feedback Messages */}
+				{message && <p className="text-green-600 text-center mb-4">{message}</p>}
+				{error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-ChangePasswordModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
+				{/* Buttons */}
+				<div className="flex justify-end space-x-4">
+					<button
+						onClick={onClose}
+						className=" hover:bg-gray-100 text-dark dark:text-secondary px-5 py-2 rounded-lg transition duration-200">
+						Close
+					</button>
+					<button
+						onClick={handlePasswordReset}
+						className={`${
+							isLoading ? 'bg-blue-400' : 'bg-blue-600'
+						} hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200`}
+						disabled={isLoading}>
+						{isLoading ? 'Sending...' : 'Send Reset Email'}
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default ChangePasswordModal;

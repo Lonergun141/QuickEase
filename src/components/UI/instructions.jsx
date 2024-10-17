@@ -9,7 +9,7 @@ export const Instructions = () => {
 					<li>Select the "Input text" tab</li>
 					<li>Click on the text area</li>
 					<li>Type or paste your text</li>
-					<li>Ensure your text has 100 words (500 characters)</li>
+					<li>Ensure your text has 200 words</li>
 					<li>Click "Generate" when you're ready</li>
 				</ol>
 			</div>
@@ -30,7 +30,7 @@ export const Instructions = () => {
 				<ol className="text-gray-600 dark:text-gray-400 list-decimal list-inside space-y-2">
 					<li>Select the "Upload images" tab</li>
 					<li>Click "Choose Files" or drag and drop</li>
-					<li>Pick one or multiple images (jpg, png, gif)</li>
+					<li>Pick one or multiple images (jpg, png, jpeg)</li>
 					<li>Ensure each image is under 10MB</li>
 					<li>Click "Generate" to process your images</li>
 				</ol>

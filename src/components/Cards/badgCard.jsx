@@ -10,8 +10,8 @@ const BadgeCard = ({ src, title, description, isEarned }) => (
         className={`max-h-full ${!isEarned ? 'opacity-50 grayscale' : ''}`}
       />
     </div>
-    <h1 className="text-lg font-semibold text-center text-dark dark:text-secondary">{title}</h1>
-    <p className="mt-1 text-sm text-center text-gray-600 dark:text-gray-300">{description}</p>
+    <h3 className="text-lg font-pmedium text-center text-dark dark:text-secondary">{title}</h3>
+    <p className="mt-1 text-sm font-pregular text-center text-gray-600 dark:text-gray-300">{description}</p>
   </div>
 );
 

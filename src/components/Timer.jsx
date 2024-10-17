@@ -19,6 +19,7 @@ const quotes = [
 	'Small steps lead to big achievements.',
 	'Your future self will thank you for studying now.',
 	'Embrace the challenge, grow your mind.',
+	'In the end of the day, its night',
 ];
 
 const Timer = ({ isCollapsed, isMobile }) => {
@@ -34,7 +35,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 
 	const changeQuote = useCallback(() => {
 		const now = Date.now();
-		if (now - lastQuoteChangeRef.current < 7500) return; // Prevent rapid changes
+		if (now - lastQuoteChangeRef.current < 7500) return; // Prevent rapid changes sa quotes
 
 		setIsQuoteVisible(false);
 		setTimeout(() => {
@@ -45,7 +46,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	}, []);
 
 	useEffect(() => {
-		changeQuote(); // Set initial quote
+		changeQuote(); 
 		quoteIntervalRef.current = setInterval(changeQuote, 8000);
 
 		return () => {
@@ -146,14 +147,14 @@ const Timer = ({ isCollapsed, isMobile }) => {
 
 	const renderTimerContent = () => (
 		<div className={`flex flex-col items-center ${isCollapsed ? 'space-y-2' : 'space-y-2'}`}>
-			<h1
-				className={`font-pbold ${isCollapsed ? 'text-md text-center' : 'text-xl'} ${
+			<h3
+				className={`font-pbold ${isCollapsed ? 'text-md text-center' : 'text-xl md:text-md xs:text-sm lg:text-1xl'} ${
 					isDarkMode ? 'text-secondary' : 'text-primary'
 				}`}>
 				{getSessionTypeText()}
-			</h1>
+			</h3>
 			<div
-				className={`flex justify-center items-center ${isCollapsed ? 'text-2xl' : 'text-6xl'} font-pbold 
+				className={`flex justify-center items-center ${isCollapsed ? 'text-2xl' : 'md:text-md sm:text-sm lg:text-6xl'} font-pbold 
                 ${isDarkMode ? 'text-secondary' : 'text-primary'} transition-all duration-300 ease-in-out `}>
 				{formatTime(currentTime)}
 			</div>

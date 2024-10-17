@@ -54,15 +54,17 @@ export default function Profile() {
 				}`}>
 				<div className="p-4">
 					{/* User Info */}
-					<div className="flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-between">
+					<div className="flex flex-col md:flex-row md:justify-between items-center md:items-center space-y-0 md:space-y-0">
 						<div className="flex items-center space-x-4">
+							{/* Profile Picture */}
 							<div className="w-16 h-16 rounded-full bg-primary dark:bg-naeg flex items-center justify-center text-white text-4xl font-bold">
 								{userInfo?.firstname?.charAt(0).toUpperCase()}
 							</div>
-							<div>
-								<h1 className="text-xl font-semibold dark:text-secondary">
+							{/* Name and Email */}
+							<div className="flex flex-col">
+								<h3 className="text-xl font-pbold dark:text-secondary">
 									{userInfo?.firstname} {userInfo?.lastname}
-								</h1>
+								</h3>
 								<p className="text-gray-500 font-pregular text-md">{userInfo?.email}</p>
 							</div>
 						</div>
@@ -72,7 +74,9 @@ export default function Profile() {
 					<div className="mt-6 bg-white dark:bg-darken p-6 rounded-lg">
 						<div className="flex items-center mb-4">
 							<FontAwesomeIcon icon={faTrophy} className="text-yellow-500 w-8 h-8 mr-3" />
-							<h3 className="text-xl font-bold text-dark dark:text-secondary">Achievements Earned</h3>
+							<h3 className="text-xl font-bold text-dark dark:text-secondary">
+								Achievements Earned
+							</h3>
 						</div>
 
 						{/* Responsive Badge Grid */}
@@ -89,7 +93,9 @@ export default function Profile() {
 						</div>
 
 						{/* View All Badges Modal Trigger */}
-						<div onClick={() => setShowModal(true)} className="flex justify-center w-full cursor-pointer mt-4">
+						<div
+							onClick={() => setShowModal(true)}
+							className="flex justify-center w-full cursor-pointer mt-4">
 							<h1 className="text-gray-600 text-center font-poppins text-xs font-medium leading-normal transition duration-200 transform hover:bg-gray-200 hover:scale-105 rounded-md px-2 py-1">
 								View All
 							</h1>
@@ -108,7 +114,9 @@ export default function Profile() {
 								<div className="text-3xl font-extrabold">{averageScore}%</div>
 								<p className="text-lg mt-1">Quiz Evaluation</p>
 								<div className="w-full h-2 mt-3 bg-gray-300 rounded-full overflow-hidden">
-									<div className="h-full bg-yellow-400" style={{ width: `${averageScore}%` }}></div>
+									<div
+										className="h-full bg-yellow-400"
+										style={{ width: `${averageScore}%` }}></div>
 								</div>
 							</div>
 
@@ -130,21 +138,27 @@ export default function Profile() {
 								<p className="text-lg mt-1">Flashcards Created</p>
 							</Link>
 
-							<Modal isOpen={isModalOpen} onClose={closeModal} title="Quiz Evaluation Explained">
+							<Modal
+								isOpen={isModalOpen}
+								onClose={closeModal}
+								title="Quiz Evaluation Explained">
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 									<div className="text-gray-800 dark:text-gray-200 space-y-4">
 										<h3 className="text-xl font-semibold">How It Works</h3>
 										<p className="text-base">
-											Your quiz evaluation score is calculated based on your performance across all quizzes you've taken:
+											Your quiz evaluation score is calculated based on your performance
+											across all quizzes you've taken:
 										</p>
 										<ul className="list-disc pl-5 text-base space-y-2">
 											<li>We sum up all the points you've earned.</li>
-											<li>We divide this by the total possible points from all quizzes.</li>
+											<li>
+												We divide this by the total possible points from all quizzes.
+											</li>
 											<li>The result is converted to a percentage.</li>
 										</ul>
 										<p className="text-base font-medium mt-4">
-											This score reflects your overall mastery of the topics you've been quizzed on. Keep taking quizzes to improve
-											your score!
+											This score reflects your overall mastery of the topics you've been
+											quizzed on. Keep taking quizzes to improve your score!
 										</p>
 									</div>
 									<div className="flex justify-center items-center">

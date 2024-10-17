@@ -11,7 +11,7 @@ import {
 	faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import LoadingScreen from '../../components/loader';
+import NotesLoadingScreen from '../../components/Loaders/loader';
 import {
 	generateSummary,
 	generateSummaryFromImages,
@@ -187,6 +187,7 @@ export default function Home() {
 						userInfo.id
 					);
 					if (response && response.id) {
+						refreshUserStats();
 						navigate(`/Notes/${response.id}`);
 					} else {
 						throw new Error('Invalid response from generateSummaryFromImages');
@@ -396,7 +397,7 @@ export default function Home() {
 					How to Upload Your Materials
 				</h2>
 				<Instructions />
-				{loading && <LoadingScreen />}
+				{loading && <NotesLoadingScreen />}
 				{isModalOpen && (
 					<Modal onClose={() => setIsModalOpen(false)}>
 						<p>{modalMessage}</p>

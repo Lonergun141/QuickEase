@@ -6,11 +6,14 @@ import Button from '../../components/button';
 import Modal from '../../components/Modals/Modal';
 import { img } from '../../constants';
 import TermsAndConditionsModal from '../../components/Policies/termsAndConditions';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import PasswordStrengthMeter from '../../components/Security/PasswordStrengthMeter';
 
 export default function SignUp() {
 	const dispatch = useDispatch();
 	const { isLoading, isSuccess, isError, message } = useSelector((state) => state.auth);
+
+	const navigate = useNavigate();
 
 	const [formData, setFormData] = useState({
 		firstname: '',
@@ -90,6 +93,11 @@ export default function SignUp() {
 		setShowModal(!showModal);
 	};
 
+	const back = () => {
+		navigate('/SignIn');
+		dispatch(reset());
+	};
+
 	return (
 		<div className="bg-white dark:bg-dark w-full h-screen flex flex-col items-center justify-between p-4">
 			<header className="my-4 md:my-8">
@@ -103,16 +111,38 @@ export default function SignUp() {
 					Create an Account
 				</h1>
 				<form className="w-full space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-					<Textfield placeholder="Firstname" name="firstname" value={formData.firstname} onChange={handleChange} />
-					{formErrors.name && <span className="text-red-500 text-sm">Firstname and lastname are required</span>}
+					<Textfield
+						placeholder="Firstname"
+						name="firstname"
+						value={formData.firstname}
+						onChange={handleChange}
+					/>
+					{formErrors.name && (
+						<span className="text-red-500 text-sm">Firstname and lastname are required</span>
+					)}
 
-					<Textfield placeholder="Lastname" name="lastname" value={formData.lastname} onChange={handleChange} />
-					{formErrors.name && <span className="text-red-500 text-sm">Firstname and lastname are required</span>}
+					<Textfield
+						placeholder="Lastname"
+						name="lastname"
+						value={formData.lastname}
+						onChange={handleChange}
+					/>
+					{formErrors.name && (
+						<span className="text-red-500 text-sm">Firstname and lastname are required</span>
+					)}
 
-					<Textfield type="email" placeholder="Email Address" name="email" value={formData.email} onChange={handleChange} />
+					<Textfield
+						type="email"
+						placeholder="Email Address"
+						name="email"
+						value={formData.email}
+						onChange={handleChange}
+					/>
 					{formErrors.email && (
 						<span className="text-red-500 text-sm">
-							{formErrors.email === true ? 'Invalid email address' : 'This email is already registered.'}
+							{formErrors.email === true
+								? 'Invalid email address'
+								: 'This email is already registered.'}
 						</span>
 					)}
 
@@ -123,7 +153,12 @@ export default function SignUp() {
 						value={formData.password}
 						onChange={handleChange}
 					/>
-					{formErrors.password && <span className="text-red-500 text-sm">Password must be at least 12 characters</span>}
+					<PasswordStrengthMeter password={password} />
+					{formErrors.password && (
+						<span className="text-red-500 text-sm">
+							Password must be at least 12 characters
+						</span>
+					)}
 
 					<Textfield
 						type="password"
@@ -132,27 +167,36 @@ export default function SignUp() {
 						value={formData.re_password}
 						onChange={handleChange}
 					/>
-					{formErrors.cpassword && <span className="text-red-500 text-sm">Passwords do not match</span>}
+
+					{formErrors.cpassword && (
+						<span className="text-red-500 text-sm">Passwords do not match</span>
+					)}
 
 					<div className="flex items-center">
 						<input type="checkbox" id="terms" className="mr-2" />
-						<label htmlFor="terms" className="text-gray-700 dark:text-secondary underline cursor-pointer" onClick={toggleModal}>
-							I accept the <a href="#">terms of use</a> and <a href="#">privacy policy</a> of the application
+						<label
+							htmlFor="terms"
+							className="text-gray-700 dark:text-secondary underline cursor-pointer"
+							onClick={toggleModal}>
+							I accept the <a href="#">terms of use</a> and <a href="#">privacy policy</a> of
+							the application
 						</label>
 					</div>
 					<Button type="submit" isLoading={isLoading}>
 						Sign up
 					</Button>
 					<div>
-					<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
-						Already have an account?{' '}
-						<Link to="/SignIn" className="text-primary dark:text-secondary">
-							Sign In Now!
-						</Link>
-					</p>
+						<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
+							Already have an account?{' '}
+							<span onClick={back} className="text-primary dark:text-secondary cursor-pointer">
+								Sign In Now!
+							</span>
+						</p>
 					</div>
 					{formErrors.global && (
-						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+						<div
+							className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+							role="alert">
 							<strong className="font-bold">Error: </strong>
 							<span className="block sm:inline">{formErrors.global}</span>
 						</div>
@@ -175,7 +219,8 @@ export default function SignUp() {
 				<div className="flex flex-col items-center">
 					<img src={img.email} alt="Success" className="w-[250px] rounded-lg mb-4" />
 					<p className="text-center text-gray-700 dark:text-secondary mb-6">
-						Your account has been created successfully. Please check your email to verify your account.
+						Your account has been created successfully. Please check your email to verify your
+						account.
 					</p>
 				</div>
 			</Modal>

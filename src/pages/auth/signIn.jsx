@@ -88,6 +88,12 @@ export default function SignIn() {
 		setShowModal(!showModal);
 	};
 
+	
+	const go = () => {
+		navigate('/SignUp');
+		dispatch(reset());
+	};
+
 	return (
 		<div className="bg-white dark:bg-dark min-h-screen flex flex-col justify-between">
 			<header className="pt-8 md:pt-12">
@@ -139,9 +145,9 @@ export default function SignIn() {
 					</form>
 					<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
 						Don't have an account?{' '}
-						<Link to="/SignUp" className="text-primary dark:text-secondary">
+						<span onClick={go} className="text-primary dark:text-secondary cursor-pointer">
 							Register Now!
-						</Link>
+						</span>
 					</p>
 				</div>
 				<TermsAndConditionsModal isOpen={showModal} onClose={toggleModal} />

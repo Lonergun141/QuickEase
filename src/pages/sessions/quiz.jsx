@@ -10,9 +10,10 @@ import {
 	submitQuizAnswer,
 	deleteAllChoiceAnswers,
 } from '../../features/Quiz/quizServices';
-import LoadingScreen from '../../components/loader';
+import LoadingScreen from '../../components/Loaders/loader';
 import Modal from '../../components/Modals/Modal';
 import { useUserStats } from '../../features/badge/userStatsContext';
+import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 
 const Quiz = () => {
 	const navigate = useNavigate();
@@ -37,6 +38,7 @@ const Quiz = () => {
 	};
 
 	useEffect(() => {
+	
 		const handleResize = () => {
 			if (window.innerWidth >= 768) {
 				setIsSidebarOpen(true);
@@ -178,7 +180,7 @@ const Quiz = () => {
 	};
 
 	if (isLoading) {
-		return <LoadingScreen />;
+		return <QuizLoadingScreen />;
 	}
 
 	if (error) {

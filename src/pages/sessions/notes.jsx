@@ -12,11 +12,15 @@ import {
 	faPlus,
 	faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
-import { fetchNote, updateNote, generateQuizFromSummary } from '../../features/Summarizer/openAiServices';
+import {
+	fetchNote,
+	updateNote,
+	generateQuizFromSummary,
+} from '../../features/Summarizer/openAiServices';
 import { createQuiz, fetchQuiz } from '../../features/Quiz/quizServices';
 import { useSelector } from 'react-redux';
 import { createFlashcards, fetchSetFlashcards } from '../../features/Flashcard/flashCard';
-import LoadingScreen from '../../components/loader';
+import NotesLoadingScreen from '../../components/Loaders/loader';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import parse from 'html-react-parser';
@@ -26,7 +30,10 @@ import Modal from '../../components/Modals/Modal';
 import { useUserStats } from '../../features/badge/userStatsContext';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import FlashcardLoadingScreen from '../../components/Loaders/flashLoader';
+import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 
+//For math formulas formatting
 const renderMath = (math, displayMode = false) => {
 	try {
 		return katex.renderToString(math, {
@@ -93,6 +100,8 @@ export default function Notes() {
 	const [editedTitle, setEditedTitle] = useState('');
 	const [editedSummary, setEditedSummary] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingF, setIsLoadingF] = useState(false);
+	const [isLoadingQ, setIsLoadingQ] = useState(false);
 	const [quizExists, setQuizExists] = useState(false);
 	const [flashcardsExist, setFlashcardsExist] = useState(false);
 	const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
@@ -114,25 +123,29 @@ export default function Notes() {
 					setNote(noteData);
 					setEditedTitle(noteData.notetitle);
 					setEditedSummary(noteData.notesummary);
-
-					const flashcards = await fetchSetFlashcards(id);
-					setFlashcardsExist(flashcards.length > 0);
-
-					const quizResponse = await fetchQuiz(id);
-					setQuizExists(quizResponse.length > 0);
-				} catch (error) {}
+				} catch (error) {
+					console.error('Error fetching note data:', error);
+				}
 			}
 		};
 
 		getNoteData();
 	}, [id, userInfo]);
 
+	useEffect(() => {
+		const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+		if (storedData[id]) {
+			setQuizExists(!!storedData[id].quizExists);
+			setFlashcardsExist(!!storedData[id].flashcardsExist);
+		}
+	}, [id]);
+
 	const handleSidebarToggle = (isExpanded) => {
 		setSidebarExpanded(isExpanded);
 	};
 
 	const handleQuiz = async () => {
-		setIsLoading(true);
+		setIsLoadingQ(true);
 		if (quizExists) {
 			navigate(`/Review/${id}`);
 		} else {
@@ -141,7 +154,21 @@ export default function Notes() {
 				const generatedQuiz = await generateQuizFromSummary(note.notesummary);
 				await createQuiz(id, generatedQuiz);
 				setQuizExists(true);
+
+				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+				localStorage.setItem(
+					'noteData',
+					JSON.stringify({
+						...storedData,
+						[id]: {
+							...storedData[id],
+							quizExists: true,
+						},
+					})
+				);
+
 				refreshUserStats();
+
 				navigate(`/Quiz/${id}`);
 			} catch (error) {
 				console.error('Error generating quiz:', error);
@@ -164,7 +191,7 @@ export default function Notes() {
 				setIsErrorModalOpen(true);
 			} finally {
 				setIsGeneratingQuiz(false);
-				setIsLoading(false);
+				setIsLoadingQ(false);
 			}
 		}
 	};
@@ -217,24 +244,30 @@ export default function Notes() {
 	};
 
 	const handleFlashcards = async () => {
-		setIsLoading(true);
+		setIsLoadingF(true);
 		try {
 			if (!flashcardsExist) {
 				const response = await createFlashcards(id, userInfo.id);
 				console.log('Flashcards creation response:', response);
 			}
+			const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+			localStorage.setItem(
+				'noteData',
+				JSON.stringify({
+					...storedData,
+					[id]: {
+						...storedData[id],
+						flashcardsExist: true,
+					},
+				})
+			);
 			refreshUserStats();
 			navigate(`/Flashcards/${id}`);
 		} catch (error) {
 			console.error('Error with flashcards:', error);
 		} finally {
-			setIsLoading(false);
+			setIsLoadingF(false);
 		}
-	};
-
-	const openConfirmationModal = (action) => {
-		setModalAction(action);
-		setIsModalOpen(true);
 	};
 
 	// Function to handle modal confirmation
@@ -248,7 +281,15 @@ export default function Notes() {
 	};
 
 	if (isLoading) {
-		return <LoadingScreen />;
+		return <NotesLoadingScreen />;
+	}
+
+	if (isLoadingF) {
+		return <FlashcardLoadingScreen />;
+	}
+
+	if (isLoadingQ) {
+		return <QuizLoadingScreen />;
 	}
 
 	return (
@@ -258,15 +299,21 @@ export default function Notes() {
 				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
-				<div className="flex items-center mb-6 justify-between">
+				<section className="flex items-center mb-6 justify-between">
 					<button
-						onClick={() => navigate(-1)}
+						onClick={() => navigate('/myNotes')}
 						className="text-gray-500 dark:text-secondary hover:text-highlights transition-colors duration-200">
 						<FontAwesomeIcon icon={faArrowLeft} className="text-2xl" />
 					</button>
-					<div className="hidden xs:flex items-center">
-						<FontAwesomeIcon icon={faFire} color="#EE924F" className="text-coral-red text-xl mr-3" />
-						<h1 className="text-xl md:text-3xl lg:text-xl font-pbold text-highlights dark:text-secondary">Summary</h1>
+					<div className="hidden xs:flex items-center justify-center">
+						<FontAwesomeIcon
+							icon={faFire}
+							color="#EE924F"
+							className="text-coral-red text-xl mr-3"
+						/>
+						<h3 className="text-xl md:text-3xl lg:text-xl font-pbold text-highlights dark:text-secondary">
+							Summary
+						</h3>
 					</div>
 
 					{!isEditing ? (
@@ -276,8 +323,13 @@ export default function Notes() {
 								title="Edit"
 								aria-label="Edit"
 								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-								<FontAwesomeIcon icon={faPen} className="text-xl text-highlights dark:text-secondary" />
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">Edit</span>
+								<FontAwesomeIcon
+									icon={faPen}
+									className="text-xl text-highlights dark:text-secondary"
+								/>
+								<span className="ml-2 text-sm text-highlights dark:text-secondary">
+									Edit
+								</span>
 							</button>
 						</div>
 					) : (
@@ -287,8 +339,13 @@ export default function Notes() {
 								title="Save"
 								aria-label="Save"
 								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700 mr-2">
-								<FontAwesomeIcon icon={faSave} className="text-xl text-highlights dark:text-secondary" />
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">Save</span>
+								<FontAwesomeIcon
+									icon={faSave}
+									className="text-xl text-highlights dark:text-secondary"
+								/>
+								<span className="ml-2 text-sm text-highlights dark:text-secondary">
+									Save
+								</span>
 							</button>
 
 							<button
@@ -296,22 +353,32 @@ export default function Notes() {
 								title="Cancel"
 								aria-label="Cancel"
 								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-								<FontAwesomeIcon icon={faTimes} className="text-xl text-highlights dark:text-secondary" />
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">Cancel</span>
+								<FontAwesomeIcon
+									icon={faTimes}
+									className="text-xl text-highlights dark:text-secondary"
+								/>
+								<span className="ml-2 text-sm text-highlights dark:text-secondary">
+									Cancel
+								</span>
 							</button>
 						</div>
 					)}
-				</div>
+				</section>
 
-				<div className="mt-8">
+				<section className="mt-8">
 					<h2 className="text-xl font-pbold mb-4 dark:text-secondary">More Study Options</h2>
 					<div className="flex items-center md:flex-row md:justify-start md:space-x-6">
 						<div className="flex flex-col items-center mr-8">
 							<button
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
-                  ${flashcardsExist ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'}`}
+                  ${
+							flashcardsExist ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'
+						}`}
 								onClick={handleFlashcardsClick}>
-								<FontAwesomeIcon icon={flashcardsExist ? faClone : faPlus} className="text-4xl text-white" />
+								<FontAwesomeIcon
+									icon={flashcardsExist ? faClone : faPlus}
+									className="text-4xl text-white"
+								/>
 							</button>
 							<span className="text-center text-sm text-highlights dark:text-secondary">
 								{flashcardsExist ? 'Open Flashcards' : 'Generate Flashcards'}
@@ -322,14 +389,17 @@ export default function Notes() {
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
                   ${quizExists ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'}`}
 								onClick={handleQuizClick}>
-								<FontAwesomeIcon icon={quizExists ? faLightbulb : faPlus} className="text-4xl text-white" />
+								<FontAwesomeIcon
+									icon={quizExists ? faLightbulb : faPlus}
+									className="text-4xl text-white"
+								/>
 							</button>
 							<span className="text-center text-sm text-gray-600 dark:text-secondary">
 								{quizExists ? 'Open Quiz' : 'Generate Quiz'}
 							</span>
 						</div>
 					</div>
-				</div>
+				</section>
 
 				{isLoading || !note ? (
 					<div className="mt-9">
@@ -354,8 +424,10 @@ export default function Notes() {
 							</>
 						) : (
 							<>
-								<h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-pbold mb-4 dark:text-secondary">
-									{note.notetitle || <Skeleton height={20} className="dark:bg-darkS rounded-full" />}
+								<h1 className="text-xl text-highlights xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
+									{note.notetitle || (
+										<Skeleton height={20} className="dark:bg-darkS rounded-full" />
+									)}
 								</h1>
 
 								<div className="prose max-w-none text-gray-700 dark:text-secondary">
@@ -374,14 +446,14 @@ export default function Notes() {
 					</div>
 				)}
 
-				{/* Modal for Confirmation */}
 				<Modal
 					isOpen={isModalOpen}
 					onClose={() => setIsModalOpen(false)}
 					title={`Generate ${modalAction === 'flashcards' ? 'Flashcards' : 'Quiz'}`}>
 					<div className="space-y-4">
 						<p className="text-gray-600 dark:text-gray-300">
-							Are you sure you want to generate {modalAction === 'flashcards' ? 'flashcards' : 'a quiz'} from this summary?
+							Are you sure you want to generate{' '}
+							{modalAction === 'flashcards' ? 'flashcards' : 'a quiz'} from this summary?
 							This action cannot be undone.
 						</p>
 						<div className="flex justify-end space-x-4">
@@ -398,8 +470,12 @@ export default function Notes() {
 						</div>
 					</div>
 				</Modal>
+
 				{/* Error Modal */}
-				<Modal isOpen={isErrorModalOpen} onClose={() => setIsErrorModalOpen(false)} title="Error">
+				<Modal
+					isOpen={isErrorModalOpen}
+					onClose={() => setIsErrorModalOpen(false)}
+					title="Error">
 					<div className="space-y-4">
 						<p className="text-gray-600 dark:text-gray-300">{errorMessage}</p>
 						<div className="flex justify-end">

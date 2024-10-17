@@ -40,19 +40,19 @@ export default function FlashCardHistory() {
 						id: flashcard.noteID,
 						title: flashcard.note_title,
 						count: 0,
-						dateCreated: new Date().toISOString(), // Use current date as creation date
+						dateCreated: new Date().toISOString(), 
 					};
 				}
 				acc[flashcard.noteID].count += 1;
-				// Update the dateUpdated to current time whenever we encounter this flashcard
+		
 				acc[flashcard.noteID].dateUpdated = new Date().toISOString();
 				return acc;
 			}, {});
 
-			// Check localStorage for existing dates
+	
 			const storedDates = JSON.parse(localStorage.getItem('flashcardDates') || '{}');
 
-			// Update groupedFlashcards with stored dates or set new ones
+		
 			Object.keys(groupedFlashcards).forEach((noteId) => {
 				if (storedDates[noteId]) {
 					groupedFlashcards[noteId].dateCreated = storedDates[noteId].dateCreated;
@@ -65,7 +65,6 @@ export default function FlashCardHistory() {
 				}
 			});
 
-			// Save updated dates to localStorage
 			localStorage.setItem('flashcardDates', JSON.stringify(storedDates));
 
 			const sortedFlashcards = sortFlashcards(Object.values(groupedFlashcards), sortOption);
@@ -102,7 +101,7 @@ export default function FlashCardHistory() {
 	};
 
 	const handleCardClick = (noteId) => {
-		// Update the dateUpdated for this flashcard
+		
 		const updatedFlashcards = flashcards.map((flashcard) => {
 			if (flashcard.id === noteId) {
 				return { ...flashcard, dateUpdated: new Date().toISOString() };
@@ -110,8 +109,6 @@ export default function FlashCardHistory() {
 			return flashcard;
 		});
 		setFlashcards(updatedFlashcards);
-
-		// Update localStorage
 		const storedDates = JSON.parse(localStorage.getItem('flashcardDates') || '{}');
 		storedDates[noteId] = {
 			...storedDates[noteId],
@@ -189,7 +186,7 @@ export default function FlashCardHistory() {
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleCardClick(flashcard.id)}>
 										<div className="flex justify-between items-center mb-2">
-											<h2 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">{flashcard.title}</h2>
+											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">{flashcard.title}</h3>
 										</div>
 										<p className="text-xs text-coral-red dark:text-red-400 font-pregular">Flashcards: {flashcard.count}</p>
 										<p className="text-xs text-gray-400 font-pregular">
@@ -200,13 +197,9 @@ export default function FlashCardHistory() {
 							</div>
 						) : (
 							<div className="flex flex-col items-center justify-center h-full text-center mt-8">
-								<img src={SVG} alt="No flashcards available" className="w-64 h-64" />
+								
 								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">No flashcards created yet!</h1>
-								<button
-									onClick={() => navigate('/home')}
-									className="mt-4 px-6 py-2 bg-highlights dark:bg-secondary text-white dark:text-dark rounded-full font-semibold hover:bg-opacity-90 transition-all">
-									Go to Home
-								</button>
+								
 							</div>
 						)}
 					</div>

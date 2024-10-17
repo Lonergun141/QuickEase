@@ -68,25 +68,23 @@ export const BadgeProvider = ({ children }) => {
 			const newAchievements = [];
 			for (const [key, badge] of Object.entries(badgeDefinitions)) {
 				if (badge.condition(stats)) {
-					console.log(`Condition met for badge: ${badge.title}`);
 					const hasAchievement = achievements.some((a) => a.badge === badge.id);
 					if (!hasAchievement && !shownAchievements.has(badge.id)) {
 						try {
 							const response = await createAchievement(stats.userId, badge.id);
 							if (response) {
-								console.log(`Achievement earned: ${badge.title}`);
 								newAchievements.push(badge);
-								setAchievements((prevAchievements) => [...prevAchievements, response]);
+								setAchievements((prevAchievements) => {
+									const updatedAchievements = [...prevAchievements, response];
+									updateLocalStorage(stats.userId, updatedAchievements); 
+									return updatedAchievements;
+								});
 								setShownAchievements((prev) => new Set([...prev, badge.id]));
 							}
 						} catch (error) {
 							console.error('Error creating achievement:', error);
 						}
-					} else {
-						console.log(`Achievement already exists or shown: ${badge.title}`);
 					}
-				} else {
-					console.log(`Condition not met for badge: ${badge.title}`);
 				}
 			}
 
@@ -110,6 +108,7 @@ export const BadgeProvider = ({ children }) => {
 		try {
 			const data = await fetchUserAchievements(userId);
 			setAchievements(data);
+			updateLocalStorage(userId, data); 
 		} catch (error) {
 			console.error('Error fetching achievements:', error);
 		}
@@ -120,6 +119,10 @@ export const BadgeProvider = ({ children }) => {
 		if (achievementQueue.length <= 1) {
 			setShowAchievementModal(false);
 		}
+	};
+
+	const updateLocalStorage = (userId, updatedAchievements) => {
+		localStorage.setItem(`achievements_${userId}`, JSON.stringify(updatedAchievements));
 	};
 
 	return (

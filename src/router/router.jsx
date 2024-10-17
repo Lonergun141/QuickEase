@@ -19,11 +19,13 @@ import Quiz from '../pages/sessions/quiz';
 import Results from '../pages/sessions/results';
 import Review from '../pages/sessions/review';
 
-import LoadingScreen from '../components/loader';
+import LoadingScreen from '../components/Loaders/loader';
 import TranscribeError from '../pages/main/transcribeError';
 import ErrorPage from '../components/UI/ErrorPage';
 
 import ProtectedRoute from '../features/auth/ProtectedRoute';
+import FlashcardLoadingScreen from '../components/Loaders/flashLoader';
+import QuizLoadingScreen from '../components/Loaders/quizLoader';
 
 export const router = createBrowserRouter([
 	{
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
 	{
 		path: '/Loader',
 		element: <LoadingScreen />,
+	},
+	{
+		path: '/FlashcardLoadingScreen',
+		element: <FlashcardLoadingScreen />,
+	},
+	{
+		path: '/QuizLoadingScreen',
+		element: <QuizLoadingScreen />,
 	},
 	{
 		path: '/SignIn',

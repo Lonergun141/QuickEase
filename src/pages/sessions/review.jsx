@@ -4,7 +4,8 @@ import Button from '../../components/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { fetchQuizReviewData } from '../../features/Quiz/quizServices';
-import LoadingScreen from '../../components/loader';
+import LoadingScreen from '../../components/Loaders/loader';
+import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 
 const Review = () => {
 	const { id } = useParams();
@@ -17,7 +18,7 @@ const Review = () => {
 		const fetchReviewData = async () => {
 			try {
 				const data = await fetchQuizReviewData(id);
-				console.log('Quiz Review Data:', data);
+				// console.log('Quiz Review Data:', data);
 				setQuizData(data);
 			} catch (error) {
 				console.error('Failed to fetch review data:', error);
@@ -51,7 +52,7 @@ const Review = () => {
 	}, []);
 
 	if (isLoading) {
-		return <LoadingScreen />;
+		return <QuizLoadingScreen />;
 	}
 
 	if (!quizData) {

@@ -161,9 +161,9 @@ export default function MyNotes() {
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleNoteClick(note.id)}>
 										<div className="flex justify-between items-center mb-2">
-											<h2 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">
+											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">
 												{note.notetitle}
-											</h2>
+											</h3>
 
 											<button
 												className="text-gray-500 hover:text-red-600 transition-colors duration-200"

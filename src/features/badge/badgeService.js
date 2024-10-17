@@ -31,6 +31,7 @@ export const fetchUserAchievements = async (userId) => {
   }
 };
 
+
 export const createAchievement = async (userId, badgeId) => {
   try {
     const response = await axiosInstance.post(`/achievements/`, {
@@ -40,6 +41,16 @@ export const createAchievement = async (userId, badgeId) => {
     return response.data;
   } catch (error) {
     console.error('Error creating achievement:', error);
+    throw error;
+  }
+};
+
+export const fetchBadges = async () => {
+  try {
+    const response = await axiosInstance.get(`/badges/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching badges:', error);
     throw error;
   }
 };

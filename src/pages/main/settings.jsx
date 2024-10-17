@@ -39,11 +39,11 @@ export default function Settings() {
 				className={`transition-all duration-300 flex-grow p-6 lg:p-12 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
-				<h1 className="text-4xl lg:text-5xl font-extrabold text-highlights mb-12 dark:text-white">Settings</h1>
+				<h3 className="text-4xl lg:text-5xl font-extrabold text-highlights mb-12 dark:text-white">Settings</h3>
 
 				{/* Appearance Section */}
 				<section className="mb-12">
-					<h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Appearance</h1>
+					<h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Appearance</h3>
 					<p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Control how you see the world.</p>
 					<div className="bg-white dark:bg-darken p-6 rounded-xl shadow-lg flex justify-between items-center">
 						<label className="flex items-center">
@@ -62,7 +62,7 @@ export default function Settings() {
 
 				{/* Security Section */}
 				<section className="mb-12">
-					<h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Security</h1>
+					<h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Security</h3>
 					<p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Sometimes, you need to lock things away.</p>
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
 						{/* Deactivate Account Card */}
