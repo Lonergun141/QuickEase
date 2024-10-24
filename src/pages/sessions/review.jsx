@@ -18,8 +18,26 @@ const Review = () => {
 		const fetchReviewData = async () => {
 			try {
 				const data = await fetchQuizReviewData(id);
-				// console.log('Quiz Review Data:', data);
 				setQuizData(data);
+
+				
+				const quizExists = data.questions && data.questions.length > 0;
+				const quizTaken =
+					data.userTest && (data.userTest.TestScore > 0 || data.userTest.TestTotalScore > 0);
+
+			
+				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+				localStorage.setItem(
+					'noteData',
+					JSON.stringify({
+						...storedData,
+						[id]: {
+							...storedData[id],
+							quizExists: quizExists,
+							quizTaken: quizTaken,
+						},
+					})
+				);
 			} catch (error) {
 				console.error('Failed to fetch review data:', error);
 			} finally {
@@ -83,7 +101,7 @@ const Review = () => {
 						onClick={handleToggleSidebar}
 					/>
 				</div>
-				<div className='py-6'>
+				<div className="py-6">
 					<span className="text-xl font-inc cursor-pointer" onClick={() => navigate('/Home')}>
 						<span className="text-black dark:text-gray-100">QUICK</span>
 						<span className="text-primary dark:text-naeg">EASE</span>
@@ -94,7 +112,9 @@ const Review = () => {
 					<div className="grid grid-cols-4 gap-2 mb-6 mt-4">
 						{questions.map((question, index) => {
 							const userAnswerFromNote = answersByNote[index];
-							const userChoice = userAnswerFromNote ? choices.find((choice) => choice.id === userAnswerFromNote.answer) : null;
+							const userChoice = userAnswerFromNote
+								? choices.find((choice) => choice.id === userAnswerFromNote.answer)
+								: null;
 							const isCorrect = userChoice?.isAnswer;
 
 							return (
@@ -107,7 +127,11 @@ const Review = () => {
 											? 'bg-red-100 text-red-500 front-pmedium'
 											: 'bg-white dark:bg-dark text-gray-900 dark:text-gray-300'
 									}`}
-									onClick={() => document.getElementById(`question-${index}`).scrollIntoView({ behavior: 'smooth' })}>
+									onClick={() =>
+										document
+											.getElementById(`question-${index}`)
+											.scrollIntoView({ behavior: 'smooth' })
+									}>
 									{index + 1}
 								</div>
 							);
@@ -145,17 +169,30 @@ const Review = () => {
 
 				<div className="p-4 max-w-6xl mx-auto rounded-lg">
 					<div className="text-left mb-12 bg-white dark:bg-darken p-8 rounded-lg shadow-sm">
-						<h1 className="text-4xl font-pbold text-highlights dark:text-secondary mb-4">Quiz Review</h1>
+						<h1 className="text-4xl font-pbold text-highlights dark:text-secondary mb-4">
+							Quiz Review
+						</h1>
 						<p className="text-gray-600 font-pregular mb-4 dark:text-naeg">
-							Date Taken: {userTest?.TestDateCreated ? new Date(userTest.TestDateCreated).toLocaleString() : 'Not taken yet'}
+							Date Taken:{' '}
+							{userTest?.TestDateCreated
+								? new Date(userTest.TestDateCreated).toLocaleString()
+								: 'Not taken yet'}
 						</p>
 						{!hasNotTakenQuiz && (
 							<p className="text-xl mt-8 font-pmedium text-dark dark:text-secondary">
-								Marks: <span className="text-highlights dark:text-secondary">{userTest?.TestScore ?? 'N/A'}</span> out of{' '}
-								<span className="text-highlights dark:text-secondary">{userTest?.TestTotalScore ?? 'N/A'}</span>
+								Marks:{' '}
+								<span className="text-highlights dark:text-secondary">
+									{userTest?.TestScore ?? 'N/A'}
+								</span>{' '}
+								out of{' '}
+								<span className="text-highlights dark:text-secondary">
+									{userTest?.TestTotalScore ?? 'N/A'}
+								</span>
 							</p>
 						)}
-						<a className="font-pregular py-8 underline mt-8 text-review cursor-pointer" href="/home">
+						<a
+							className="font-pregular py-8 underline mt-8 text-review cursor-pointer"
+							href="/home">
 							back to home
 						</a>
 					</div>
@@ -163,7 +200,8 @@ const Review = () => {
 					{hasNotTakenQuiz ? (
 						<div className="mb-12 p-8 rounded-lg bg-white dark:bg-darken shadow-sm">
 							<p className="text-lg text-dark dark:text-secondary">
-								You haven't taken this quiz yet. Please take the test to see your results and review the questions.
+								You haven't taken this quiz yet. Please take the test to see your results
+								and review the questions.
 							</p>
 						</div>
 					) : (
@@ -171,7 +209,9 @@ const Review = () => {
 							const questionChoices = choicesByQuestion[question.id] || [];
 							const correctChoice = questionChoices.find((choice) => choice.isAnswer);
 							const userAnswerFromNote = answersByNote[questionIndex];
-							const userChoice = userAnswerFromNote ? choices.find((choice) => choice.id === userAnswerFromNote.answer) : null;
+							const userChoice = userAnswerFromNote
+								? choices.find((choice) => choice.id === userAnswerFromNote.answer)
+								: null;
 							const isCorrect = userChoice?.isAnswer;
 
 							return (
@@ -179,13 +219,24 @@ const Review = () => {
 									key={question.id}
 									id={`question-${questionIndex}`}
 									className="mb-12 p-8 border rounded-lg bg-white dark:bg-darken shadow-sm">
-									<p className="font-pbold text-xl mb-6 text-highlights dark:text-secondary">{question.TestQuestion}</p>
+									<p className="font-pbold text-xl mb-6 text-highlights dark:text-secondary">
+										{question.TestQuestion}
+									</p>
 
-									<div className={`mb-4 p-4 rounded-lg ${isCorrect ? 'bg-green-100' : 'bg-red-100'}`}>
+									<div
+										className={`mb-4 p-4 rounded-lg ${
+											isCorrect ? 'bg-green-100' : 'bg-red-100'
+										}`}>
 										<p className="font-pmedium mb-2">Your Answer:</p>
 										{userChoice ? (
-											<div className={`flex items-center ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-												<FontAwesomeIcon icon={isCorrect ? faCheckCircle : faTimesCircle} className="mr-2 text-xl" />
+											<div
+												className={`flex items-center ${
+													isCorrect ? 'text-green-600' : 'text-red-600'
+												}`}>
+												<FontAwesomeIcon
+													icon={isCorrect ? faCheckCircle : faTimesCircle}
+													className="mr-2 text-xl"
+												/>
 												<span className="text-lg">{userChoice.item_choice_text}</span>
 											</div>
 										) : (
@@ -196,17 +247,23 @@ const Review = () => {
 									{!isCorrect && (
 										<div className="p-4 bg-blue-100 rounded-lg">
 											<p className="font-pmedium mb-2">Correct Answer:</p>
-											<p className="text-primary text-lg">{correctChoice?.item_choice_text ?? 'Unknown'}</p>
+											<p className="text-primary text-lg">
+												{correctChoice?.item_choice_text ?? 'Unknown'}
+											</p>
 										</div>
 									)}
 
 									<div className="mt-4">
-										<p className="font-pmedium mb-2 text-dark dark:text-secondary">All Choices:</p>
+										<p className="font-pmedium mb-2 text-dark dark:text-secondary">
+											All Choices:
+										</p>
 										{questionChoices.map((choice) => (
 											<div
 												key={choice.id}
 												className={`flex items-center ${
-													choice.isAnswer ? 'text-primary font-semibold' : 'text-gray-800 dark:text-naeg'
+													choice.isAnswer
+														? 'text-primary font-semibold'
+														: 'text-gray-800 dark:text-naeg'
 												}`}>
 												<span className="text-lg">{choice.item_choice_text}</span>
 											</div>

@@ -146,14 +146,17 @@ export default function Notes() {
 
 	const handleQuiz = async () => {
 		setIsLoadingQ(true);
-		if (quizExists) {
-			navigate(`/Review/${id}`);
-		} else {
-			setIsGeneratingQuiz(true);
-			try {
+		try {
+		
+			const quizData = await fetchQuiz(id);
+			const quizExists = Array.isArray(quizData) && quizData.length > 0;
+
+			if (quizExists) {
+				navigate(`/Review/${id}`);
+			} else {
+				setIsGeneratingQuiz(true);
 				const generatedQuiz = await generateQuizFromSummary(note.notesummary);
 				await createQuiz(id, generatedQuiz);
-				setQuizExists(true);
 
 				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
 				localStorage.setItem(
@@ -168,31 +171,30 @@ export default function Notes() {
 				);
 
 				refreshUserStats();
-
 				navigate(`/Quiz/${id}`);
-			} catch (error) {
-				console.error('Error generating quiz:', error);
-				let userFriendlyMessage = 'Failed to generate the quiz. Please try again later.';
-
-				if (error.response) {
-					const status = error.response.status;
-					if (status === 401 || status === 403) {
-						userFriendlyMessage = 'Unauthorized access. Please check your API key.';
-					} else if (status === 429) {
-						userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
-					} else if (status >= 500) {
-						userFriendlyMessage = 'Server error. Please try again later.';
-					}
-				} else if (error.message) {
-					userFriendlyMessage = error.message;
-				}
-
-				setErrorMessage(userFriendlyMessage);
-				setIsErrorModalOpen(true);
-			} finally {
-				setIsGeneratingQuiz(false);
-				setIsLoadingQ(false);
 			}
+		} catch (error) {
+			console.error('Error handling quiz:', error);
+			let userFriendlyMessage = 'Failed to handle the quiz. Please try again later.';
+
+			if (error.response) {
+				const status = error.response.status;
+				if (status === 401 || status === 403) {
+					userFriendlyMessage = 'Unauthorized access. Please check your API key.';
+				} else if (status === 429) {
+					userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
+				} else if (status >= 500) {
+					userFriendlyMessage = 'Server error. Please try again later.';
+				}
+			} else if (error.message) {
+				userFriendlyMessage = error.message;
+			}
+
+			setErrorMessage(userFriendlyMessage);
+			setIsErrorModalOpen(true);
+		} finally {
+			setIsGeneratingQuiz(false);
+			setIsLoadingQ(false);
 		}
 	};
 

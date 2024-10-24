@@ -54,15 +54,15 @@ export default function Profile() {
 				}`}>
 				<div className="p-4">
 					{/* User Info */}
-					<div className="flex flex-col md:flex-row md:justify-between items-center md:items-center space-y-0 md:space-y-0">
-						<div className="flex items-center space-x-4">
+					<div className="flex flex-col sm:flex-col md:flex-row md:justify-between items-center md:items-center space-y-0 md:space-y-0">
+						<div className="flex items-center sm:flex-row space-x-4 ">
 							{/* Profile Picture */}
 							<div className="w-16 h-16 rounded-full bg-primary dark:bg-naeg flex items-center justify-center text-white text-4xl font-bold">
 								{userInfo?.firstname?.charAt(0).toUpperCase()}
 							</div>
 							{/* Name and Email */}
 							<div className="flex flex-col">
-								<h3 className="text-xl font-pbold dark:text-secondary">
+								<h3 className="lg:text-xl sm:text-base font-pbold dark:text-secondary">
 									{userInfo?.firstname} {userInfo?.lastname}
 								</h3>
 								<p className="text-gray-500 font-pregular text-md">{userInfo?.email}</p>
@@ -74,13 +74,13 @@ export default function Profile() {
 					<div className="mt-6 bg-white dark:bg-darken p-6 rounded-lg">
 						<div className="flex items-center mb-4">
 							<FontAwesomeIcon icon={faTrophy} className="text-yellow-500 w-8 h-8 mr-3" />
-							<h3 className="text-xl font-bold text-dark dark:text-secondary">
+							<h3 className="lg:text-xl sm:text-base md:text-md font-bold text-dark dark:text-secondary">
 								Achievements Earned
 							</h3>
 						</div>
 
 						{/* Responsive Badge Grid */}
-						<div className="mt-2 p-4 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+						<div className="mt-2 p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-4">
 							{earnedBadges.map((badge, index) => (
 								<div key={index} className="flex justify-center items-center">
 									<img

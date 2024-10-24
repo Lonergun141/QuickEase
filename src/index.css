@@ -60,6 +60,23 @@
   url('./assets/fonts/Poppins/Poppins-Medium.ttf') format("truetype");
 }
 
+/* App.css or your CSS file */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loading {
+  animation: fadeInScale 0.8s ease-in-out forwards; /* Animation duration and easing */
+}
+
+
 /* Custom default styles */
 body{
 

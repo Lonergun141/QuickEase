@@ -26,7 +26,7 @@ const Footer = () => {
 				</div>
 
 				<div className="relative z-20 p-6 w-full md:w-1/2 flex flex-col items-center md:items-start space-y-6 mb-16">
-					<h2 className="text-3xl md:text-4xl font-pmedium mb-4 text-center md:text-left">Get OUR APP NOW</h2>
+					<h2 className="text-3xl md:text-4xl font-pmedium mb-4 text-center md:text-left">GET OUR APP NOW</h2>
 					<img src={img.QrCode} alt="QR code" className="w-40 md:w-64 mb-4 rounded-lg" />
 					<p className="text-center md:text-left font-pregular dark:text-secondary">Scan the code to download</p>
 					<div className="flex flex-col sm:flex-row sm:justify-start sm:space-x-20 text-center md:text-left mt-10 text-sm">

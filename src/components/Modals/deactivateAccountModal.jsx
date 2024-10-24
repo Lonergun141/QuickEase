@@ -70,13 +70,13 @@ const DeactivateAccountModal = ({ isOpen, onClose }) => {
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className=" hover:bg-gray-100 dark:text-secondary text-dark px-5 py-2 rounded-lg transition duration-200">
+            className=" hover:bg-gray-100 dark:text-secondary dark:hover:bg-gray-700 text-dark px-5 py-2 rounded-lg transition duration-200">
             Cancel
           </button>
           <button
             onClick={handleDeactivateAccount}
             className={`${
-              isLoading ? 'bg-red-400' : 'bg-red-600'
+              isLoading ? 'bg-red-400' : 'bg-red-500 '
             } hover:bg-red-700 text-white px-6 py-2 rounded-md transition duration-200`}
             disabled={isLoading}>
             {isLoading ? 'Deactivating...' : 'Deactivate Account'}

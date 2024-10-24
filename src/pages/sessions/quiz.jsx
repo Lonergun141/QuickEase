@@ -29,7 +29,6 @@ const Quiz = () => {
 	const [modalAction, setModalAction] = useState(null);
 	const { refreshUserStats } = useUserStats();
 
-
 	const shuffleArray = (array) => {
 		return array
 			.map((item) => ({ item, sort: Math.random() }))
@@ -38,7 +37,6 @@ const Quiz = () => {
 	};
 
 	useEffect(() => {
-	
 		const handleResize = () => {
 			if (window.innerWidth >= 768) {
 				setIsSidebarOpen(true);
@@ -71,8 +69,16 @@ const Quiz = () => {
 					);
 
 					setQuestions(questionsWithChoices);
-					setAnswers(savedAnswers.length > 0 ? savedAnswers : Array(questionsWithChoices.length).fill(null));
-					setFlags(savedFlags.length > 0 ? savedFlags : Array(questionsWithChoices.length).fill(false));
+					setAnswers(
+						savedAnswers.length > 0
+							? savedAnswers
+							: Array(questionsWithChoices.length).fill(null)
+					);
+					setFlags(
+						savedFlags.length > 0
+							? savedFlags
+							: Array(questionsWithChoices.length).fill(false)
+					);
 				} else {
 					setError('No quiz found for this note.');
 				}
@@ -112,7 +118,9 @@ const Quiz = () => {
 		if (unansweredCount > 0 || flaggedCount > 0) {
 			let content = '';
 			if (unansweredCount > 0) {
-				content += `You have ${unansweredCount} unanswered question${unansweredCount > 1 ? 's' : ''}. `;
+				content += `You have ${unansweredCount} unanswered question${
+					unansweredCount > 1 ? 's' : ''
+				}. `;
 			}
 			if (flaggedCount > 0) {
 				content += `You have ${flaggedCount} flagged question${flaggedCount > 1 ? 's' : ''}. `;
@@ -150,7 +158,7 @@ const Quiz = () => {
 
 			localStorage.removeItem(`quiz-answers-${id}`);
 			localStorage.removeItem(`quiz-flags-${id}`);
-			refreshUserStats()
+			refreshUserStats();
 			navigate(`/Results/${id}`, {
 				state: { score: calculatedScore, total: questions.length, noteId: id },
 			});
@@ -171,6 +179,9 @@ const Quiz = () => {
 		if (modalAction === 'submit') {
 			submitQuiz();
 		} else if (modalAction === 'cancel') {
+			localStorage.removeItem(`quiz-answers-${id}`);
+			localStorage.removeItem(`quiz-flags-${id}`);
+			localStorage.removeItem(`noteData`);
 			navigate(`/notes/${id}`);
 		}
 	};
@@ -203,7 +214,8 @@ const Quiz = () => {
 				}`}
 				style={{
 					maxWidth: '250px',
-					transform: isSidebarOpen || window.innerWidth >= 768 ? 'translateX(0)' : 'translateX(-100%)',
+					transform:
+						isSidebarOpen || window.innerWidth >= 768 ? 'translateX(0)' : 'translateX(-100%)',
 				}}>
 				<div>
 					<h2>Navigator</h2>
@@ -228,7 +240,11 @@ const Quiz = () => {
 									? 'bg-primary text-white'
 									: 'bg-white dark:bg-dark text-gray-900 dark:text-gray-300'
 							}`}
-							onClick={() => document.getElementById(`question-${index}`).scrollIntoView({ behavior: 'smooth' })}>
+							onClick={() =>
+								document
+									.getElementById(`question-${index}`)
+									.scrollIntoView({ behavior: 'smooth' })
+							}>
 							{index + 1}
 						</div>
 					))}

@@ -76,20 +76,20 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
 
 				{/* Feedback Messages */}
 				{message && <p className="text-green-600 text-center mb-4">{message}</p>}
-				{error && <p className="text-red-600 text-center mb-4">{error}</p>}
+				{error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
 				{/* Buttons */}
 				<div className="flex justify-end space-x-4">
 					<button
 						onClick={onClose}
-						className=" hover:bg-gray-100 text-dark dark:text-secondary px-5 py-2 rounded-lg transition duration-200">
+						className=" hover:bg-gray-100 dark:hover:bg-gray-700 text-dark dark:text-secondary px-5 py-2 rounded-lg transition duration-200">
 						Close
 					</button>
 					<button
 						onClick={handlePasswordReset}
 						className={`${
-							isLoading ? 'bg-blue-400' : 'bg-blue-600'
-						} hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200`}
+							isLoading ? 'bg-green-500' : 'bg-green-500'
+						} hover:bg-green-700  text-white px-6 py-2 rounded-lg transition duration-200`}
 						disabled={isLoading}>
 						{isLoading ? 'Sending...' : 'Send Reset Email'}
 					</button>

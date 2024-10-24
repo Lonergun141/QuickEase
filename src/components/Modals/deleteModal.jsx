@@ -26,7 +26,7 @@ const DeleteModal = ({ isOpen, onClose, onDelete, noteTitle }) => {
 
 				<footer className="bg-secondary dark:bg-darken px-6 py-4 flex justify-end space-x-4">
 					<button
-						className=" hover:bg-gray-200 text-gray-700 dark:text-naeg font-bold py-2 px-4 rounded transition-colors"
+						className=" hover:bg-gray-200 text-gray-300 dark:text-secondary dark:hover:bg-gray-700 font-bold py-2 px-4 rounded transition-colors"
 						onClick={onClose}>
 						Cancel
 					</button>
