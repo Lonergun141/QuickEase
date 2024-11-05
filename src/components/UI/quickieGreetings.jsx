@@ -21,7 +21,7 @@ export const QuickieGreetings = () => {
 		<div
 			className={`${
 				slideIn ? 'slide-in' : 'slide-out'
-			} flex flex-col md:flex-row items-center justify-center bg-white dark:bg-darken text-black rounded-lg p-4 mb-8 overflow-hidden relative transition-transform duration-700 ease-in-out`}
+			} flex flex-col md:flex-row items-center justify-center bg-white quickie-greetings dark:bg-darken text-black rounded-lg p-4 mb-8 overflow-hidden relative transition-transform duration-700 ease-in-out`}
 		>
 			{/* Gradient background overlay - hidden on small screens */}
 			<div className="hidden md:block absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-[#fffe] to-transparent z-10 dark:bg-gradient-to-t dark:from-[#171717] dark:to-transparent"></div>

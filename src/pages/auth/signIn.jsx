@@ -113,6 +113,7 @@ export default function SignIn() {
 					<form className="space-y-4 md:space-y-6 dark:bg-dark" onSubmit={handleSubmit}>
 						<Textfield
 							placeholder="Email"
+							autoComplete="email" 
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							error={formErrors.email}
@@ -122,6 +123,7 @@ export default function SignIn() {
 						<Textfield
 							type="password"
 							placeholder="Password"
+							autoComplete="current-password" 
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							error={formErrors.password}

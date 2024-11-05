@@ -1,11 +1,11 @@
 import axios from 'axios';
-
+//Backend endpoints connection
 const API_BASE_URL = `https://d4ngk.pythonanywhere.com/quickease/api/v1`;
 
 const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
 });
-
+//axios instance to globalize user access token for authorization
 axiosInstance.interceptors.request.use(
 	(config) => {
 		const user = JSON.parse(localStorage.getItem('user'));
@@ -24,11 +24,12 @@ export const createQuiz = async (noteId, quizData) => {
     try {
         // First, create the UserTest
         const testResponse = await axiosInstance.post(`/usertest-create/${noteId}/`, {});
-        // console.log('Test created successfully:', testResponse.data);
+        // console.log('Test created successfully:', testResponse.data); for development tracker for errors
 
-        // Then, create questions and choices for each question
+        // Then, create questions and choices for each question through for loop
         for (const question of quizData) {
             try {
+                //post the created questions from openai
                 const questionResponse = await axiosInstance.post(`/questions/create/${noteId}/`, {
                     TestQuestion: question.TestQuestion,
                 });

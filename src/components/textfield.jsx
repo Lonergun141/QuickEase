@@ -10,6 +10,7 @@ function Textfield({
   value,
   name,
   onChange,
+  autoComplete = 'off', // Added default value for autoComplete
   borderColor = 'border-gray-300',
   focusBorderColor = 'border-primary',
   paddingY = 'py-2',
@@ -28,6 +29,7 @@ function Textfield({
         onChange={onChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        autoComplete={autoComplete} // Added autoComplete attribute
       />
       {type === 'password' && (
         <button
@@ -47,8 +49,9 @@ Textfield.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  autoComplete: PropTypes.string, 
   borderColor: PropTypes.string,
-  name: PropTypes.string,  
+  name: PropTypes.string,
   focusBorderColor: PropTypes.string,
   paddingY: PropTypes.string,
 };

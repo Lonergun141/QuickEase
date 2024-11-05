@@ -9,6 +9,7 @@ import {
 	faTimes,
 	faUpload,
 	faExclamationTriangle,
+	faRoute,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import NotesLoadingScreen from '../../components/Loaders/loader';
@@ -22,6 +23,9 @@ import Modal from '../../components/Modals/Modal';
 import { Instructions } from '../../components/UI/instructions';
 import { QuickieGreetings } from '../../components/UI/quickieGreetings';
 import { useUserStats } from '../../features/badge/userStatsContext';
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
+import { img } from '../../constants';
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState('text');
@@ -40,12 +44,105 @@ export default function Home() {
 	const [isDragOver, setIsDragOver] = useState(false);
 	const { refreshUserStats } = useUserStats();
 
+	const { isDarkMode } = useDarkMode();
+
+	const [run, setRun] = useState(false);
+	const [stepIndex, setStepIndex] = useState(0);
+
+	const steps = [
+		{
+			target: '.quickie-greeting',
+			content: (
+				<div className="flex items-center gap-4 text-base sm:text-lg lg:text-xl p-4 sm:p-6">
+					<FontAwesomeIcon icon={faRoute} className="text-lg sm:text-2xl" />
+					<p>
+						Hello! Meet{' '}
+						<span className="font-pbold">{isDarkMode ? 'NightWing' : 'Quickie'}</span>, your
+						guide and study assistant! Let’s start our journey!
+					</p>
+				</div>
+			),
+			placement: 'bottom',
+		},
+		{
+			target: '.input-methods',
+			content: (
+				<div className="text-sm sm:text-base flex flex-col gap-3 p-4 sm:p-6">
+					<div className="flex items-center gap-2">
+						<FontAwesomeIcon icon={faPenToSquare} className="text-base sm:text-xl" />
+						<p>
+							<strong>Select your input method:</strong> text, documents, or images.
+						</p>
+					</div>
+					<p className="italic">Choose one to begin your study sessions!</p>
+				</div>
+			),
+			placement: 'right',
+			spotlightClassName: 'rounded-lg border-2 border-yellow-300 animate-pulse',
+		},
+		{
+			target: '.text-area',
+			content: (
+				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+					<FontAwesomeIcon icon={faFileAlt} className="text-base sm:text-2xl" />
+					<p>
+						Enter your content here! This section will change depending on what input type you
+						want to generate with. It’s time to make it shine!
+					</p>
+				</div>
+			),
+			placement: 'bottom',
+			spotlightClassName: 'rounded-lg border-2 border-pink-400 animate-pulse',
+		},
+		{
+			target: '.generate-button',
+			content: (
+				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+					<FontAwesomeIcon icon={faUpload} className="text-lg sm:text-2xl" />
+					<p>
+						All set? Click <span className="font-bold">“Generate”</span> to see your study
+						materials take shape!
+					</p>
+				</div>
+			),
+			placement: 'top',
+			spotlightClassName: 'rounded-lg border-2 border-green-400 animate-pulse',
+		},
+	];
+
+	const handleJoyrideCallback = (data) => {
+		const { action, status, type } = data;
+
+		if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+			setStepIndex((prev) => prev + (action === ACTIONS.PREV ? -1 : 1));
+		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+			setRun(false);
+			if (status === STATUS.SKIPPED) {
+				localStorage.setItem('hasSeenTour', 'skipped');
+			}
+		}
+	};
+
+	const handleResetTour = () => {
+		setStepIndex(0);
+		setRun(true);
+		localStorage.removeItem('hasSeenTour');
+	};
+
 	const dispatch = useDispatch();
 	const { userInfo } = useSelector((state) => state.auth);
 
 	useEffect(() => {
 		dispatch(fetchUserInfo());
 	}, [dispatch]);
+
+	useEffect(() => {
+		const hasSeenTour = localStorage.getItem('hasSeenTour');
+		if (!hasSeenTour) {
+			setRun(true);
+			localStorage.setItem('hasSeenTour', 'true');
+		}
+	}, []);
 
 	const handleSidebarToggle = (isExpanded) => {
 		setSidebarExpanded(isExpanded);
@@ -206,18 +303,61 @@ export default function Home() {
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-secondary dark:bg-dark w-full">
+			<Joyride
+				callback={handleJoyrideCallback}
+				continuous
+				hideCloseButton
+				run={run}
+				scrollToFirstStep
+				showProgress
+				showSkipButton
+				stepIndex={stepIndex}
+				steps={steps}
+				styles={{
+					options: {
+						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
+						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
+						overlayColor: 'rgba(0, 0, 0, 0.6)',
+						primaryColor: '#63A7FF',
+						textColor: isDarkMode ? '#fff' : '#333333',
+						zIndex: 1000,
+					},
+					tooltipContainer: {
+						fontFamily: '"Poppins", sans-serif',
+						fontSize: '0.8rem',
+						textAlign: 'center',
+						padding: '8px 12px',
+					},
+					buttonBack: {
+						color: isDarkMode ? '#C0C0C0' : '#213660',
+					},
+				}}
+			/>
+
 			<Sidebar onToggle={handleSidebarToggle} />
+
 			<main
 				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
+				<button
+					onClick={handleResetTour}
+					className="fixed bottom-4 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+					title="Reset Tour">
+					<FontAwesomeIcon icon={faRoute} />
+					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
+				</button>
+
 				<div className="rounded-lg overflow-hidden">
 					{/* Quickie Mascot - Highlighted First */}
-					<QuickieGreetings />
-					<div className="flex flex-col lg:flex-row">
+					<div className="quickie-greeting">
+						<QuickieGreetings />
+					</div>
+
+					<div className="input-methods flex flex-col lg:flex-row">
 						<div className="w-full lg:w-3/4 p-2">
 							{/* Mobile tab selector */}
-							<div className="lg:hidden flex justify-center mb-4 bg-gray-100 dark:bg-dark rounded-lg p-2">
+							<div className="input-methods lg:hidden flex justify-center mb-4 bg-gray-100 dark:bg-dark rounded-lg p-2">
 								{['text', 'documents', 'images'].map((tab) => (
 									<button
 										key={tab}
@@ -248,7 +388,7 @@ export default function Home() {
 							{activeTab === 'text' && (
 								<div className="w-full">
 									<textarea
-										className="w-full h-64 p-2 border rounded resize-none dark:bg-darken dark:text-secondary"
+										className="text-area w-full h-64 p-2 border rounded resize-none dark:bg-darken dark:text-secondary"
 										placeholder="Input your text here"
 										value={inputText}
 										onChange={handleTextChange}
@@ -270,7 +410,7 @@ export default function Home() {
 							)}
 							{(activeTab === 'documents' || activeTab === 'images') && (
 								<div
-									className={`border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 text-center ${
+									className={`file-upload border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 text-center ${
 										filesToDisplay.length > 0 ? 'h-64 overflow-y-auto' : ''
 									} ${isDragOver ? 'bg-gray-100 dark:bg-dark' : ''}`}
 									onDragOver={handleDragOver}
@@ -309,7 +449,7 @@ export default function Home() {
 											<div className="flex justify-center">
 												<button
 													onClick={triggerFileInput}
-													className="px-4 md:px-6 py-2 bg-blue-500 dark:bg-naeg text-white text-sm md:text-base rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center">
+													className="px-4 md:px-6 py-2 bg-primary dark:bg-naeg text-white text-sm md:text-base rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center">
 													<FontAwesomeIcon icon={faUpload} className="mr-2" />
 													Choose Files
 												</button>
@@ -354,7 +494,7 @@ export default function Home() {
 							<div className="mt-4 flex justify-end">
 								<Button
 									onClick={handleGenerate}
-									className="w-full lg:w-2/3"
+									className="w-full lg:w-2/3 generate-button"
 									disabled={
 										(activeTab === 'text' &&
 											(characterCount < 200 || characterCount > 10000)) ||
@@ -365,7 +505,8 @@ export default function Home() {
 								</Button>
 							</div>
 						</div>
-						<div className="hidden lg:block w-1/4 p-4">
+
+						<div className="input-methods hidden lg:block w-1/4 p-4">
 							<div className="space-y-2">
 								{['text', 'documents', 'images'].map((tab) => (
 									<button

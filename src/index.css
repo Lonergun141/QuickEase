@@ -97,12 +97,16 @@ ul {
 }
 
 ol {
-  @apply list-inside list-decimal pl-5; /* Ensure ordered lists show numbers */
+  @apply list-inside  list-decimal pl-5; /* Ensure ordered lists show numbers */
 }
 
 ul li, ol li {
   @apply mb-2 text-gray-800 dark:text-gray-300; /* Spacing and text color for list items */
 }
+
+
+/*Hero section animations*/
+
 
 /* Define sliding animation */
 @keyframes slideInFromLeft {

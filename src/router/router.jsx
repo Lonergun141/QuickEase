@@ -27,6 +27,8 @@ import ProtectedRoute from '../features/auth/ProtectedRoute';
 import FlashcardLoadingScreen from '../components/Loaders/flashLoader';
 import QuizLoadingScreen from '../components/Loaders/quizLoader';
 
+import AnimatedLayout from '../components/Layout/AnimatedLayout';
+
 export const router = createBrowserRouter([
 	{
 		path: '*',
@@ -34,7 +36,11 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/',
-		element: <App />,
+		element: (
+			<AnimatedLayout>
+				<App />
+			</AnimatedLayout>
+		),
 	},
 	{
 		path: '/Loader',
@@ -50,15 +56,27 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/SignIn',
-		element: <SignIn />,
+		element: (
+			<AnimatedLayout>
+				<SignIn />
+			</AnimatedLayout>
+		),
 	},
 	{
 		path: '/SignUp',
-		element: <SignUp />,
+		element: (
+			<AnimatedLayout>
+				<SignUp />
+			</AnimatedLayout>
+		),
 	},
 	{
 		path: '/ForgotPass',
-		element: <ForgotPass />,
+		element: (
+			<AnimatedLayout>
+				<ForgotPass />
+			</AnimatedLayout>
+		),
 	},
 	{
 		path: '/activate/:uid/:token',

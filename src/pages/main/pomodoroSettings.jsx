@@ -156,7 +156,7 @@ export default function Pomodoro() {
 								</h3>
 							</div>
 							<p className="text-gray-700 dark:text-gray-300">
-								Choose a task you want to work on, and set your mind to it.
+								Choose a note you want to study on, and set your mind to it.
 							</p>
 						</div>
 

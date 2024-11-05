@@ -23,7 +23,7 @@ import { createFlashcards, fetchSetFlashcards } from '../../features/Flashcard/f
 import NotesLoadingScreen from '../../components/Loaders/loader';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import parse from 'html-react-parser';
+import parse, { domToReact } from 'html-react-parser';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import Modal from '../../components/Modals/Modal';
@@ -33,65 +33,94 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import FlashcardLoadingScreen from '../../components/Loaders/flashLoader';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 
-//For math formulas formatting
+// For math formulas formatting
 const renderMath = (math, displayMode = false) => {
 	try {
-		return katex.renderToString(math, {
-			throwOnError: false,
-			displayMode: displayMode,
-		});
+	  return katex.renderToString(math, {
+		throwOnError: false,
+		displayMode: displayMode,
+	  });
 	} catch (error) {
-		console.error('Error rendering math:', error);
-		return math;
+	  console.error('Error rendering math:', error);
+	  return math;
 	}
-};
-
-const renderContent = (content) => {
+  };
+  
+  // Updated renderContent function
+  const renderContent = (content) => {
 	const parts = [];
 	let lastIndex = 0;
 	const regex = /(\\\(.*?\\\)|\$\$.*?\$\$)/gs;
-
+  
+	const parseOptions = {
+	  replace: (domNode) => {
+		if (domNode.type === 'tag') {
+		  if (domNode.name === 'ul' || domNode.name === 'ol') {
+			return React.createElement(
+			  domNode.name,
+			  {
+				...domNode.attribs,
+				style: { marginLeft: '1.5rem', marginBottom: '1rem' },
+			  },
+			  domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+			);
+		  }
+		  if (domNode.name === 'li') {
+			return React.createElement(
+			  'li',
+			  {
+				...domNode.attribs,
+				style: { marginBottom: '0.5rem' },
+			  },
+			  domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+			);
+		  }
+		}
+	  },
+	};
+  
 	let match;
 	while ((match = regex.exec(content)) !== null) {
-		// Add text before the math expression
-		if (match.index > lastIndex) {
-			parts.push(parse(content.slice(lastIndex, match.index)));
-		}
-
-		// Render the math expression
-		const mathContent = match[0];
-		if (mathContent.startsWith('\\(') && mathContent.endsWith('\\)')) {
-			// Inline math
-			parts.push(
-				<span
-					key={match.index}
-					dangerouslySetInnerHTML={{
-						__html: renderMath(mathContent.slice(2, -2), false),
-					}}
-				/>
-			);
-		} else if (mathContent.startsWith('$$') && mathContent.endsWith('$$')) {
-			// Block math
-			parts.push(
-				<div
-					key={match.index}
-					dangerouslySetInnerHTML={{
-						__html: renderMath(mathContent.slice(2, -2), true),
-					}}
-				/>
-			);
-		}
-
-		lastIndex = regex.lastIndex;
+	  // Add text before the math expression
+	  if (match.index > lastIndex) {
+		parts.push(parse(content.slice(lastIndex, match.index), parseOptions));
+	  }
+  
+	  // Render the math expression
+	  const mathContent = match[0];
+	  if (mathContent.startsWith('\\(') && mathContent.endsWith('\\)')) {
+		// Inline math
+		parts.push(
+		  <span
+			key={match.index}
+			dangerouslySetInnerHTML={{
+			  __html: renderMath(mathContent.slice(2, -2), false),
+			}}
+		  />
+		);
+	  } else if (mathContent.startsWith('$$') && mathContent.endsWith('$$')) {
+		// Block math
+		parts.push(
+		  <div
+			key={match.index}
+			dangerouslySetInnerHTML={{
+			  __html: renderMath(mathContent.slice(2, -2), true),
+			}}
+		  />
+		);
+	  }
+  
+	  lastIndex = regex.lastIndex;
 	}
-
+  
 	// Add any remaining text after the last math expression
 	if (lastIndex < content.length) {
-		parts.push(parse(content.slice(lastIndex)));
+	  parts.push(parse(content.slice(lastIndex), parseOptions));
 	}
-
+  
 	return parts;
-};
+  };
+  
 
 export default function Notes() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -147,7 +176,6 @@ export default function Notes() {
 	const handleQuiz = async () => {
 		setIsLoadingQ(true);
 		try {
-		
 			const quizData = await fetchQuiz(id);
 			const quizExists = Array.isArray(quizData) && quizData.length > 0;
 
@@ -426,11 +454,13 @@ export default function Notes() {
 							</>
 						) : (
 							<>
-								<h1 className="text-xl text-highlights xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
+								<h1 className="text-xl text-dark xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
 									{note.notetitle || (
 										<Skeleton height={20} className="dark:bg-darkS rounded-full" />
 									)}
 								</h1>
+
+								<div className="my-12 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:opacity-100"></div>
 
 								<div className="prose max-w-none text-gray-700 dark:text-secondary">
 									{note.notesummary ? (

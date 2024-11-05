@@ -87,109 +87,108 @@ export const updateNoteTitle = async (id, notetitle) => {
 
 export const generateSummaryFromImages = async (files, navigate, userId) => {
 	try {
-	  // Determine worker count based on device capabilities
-	  const maxWorkers = 4;
-	  const defaultWorkers = 2;
-	  const workerCount = navigator.hardwareConcurrency
-		? Math.min(navigator.hardwareConcurrency, maxWorkers)
-		: defaultWorkers;
-  
-	  // Create a scheduler to manage multiple workers
-	  const scheduler = Tesseract.createScheduler();
-  
-	  // Initialize workers and add them to the scheduler
-	  const workerPromises = [];
-	  for (let i = 0; i < workerCount; i++) {
-		workerPromises.push(
-		  (async () => {
-			const worker = await Tesseract.createWorker('eng');
-			scheduler.addWorker(worker);
-		  })()
-		);
-	  }
-	  await Promise.all(workerPromises);
-  
-	  // Process files using the scheduler
-	  const textPromises = files.map(async (file, index) => {
-		if (file.type.startsWith('image/')) {
-		  const {
-			data: { text },
-		  } = await scheduler.addJob('recognize', file);
-		  console.log(`Tesseract result for image ${index + 1}:`, text);
-		  // Return the text for this image
-		  return text.trim();
-		} else {
-		  // Convert the document file to PNG images
-		  const pngImages = await convertFileToPng(file);
-		  // Process each PNG image with Tesseract
-		  const texts = await Promise.all(
-			pngImages.map(async (pngImage, pngIndex) => {
-			  const {
-				data: { text },
-			  } = await scheduler.addJob('recognize', pngImage);
-			  console.log(
-				`Tesseract result for converted image ${index + 1}.${pngIndex + 1}:`,
-				text
-			  );
-			  // Return the text for this page
-			  return text.trim();
-			})
-		  );
-		  // Log texts from pages of this document
-		  console.log(`Texts from document ${file.name}:`, texts);
-		  // Join the texts of the pages with '<break>'
-		  return texts.join('<break>');
+		// Determine worker count based on device capabilities
+		const maxWorkers = 4;
+		const defaultWorkers = 2;
+		const workerCount = navigator.hardwareConcurrency
+			? Math.min(navigator.hardwareConcurrency, maxWorkers)
+			: defaultWorkers;
+
+		// Create a scheduler to manage multiple workers
+		const scheduler = Tesseract.createScheduler();
+
+		// Initialize workers and add them to the scheduler
+		const workerPromises = [];
+		for (let i = 0; i < workerCount; i++) {
+			workerPromises.push(
+				(async () => {
+					const worker = await Tesseract.createWorker('eng');
+					scheduler.addWorker(worker);
+				})()
+			);
 		}
-	  });
-  
-	  const textContents = await Promise.all(textPromises);
-  
-	  // Terminate the scheduler and all workers
-	  await scheduler.terminate();
-  
-	  // Log texts before joining
-	  console.log('Text contents before joining:', textContents);
-  
-	  // Add a '<break>' between each file's text
-	  const combinedText = textContents.join('<break>');
-  
-	  // Log the combined text with <break>
-	  console.log('Combined text from all images with <break>:', combinedText);
-  
-	  // Proceed with the rest of your code
-	  const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
-	  if (wordCount < 100) {
-		console.log('Extracted text is less than 100 words.');
-		navigate('/TranscribeError');
-		return null;
-	  }
-  
-	  if (combinedText.length === 0) {
-		console.log('No text extracted from images');
-		navigate('/TranscribeError');
-		return null;
-	  }
-  
-	  if (combinedText.length === 10000) {
-		console.log('The content of your file contains more than 10000 characters.');
-		navigate('/TranscribeError');
-		return null;
-	  }
-  
-	  const formData = {
-		notecontents: combinedText,
-		user: userId,
-	  };
-  
-	  const response = await generateSummary(formData);
-	  return response;
+		await Promise.all(workerPromises);
+
+		// Process files using the scheduler
+		const textPromises = files.map(async (file, index) => {
+			if (file.type.startsWith('image/')) {
+				const {
+					data: { text },
+				} = await scheduler.addJob('recognize', file);
+				console.log(`Tesseract result for image ${index + 1}:`, text);
+				// Return the text for this image
+				return text.trim();
+			} else {
+				// Convert the document file to PNG images
+				const pngImages = await convertFileToPng(file);
+				// Process each PNG image with Tesseract
+				const texts = await Promise.all(
+					pngImages.map(async (pngImage, pngIndex) => {
+						const {
+							data: { text },
+						} = await scheduler.addJob('recognize', pngImage);
+						console.log(
+							`Tesseract result for converted image ${index + 1}.${pngIndex + 1}:`,
+							text
+						);
+						// Return the text for this page
+						return text.trim();
+					})
+				);
+				// Log texts from pages of this document
+				console.log(`Texts from document ${file.name}:`, texts);
+				// Join the texts of the pages with '<break>'
+				return texts.join('<break>');
+			}
+		});
+
+		const textContents = await Promise.all(textPromises);
+
+		// Terminate the scheduler and all workers
+		await scheduler.terminate();
+
+		// Log texts before joining
+		console.log('Text contents before joining:', textContents);
+
+		// Add a '<break>' between each file's text
+		const combinedText = textContents.join('<break>');
+
+		// Log the combined text with <break>
+		console.log('Combined text from all images with <break>:', combinedText);
+
+		// Proceed with the rest of your code
+		const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
+		if (wordCount < 100) {
+			console.log('Extracted text is less than 100 words.');
+			navigate('/TranscribeError');
+			return null;
+		}
+
+		if (combinedText.length === 0) {
+			console.log('No text extracted from images');
+			navigate('/TranscribeError');
+			return null;
+		}
+
+		if (combinedText.length === 10000) {
+			console.log('The content of your file contains more than 10000 characters.');
+			navigate('/TranscribeError');
+			return null;
+		}
+
+		const formData = {
+			notecontents: combinedText,
+			user: userId,
+		};
+
+		const response = await generateSummary(formData);
+		return response;
 	} catch (error) {
-	  console.error('Error in generateSummaryFromImages:', error);
-	  navigate('/TranscribeError');
-	  throw new Error(`Failed to generate summary: ${error.message}`);
+		console.error('Error in generateSummaryFromImages:', error);
+		navigate('/TranscribeError');
+		throw new Error(`Failed to generate summary: ${error.message}`);
 	}
-  };
-  
+};
 
 export const generateQuizFromSummary = async (summary) => {
 	try {
@@ -207,36 +206,36 @@ export const generateQuizFromSummary = async (summary) => {
 						role: 'user',
 						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should adapt to the length and detail of the summary, with at least **15 questions** as a minimum. If the summary provides enough content, generate additional questions to cover all major points and details, ensuring an even distribution of topics.
 
-Each question should have **1 correct answer** and **3 plausible, but incorrect choices**. The incorrect choices should be believable and not too easy to rule out. Randomize the position of the correct answer among the four choices in each question. Format the response as a JSON array of question objects with the following structure:
-[
-  {
-    "TestQuestion": "Question text here",
-    "choices": [
-      {
-        "item_choice_text": "Choice text here",
-        "isAnswer": boolean
-      },
-      {
-        "item_choice_text": "Choice text here",
-        "isAnswer": boolean
-      },
-      {
-        "item_choice_text": "Choice text here",
-        "isAnswer": boolean
-      },
-      {
-        "item_choice_text": "Choice text here",
-        "isAnswer": boolean
-      }
-    ]
-  }
-]
+									Each question should have **1 correct answer** and **3 plausible, but incorrect choices**. The incorrect choices should be believable and not too easy to rule out. Randomize the position of the correct answer among the four choices in each question. Format the response as a JSON array of question objects with the following structure:
+					[
+					{
+						"TestQuestion": "Question text here",
+						"choices": [
+						{
+							"item_choice_text": "Choice text here",
+							"isAnswer": boolean
+						},
+						{
+							"item_choice_text": "Choice text here",
+							"isAnswer": boolean
+						},
+						{
+							"item_choice_text": "Choice text here",
+							"isAnswer": boolean
+						},
+						{
+							"item_choice_text": "Choice text here",
+							"isAnswer": boolean
+						}
+						]
+					}
+					]
 
-The quiz should be based on the following summary:
+					The quiz should be based on the following summary:
 
-"${summary}"
+					"${summary}"
 
-Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Keep the correct answer randomized in position for each question, and ensure that incorrect answers are plausible. Do not provide any explanation or extra formatting outside the JSON structure.`,
+					Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Keep the correct answer randomized in position for each question, and ensure that incorrect answers are plausible. Do not provide any explanation or extra formatting outside the JSON structure.`,
 					},
 				],
 				max_tokens: 4000,

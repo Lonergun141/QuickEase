@@ -26,30 +26,42 @@ const Footer = () => {
 				</div>
 
 				<div className="relative z-20 p-6 w-full md:w-1/2 flex flex-col items-center md:items-start space-y-6 mb-16">
-					<h2 className="text-3xl md:text-4xl font-pmedium mb-4 text-center md:text-left">GET OUR APP NOW</h2>
+					<h2 className="text-3xl md:text-4xl font-pmedium mb-4 text-center md:text-left">
+						GET OUR APP NOW
+					</h2>
 					<img src={img.QrCode} alt="QR code" className="w-40 md:w-64 mb-4 rounded-lg" />
-					<p className="text-center md:text-left font-pregular dark:text-secondary">Scan the code to download</p>
+					<p className="text-center md:text-left font-pregular dark:text-secondary">
+						Scan the code to download
+					</p>
 					<div className="flex flex-col sm:flex-row sm:justify-start sm:space-x-20 text-center md:text-left mt-10 text-sm">
 						<div className="mb-6 sm:mb-0">
 							<p className="font-semibold dark:text-secondary">LEGAL</p>
 							<ul className="mt-2 space-y-2 cursor-pointer">
 								<li onClick={toggleModal}>Privacy Policy & Terms of Service</li>
-							
 							</ul>
 						</div>
 						<div>
 							<p className="font-semibold dark:text-secondary">TALK TO US</p>
 							<ul className="mt-2 space-y-2 dark:text-naeg cursor-pointer">
-								<li onClick={() => window.open('mailto:quickease.team@gmail.com')}>quickease.team@gmail.com</li>
+								<li onClick={() => window.open('mailto:quickease.team@gmail.com')}>
+									quickease.team@gmail.com
+								</li>
 								<li>0967 665 3378</li>
-								<li onClick={() => window.open('https://www.facebook.com/quickease.ph', '_blank')}>Facebook</li>
+								<li
+									onClick={() =>
+										window.open('https://www.facebook.com/quickease.ph', '_blank')
+									}>
+									Facebook
+								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 
 				<div className="w-full text-center py-4 mt-6 z-20 absolute bottom-0 left-0 right-0">
-					<p className="text-sm text-gray-600">© {currentYear} QuickEase. All rights reserved.</p>
+					<p className="text-sm text-gray-600">
+						© {currentYear} QuickEase. All rights reserved.
+					</p>
 				</div>
 			</footer>
 

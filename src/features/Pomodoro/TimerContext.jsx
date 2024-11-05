@@ -5,22 +5,20 @@ import {
   pauseTimer,
   skipSession,
   closeBreakModal,
-  updateCurrentTime
+  updateCurrentTime,
 } from './pomodoroSlice';
-import alarm from '../../assets/Audio/hey.mp3';
 
 export const TimerContext = createContext();
 
 export const TimerProvider = ({ children }) => {
   const dispatch = useDispatch();
-  const sound = new Audio(alarm);
-  const { 
-    currentTime, 
+  const {
+    currentTime,
     isRunning,
     startTimestamp,
     pausedTimeRemaining,
     session,
-    showBreakModal 
+    showBreakModal,
   } = useSelector((state) => state.pomodoro);
 
   const timerRef = useRef(null);
@@ -47,26 +45,12 @@ export const TimerProvider = ({ children }) => {
     };
   }, [isRunning, dispatch]);
 
-  // Handle tab visibility changes
+  // Adjusted visibility change handler
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden, clear the interval
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-        }
-      } else if (isRunning) {
-        // Clear any existing interval first
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-        }
+      if (!document.hidden && isRunning) {
         // Update the current time immediately to catch up
         dispatch(updateCurrentTime());
-        // Start a new interval
-        timerRef.current = setInterval(() => {
-          dispatch(updateCurrentTime());
-        }, 1000);
       }
     };
 
@@ -79,26 +63,24 @@ export const TimerProvider = ({ children }) => {
   // Watch for computer sleep/wake
   useEffect(() => {
     let lastTime = Date.now();
-    
+
     const handleTimeUpdate = () => {
       const currentTime = Date.now();
       const timeDiff = currentTime - lastTime;
-      
+
       // If more than 2 seconds have passed between updates,
       // assume the computer went to sleep
       if (timeDiff > 2000 && isRunning) {
         dispatch(updateCurrentTime());
       }
-      
+
       lastTime = currentTime;
     };
 
     const interval = setInterval(handleTimeUpdate, 1000);
-    
+
     return () => clearInterval(interval);
   }, [isRunning, dispatch]);
-
-
 
   const contextValue = {
     currentTime,
@@ -110,7 +92,7 @@ export const TimerProvider = ({ children }) => {
     session,
     showBreakModal,
     startTimestamp,
-    pausedTimeRemaining
+    pausedTimeRemaining,
   };
 
   return (

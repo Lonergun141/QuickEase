@@ -188,7 +188,7 @@ export default function FlashCardHistory() {
 										<div className="flex justify-between items-center mb-2">
 											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">{flashcard.title}</h3>
 										</div>
-										<p className="text-xs text-coral-red dark:text-red-400 font-pregular">Flashcards: {flashcard.count}</p>
+										<p className="text-xs text-review font-pregular">Flashcards: {flashcard.count}</p>
 										<p className="text-xs text-gray-400 font-pregular">
 											Date Created: {new Date(flashcard.dateCreated).toLocaleDateString()}
 										</p>
