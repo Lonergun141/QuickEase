@@ -14,6 +14,7 @@ import LoadingScreen from '../../components/Loaders/loader';
 import Modal from '../../components/Modals/Modal';
 import { useUserStats } from '../../features/badge/userStatsContext';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Quiz = () => {
 	const navigate = useNavigate();
@@ -28,6 +29,10 @@ const Quiz = () => {
 	const [modalContent, setModalContent] = useState('');
 	const [modalAction, setModalAction] = useState(null);
 	const { refreshUserStats } = useUserStats();
+
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const progressColor = 'white';
+	const darkProgressColor = '#4B5563';
 
 	const shuffleArray = (array) => {
 		return array
@@ -136,6 +141,7 @@ const Quiz = () => {
 	};
 
 	const submitQuiz = async () => {
+		setIsSubmitting(true);
 		try {
 			await deleteAllChoiceAnswers(id);
 			await Promise.all(
@@ -165,6 +171,8 @@ const Quiz = () => {
 		} catch (error) {
 			console.error('Error submitting quiz:', error);
 			setError('Failed to submit quiz. Please try again later.');
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -179,9 +187,6 @@ const Quiz = () => {
 		if (modalAction === 'submit') {
 			submitQuiz();
 		} else if (modalAction === 'cancel') {
-			localStorage.removeItem(`quiz-answers-${id}`);
-			localStorage.removeItem(`quiz-flags-${id}`);
-			localStorage.removeItem(`noteData`);
 			navigate(`/notes/${id}`);
 		}
 	};
@@ -237,7 +242,7 @@ const Quiz = () => {
 								flags[index]
 									? 'bg-yellow-300 text-white'
 									: answers[index] !== null
-									? 'bg-primary text-white'
+									? 'bg-primary text-white dark:bg-darkS'
 									: 'bg-white dark:bg-dark text-gray-900 dark:text-gray-300'
 							}`}
 							onClick={() =>
@@ -250,8 +255,19 @@ const Quiz = () => {
 					))}
 				</div>
 
-				<Button onClick={handleSubmit} className="w-full max-w-lg">
-					Submit Quiz
+				<Button onClick={handleSubmit} className="w-full max-w-lg" disabled={isSubmitting}>
+					{isSubmitting ? (
+						<div className="flex items-center justify-center">
+							<CircularProgress size={24} style={{ color: 'currentColor' }} />
+							<style>
+								{`.dark .MuiCircularProgress-root {
+								color: ${darkProgressColor} !important;
+							}`}
+							</style>
+						</div>
+					) : (
+						'Submit Quiz'
+					)}
 				</Button>
 
 				<div
@@ -293,9 +309,20 @@ const Quiz = () => {
 					</div>
 				))}
 
-				<div className="flex justify-center">
+				<div className="flex justify-center md:hidden">
 					<Button onClick={handleSubmit} className="w-full max-w-lg">
-						Submit Quiz
+						{isSubmitting ? (
+							<div className="flex items-center justify-center">
+								<CircularProgress size={24} style={{ color: 'currentColor' }} />
+								<style>
+									{`.dark .MuiCircularProgress-root {
+						color: ${darkProgressColor} !important;
+					}`}
+								</style>
+							</div>
+						) : (
+							'Submit Quiz'
+						)}
 					</Button>
 				</div>
 			</div>

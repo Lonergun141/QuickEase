@@ -36,91 +36,90 @@ import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 // For math formulas formatting
 const renderMath = (math, displayMode = false) => {
 	try {
-	  return katex.renderToString(math, {
-		throwOnError: false,
-		displayMode: displayMode,
-	  });
+		return katex.renderToString(math, {
+			throwOnError: false,
+			displayMode: displayMode,
+		});
 	} catch (error) {
-	  console.error('Error rendering math:', error);
-	  return math;
+		console.error('Error rendering math:', error);
+		return math;
 	}
-  };
-  
-  // Updated renderContent function
-  const renderContent = (content) => {
+};
+
+// Updated renderContent function
+const renderContent = (content) => {
 	const parts = [];
 	let lastIndex = 0;
 	const regex = /(\\\(.*?\\\)|\$\$.*?\$\$)/gs;
-  
+
 	const parseOptions = {
-	  replace: (domNode) => {
-		if (domNode.type === 'tag') {
-		  if (domNode.name === 'ul' || domNode.name === 'ol') {
-			return React.createElement(
-			  domNode.name,
-			  {
-				...domNode.attribs,
-				style: { marginLeft: '1.5rem', marginBottom: '1rem' },
-			  },
-			  domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
-			);
-		  }
-		  if (domNode.name === 'li') {
-			return React.createElement(
-			  'li',
-			  {
-				...domNode.attribs,
-				style: { marginBottom: '0.5rem' },
-			  },
-			  domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
-			);
-		  }
-		}
-	  },
+		replace: (domNode) => {
+			if (domNode.type === 'tag') {
+				if (domNode.name === 'ul' || domNode.name === 'ol') {
+					return React.createElement(
+						domNode.name,
+						{
+							...domNode.attribs,
+							style: { marginLeft: '1.5rem', marginBottom: '1rem' },
+						},
+						domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+					);
+				}
+				if (domNode.name === 'li') {
+					return React.createElement(
+						'li',
+						{
+							...domNode.attribs,
+							style: { marginBottom: '0.5rem' },
+						},
+						domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+					);
+				}
+			}
+		},
 	};
-  
+
 	let match;
 	while ((match = regex.exec(content)) !== null) {
-	  // Add text before the math expression
-	  if (match.index > lastIndex) {
-		parts.push(parse(content.slice(lastIndex, match.index), parseOptions));
-	  }
-  
-	  // Render the math expression
-	  const mathContent = match[0];
-	  if (mathContent.startsWith('\\(') && mathContent.endsWith('\\)')) {
-		// Inline math
-		parts.push(
-		  <span
-			key={match.index}
-			dangerouslySetInnerHTML={{
-			  __html: renderMath(mathContent.slice(2, -2), false),
-			}}
-		  />
-		);
-	  } else if (mathContent.startsWith('$$') && mathContent.endsWith('$$')) {
-		// Block math
-		parts.push(
-		  <div
-			key={match.index}
-			dangerouslySetInnerHTML={{
-			  __html: renderMath(mathContent.slice(2, -2), true),
-			}}
-		  />
-		);
-	  }
-  
-	  lastIndex = regex.lastIndex;
+		// Add text before the math expression
+		if (match.index > lastIndex) {
+			parts.push(parse(content.slice(lastIndex, match.index), parseOptions));
+		}
+
+		// Render the math expression
+		const mathContent = match[0];
+		if (mathContent.startsWith('\\(') && mathContent.endsWith('\\)')) {
+			// Inline math
+			parts.push(
+				<span
+					key={match.index}
+					dangerouslySetInnerHTML={{
+						__html: renderMath(mathContent.slice(2, -2), false),
+					}}
+				/>
+			);
+		} else if (mathContent.startsWith('$$') && mathContent.endsWith('$$')) {
+			// Block math
+			parts.push(
+				<div
+					key={match.index}
+					dangerouslySetInnerHTML={{
+						__html: renderMath(mathContent.slice(2, -2), true),
+					}}
+				/>
+			);
+		}
+
+		lastIndex = regex.lastIndex;
 	}
-  
+
 	// Add any remaining text after the last math expression
 	if (lastIndex < content.length) {
-	  parts.push(parse(content.slice(lastIndex), parseOptions));
+		parts.push(parse(content.slice(lastIndex), parseOptions));
 	}
-  
+
 	return parts;
-  };
-  
+};
 
 export default function Notes() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -175,13 +174,11 @@ export default function Notes() {
 
 	const handleQuiz = async () => {
 		setIsLoadingQ(true);
-		try {
-			const quizData = await fetchQuiz(id);
-			const quizExists = Array.isArray(quizData) && quizData.length > 0;
-
-			if (quizExists) {
-				navigate(`/Review/${id}`);
-			} else {
+		if (quizExists) {
+			navigate(`/Review/${id}`);
+		} else {
+			setIsGeneratingQuiz(true);
+			try {
 				setIsGeneratingQuiz(true);
 				const generatedQuiz = await generateQuizFromSummary(note.notesummary);
 				await createQuiz(id, generatedQuiz);
@@ -197,32 +194,33 @@ export default function Notes() {
 						},
 					})
 				);
+				setQuizExists(true);
 
 				refreshUserStats();
 				navigate(`/Quiz/${id}`);
-			}
-		} catch (error) {
-			console.error('Error handling quiz:', error);
-			let userFriendlyMessage = 'Failed to handle the quiz. Please try again later.';
+			} catch (error) {
+				console.error('Error generating quiz:', error);
+				let userFriendlyMessage = 'Failed to generate the quiz. Please try again later.';
 
-			if (error.response) {
-				const status = error.response.status;
-				if (status === 401 || status === 403) {
-					userFriendlyMessage = 'Unauthorized access. Please check your API key.';
-				} else if (status === 429) {
-					userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
-				} else if (status >= 500) {
-					userFriendlyMessage = 'Server error. Please try again later.';
+				if (error.response) {
+					const status = error.response.status;
+					if (status === 401 || status === 403) {
+						userFriendlyMessage = 'Unauthorized access. Please check your API key.';
+					} else if (status === 429) {
+						userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
+					} else if (status >= 500) {
+						userFriendlyMessage = 'Server error. Please try again later.';
+					}
+				} else if (error.message) {
+					userFriendlyMessage = error.message;
 				}
-			} else if (error.message) {
-				userFriendlyMessage = error.message;
-			}
 
-			setErrorMessage(userFriendlyMessage);
-			setIsErrorModalOpen(true);
-		} finally {
-			setIsGeneratingQuiz(false);
-			setIsLoadingQ(false);
+				setErrorMessage(userFriendlyMessage);
+				setIsErrorModalOpen(true);
+			} finally {
+				setIsGeneratingQuiz(false);
+				setIsLoading(false);
+			}
 		}
 	};
 
@@ -496,7 +494,7 @@ export default function Notes() {
 							</button>
 							<button
 								onClick={handleModalConfirm}
-								className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+								className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
 								Generate
 							</button>
 						</div>

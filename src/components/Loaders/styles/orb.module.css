@@ -1,0 +1,69 @@
+.loaderContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5%;
+}
+
+.glowingOrbLoader {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    animation: rotate 2s linear infinite;
+}
+
+.orb {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6D5BFF, #FF6D6D);
+    box-shadow: 0 0 10px rgba(109, 91, 255, 0.7), 0 0 20px rgba(255, 109, 109, 0.7);
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.orb1 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+
+.orb2 {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    animation-delay: 0.5s;
+}
+
+.orb3 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 1s;
+}
+
+.orb4 {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    animation-delay: 1.5s;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes glow {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+}

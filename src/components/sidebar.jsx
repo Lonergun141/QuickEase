@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -14,7 +13,7 @@ import {
 	faTimes,
 	faLightbulb,
 	faUserCircle,
-	faSignOut
+	faSignOut,
 } from '@fortawesome/free-solid-svg-icons';
 import Button from './button';
 import Timer from './Timer';
@@ -125,8 +124,8 @@ const Sidebar = ({ onToggle }) => {
 									<span
 										className={`${
 											location.pathname === item.path
-												? 'text-primary dark:text-secondary font-semibold'
-												: 'text-gray-600 dark:text-secondary font-semibold'
+												? 'text-primary dark:text-secondary font-psemibold'
+												: 'text-gray-600 dark:text-secondary font-psemibold'
 										}`}>
 										{item.text}
 									</span>
@@ -135,7 +134,6 @@ const Sidebar = ({ onToggle }) => {
 						))}
 					</ul>
 				</nav>
-				{/* Remove Timer from here to prevent unmounting */}
 			</div>
 			<div className="p-4">
 				<Button
@@ -157,7 +155,6 @@ const Sidebar = ({ onToggle }) => {
 							<FontAwesomeIcon icon={faBars} size="lg" />
 						</button>
 						<div className="flex-1">
-							{/* Move Timer here inside the header */}
 							{activeSettings.showTimer && (
 								<div className="p-2 m-2 py-2 rounded-md">
 									<Timer isCollapsed={false} isMobile={true} />
@@ -184,7 +181,7 @@ const Sidebar = ({ onToggle }) => {
 						</div>
 						<div className="h-[calc(100%-4rem)] overflow-y-auto">
 							{renderSidebarContent()}
-							{/* Timer inside the sidebar when open */}
+
 							{activeSettings.showTimer && (
 								<div className="p-2 m-2">
 									<Timer isCollapsed={false} isMobile={true} />
@@ -192,7 +189,6 @@ const Sidebar = ({ onToggle }) => {
 							)}
 						</div>
 					</div>
-					{/* Remove the Timer rendered outside the header */}
 				</>
 			) : (
 				<div
@@ -235,8 +231,8 @@ const Sidebar = ({ onToggle }) => {
 												<span
 													className={
 														location.pathname === item.path
-															? 'text-primary dark:text-secondary font-semibold'
-															: 'text-gray-600 dark:text-secondary font-semibold'
+															? 'text-primary dark:text-secondary font-semibold md:text-sm lg:text-md'
+															: 'text-gray-600 dark:text-secondary font-semibold  md:text-sm lg:text-md '
 													}>
 													{item.text}
 												</span>

@@ -19,7 +19,7 @@ export default function FlashcardLoadingScreen() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-secondary dark:bg-dark z-50 p-4">
         <h1 className="loading-title animate-gradientText text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 p-9">
-                Generating Your Notes
+                Generating Your Flashcards
             </h1>
 
       <div className="relative flex items-center justify-center mb-10 animate-flashCardFlipGroup">

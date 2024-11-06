@@ -23,7 +23,7 @@ const TranscribeError = () => {
 					Oops! Something went wrong.
 				</h1>
 				<p className="text-center text-gray-600 dark:text-naeg mb-6">
-					We encountered an issue while processing your request. Make sure your images and files has text for
+					We encountered an issue while processing your request. Make sure your images and files has text more than 200 words for
 					Quickie to read.
 				</p>
 

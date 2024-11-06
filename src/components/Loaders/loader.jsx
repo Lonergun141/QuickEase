@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import GlowingOrbLoader from './glowingOrb';
 
 const quotes = [
     "I read the entire internet, and all I got was this lousy summary.",
@@ -32,12 +33,7 @@ export default function NotesLoadingScreen() {
                 Generating Your Notes
             </h1>
 
-          
-            <div className="w-full max-w-xs sm:max-w-md md:max-w-lg my-9">
-                <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
-                    <div className="h-full loading-bar"></div>
-                </div>
-            </div>
+            <GlowingOrbLoader />
 
            
             <p className="loading-quote font-pRegular text-gray-800 dark:text-gray-200 text-center max-w-md text-lg sm:text-xl md:text-xl mb-6 animate-fadeIn">

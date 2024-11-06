@@ -28,7 +28,7 @@ const QuizQuestionCard = ({ questionNumber, question, choices, selectedAnswer, o
             key={index}
             onClick={() => handleChoiceSelect(index)}
             className={`border rounded-lg p-4 text-center font-pregular text-dark dark:text-secondary ${
-              selectedAnswer === index ? 'bg-primary text-white dark:text-secondary dark:bg-naeg' : ''
+              selectedAnswer === index ? 'bg-primary text-white dark:text-secondary dark:bg-darkS' : ''
             }`}>
             {choice}
           </button>

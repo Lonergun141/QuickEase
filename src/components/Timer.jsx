@@ -110,7 +110,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 			} transition-opacity duration-500 ease-in-out ${
 				isQuoteVisible ? 'opacity-100' : 'opacity-0'
 			}`}>
-			<p className="font-pmedium text-sm">{quotes[quoteIndex]}</p>
+			<p className="font-pmedium text-xs">{quotes[quoteIndex]}</p>
 		</div>
 	);
 
@@ -153,7 +153,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 			</h3>
 			<div
 				className={`flex justify-center items-center ${
-					isCollapsed ? 'text-2xl' : 'md:text-md sm:text-sm lg:text-6xl'
+					isCollapsed ? 'text-2xl' : 'md:text-md sm:text-sm lg:text-5xl'
 				} font-pbold ${
 					isDarkMode ? 'text-secondary' : 'text-primary'
 				} transition-all duration-300 ease-in-out`}>

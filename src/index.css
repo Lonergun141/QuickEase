@@ -254,6 +254,22 @@ ul li, ol li {
   transition: width 0.3s ease-in-out; 
 }
 
+.spinner-circle {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  background: conic-gradient(#6D5BFF, #FF6D6D, #FF6D6D, #FF6D5B, #6D5BFF);
+  mask-image: radial-gradient(circle, transparent 40%, black 41%);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes gradientLoading {
   0% {
       background-position: 0% 50%;

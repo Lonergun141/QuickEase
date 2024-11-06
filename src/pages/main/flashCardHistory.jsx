@@ -186,7 +186,7 @@ export default function FlashCardHistory() {
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleCardClick(flashcard.id)}>
 										<div className="flex justify-between items-center mb-2">
-											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-pbold text-highlights dark:text-secondary">{flashcard.title}</h3>
+											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-lg font-pbold text-highlights dark:text-secondary">{flashcard.title}</h3>
 										</div>
 										<p className="text-xs text-review font-pregular">Flashcards: {flashcard.count}</p>
 										<p className="text-xs text-gray-400 font-pregular">
