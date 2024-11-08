@@ -11,11 +11,13 @@ const DeleteModal = ({ isOpen, onClose, onDelete, noteTitle }) => {
 
 	return (
 		<div
-			className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4"
+			className="fixed inset-0 flex  items-center justify-center bg-black bg-opacity-50 z-100"
 			onClick={handleOverlayClick}>
 			<div className="bg-white dark:bg-darken rounded-lg shadow-xl w-full max-w-md mx-auto overflow-hidden">
 				<header className="bg-secondary dark:bg-darken px-6 py-4 flex justify-between items-center">
-					<h1 className="font-pmedium text-2xl text-gray-800 dark:text-secondary">Delete Note</h1>
+					<h1 className="font-pmedium text-2xl text-gray-800 dark:text-secondary">
+						Delete Note
+					</h1>
 				</header>
 
 				<div className="px-6 py-4">

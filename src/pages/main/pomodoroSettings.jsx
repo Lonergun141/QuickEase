@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faCheckCircle, faCoffee, faBolt } from '@fortawesome/free-solid-svg-icons';
+import {
+	faClock,
+	faCheckCircle,
+	faCoffee,
+	faBolt,
+	faRoute,
+} from '@fortawesome/free-solid-svg-icons';
 import {
 	setPendingSetting,
 	applySettings,
@@ -10,6 +16,8 @@ import {
 } from '../../features/Pomodoro/pomodoroSlice';
 import Sidebar from '../../components/sidebar';
 import { fetchUserInfo } from '../../features/auth/authSlice';
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 
 export default function Pomodoro() {
 	const { pendingSettings, isLoading, error } = useSelector((state) => state.pomodoro);
@@ -17,32 +25,82 @@ export default function Pomodoro() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
 	const dispatch = useDispatch();
 
+	const [run, setRun] = useState(false);
+	const [stepIndex, setStepIndex] = useState(0);
+
+	const { isDarkMode } = useDarkMode();
+
+	const steps = [
+		{
+			target: '.togglePom',
+			content: (
+				<div className="flex items-center gap-4 text-base sm:text-lg lg:text-xl p-4 sm:p-6">
+					<FontAwesomeIcon icon={faClock} className="text-lg sm:text-2xl" />
+					<p>
+						Toggle this switch to enable or disable the Pomodoro timer during your study
+						sessions.
+					</p>
+				</div>
+			),
+			placement: 'bottom',
+			disableBeacon: true,
+		},
+		{
+			target: '.time',
+			content: (
+				<div className="text-sm sm:text-base flex flex-col gap-3 p-4 sm:p-6">
+					<div className="flex items-center gap-2">
+						<FontAwesomeIcon icon={faClock} className="text-base sm:text-xl" />
+						<p>Adjust your study and break durations here. Remember, balance is key!</p>
+					</div>
+				</div>
+			),
+			placement: 'top',
+			disableBeacon: true,
+		},
+		{
+			target: '.edit',
+			content: (
+				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+					<FontAwesomeIcon icon={faClock} className="text-base sm:text-2xl" />
+					<p>You can also click this button to edit the generated summary note contents</p>
+				</div>
+			),
+			placement: 'right',
+			disableBeacon: true,
+		},
+	];
+
+	const handleJoyrideCallback = (data) => {
+		const { action, status, type } = data;
+
+		if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+			setStepIndex((prev) => prev + (action === ACTIONS.PREV ? -1 : 1));
+		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+			setRun(false);
+			if (status === STATUS.SKIPPED) {
+				localStorage.setItem('hasSeenTour', 'skipped');
+			}
+		}
+	};
+
+	const handleResetTour = () => {
+		setStepIndex(0);
+		setRun(true);
+		localStorage.removeItem('hasSeenTour');
+	};
+
 	useEffect(() => {
 		dispatch(fetchUserInfo());
 		dispatch(fetchPomodoroSettings());
 	}, [dispatch]);
 
-	const handleSettingChange = (setting, value) => {
-		if (setting === 'showTimer') {
-			dispatch(setPendingSetting({ [setting]: value }));
-		} else {
-			const numValue = value === '' ? '' : parseInt(value, 10);
-			if (numValue === '' || (numValue >= 1 && Number.isInteger(numValue))) {
-				dispatch(setPendingSetting({ [setting]: numValue }));
-			}
-		}
-	};
-
-	const handleSidebarToggle = (isExpanded) => {
-		setSidebarExpanded(isExpanded);
-	};
-
-	const handleSave = async () => {
+	const saveSettings = async (newSettings) => {
 		const settingsToSave = {
-			study_time: pendingSettings.studyTime,
-			short_break: pendingSettings.shortBreak,
-			long_break: pendingSettings.longBreak,
-			show_timer: pendingSettings.showTimer,
+			study_time: newSettings.studyTime,
+			short_break: newSettings.shortBreak,
+			long_break: newSettings.longBreak,
+			show_timer: newSettings.showTimer,
 			user: userInfo.id,
 		};
 
@@ -54,17 +112,89 @@ export default function Pomodoro() {
 		}
 	};
 
+	const handleSettingChange = async (setting, value) => {
+		let newValue;
+		if (setting === 'showTimer') {
+			newValue = value;
+		} else {
+			newValue = value === '' ? '' : parseInt(value, 10);
+			if (!(newValue === '' || (newValue >= 1 && Number.isInteger(newValue)))) {
+				return;
+			}
+		}
+
+		const newSettings = {
+			...pendingSettings,
+			[setting]: newValue,
+		};
+
+		dispatch(setPendingSetting({ [setting]: newValue }));
+
+		// Only auto-save if the value is valid
+		if (setting === 'showTimer' || (newValue !== '' && newValue >= 1)) {
+			await saveSettings(newSettings);
+		}
+	};
+
+	const handleSidebarToggle = (isExpanded) => {
+		setSidebarExpanded(isExpanded);
+	};
+
 	if (error) {
 		return <div>Error: {error}</div>;
 	}
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-secondary dark:bg-dark w-full">
+			<Joyride
+				callback={handleJoyrideCallback}
+				continuous
+				hideCloseButton
+				run={run}
+				scrollToFirstStep
+				showProgress
+				showSkipButton
+				stepIndex={stepIndex}
+				steps={steps}
+				disableScrolling={true}
+				locale={{
+					back: 'Previous',
+					last: 'Finish',
+					next: 'Next',
+					skip: 'Skip',
+				}}
+				styles={{
+					options: {
+						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
+						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
+						overlayColor: 'rgba(0, 0, 0, 0.6)',
+						primaryColor: '#63A7FF',
+						textColor: isDarkMode ? '#fff' : '#333333',
+						zIndex: 1000,
+					},
+					tooltipContainer: {
+						fontFamily: '"Poppins", sans-serif',
+						fontSize: '0.8rem',
+						textAlign: 'center',
+						padding: '8px 12px',
+					},
+					buttonBack: {
+						color: isDarkMode ? '#C0C0C0' : '#213660',
+					},
+				}}
+			/>
 			<Sidebar onToggle={handleSidebarToggle} />
 			<main
 				className={`transition-all duration-300 flex-grow p-6 lg:p-10 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
+				<button
+					onClick={handleResetTour}
+					className="fixed bottom-4 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+					title="Reset Tour">
+					<FontAwesomeIcon icon={faRoute} />
+					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
+				</button>
 				{/* Banner Section */}
 				<div className="relative bg-gradient-to-r from-blue-500 to-review rounded-xl p-12 shadow-lg mb-12 animate-gradientMove">
 					<h3 className="sm:text-3xl md:text-3xl lg:text-5xl font-extrabold text-white drop-shadow-lg mb-2 animate-slideIn">
@@ -79,8 +209,32 @@ export default function Pomodoro() {
 					/>
 				</div>
 
+				{/* Toggle Switch for Show Timer */}
+				<div className="mb-8 ">
+					<label className="flex items-center ">
+						<span className="text-lg text-gray-700 dark:text-gray-300 font-pmedium">
+							Enable Pomodoro
+						</span>
+						<div className="ml-4 relative togglePom">
+							<input
+								type="checkbox"
+								className="sr-only"
+								checked={pendingSettings.showTimer}
+								onChange={(e) => handleSettingChange('showTimer', e.target.checked)}
+							/>
+							<div className="block bg-secondary dark:bg-dark border w-14 h-8 rounded-full shadow-inner"></div>
+							<div
+								className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform ${
+									pendingSettings.showTimer
+										? 'transform translate-x-6 bg-primary dark:bg-gray-400'
+										: 'bg-slate-300 dark:bg-naeg'
+								}`}></div>
+						</div>
+					</label>
+				</div>
+
 				{/* Time Settings */}
-				<div className="mb-8">
+				<div className="mb-8 time">
 					<p className="text-lg mb-4 text-gray-700 dark:text-gray-300 font-pregular">
 						Time (minutes)
 					</p>
@@ -106,37 +260,6 @@ export default function Pomodoro() {
 						))}
 					</div>
 				</div>
-
-				{/* Toggle Switch for Show Timer */}
-				<div className="mb-8">
-					<label className="flex items-center">
-						<span className="text-lg text-gray-700 dark:text-gray-300 font-pmedium">
-							Enable Pomodoro
-						</span>
-						<div className="ml-4 relative">
-							<input
-								type="checkbox"
-								className="sr-only"
-								checked={pendingSettings.showTimer}
-								onChange={(e) => handleSettingChange('showTimer', e.target.checked)}
-							/>
-							<div className="block bg-secondary dark:bg-dark border w-14 h-8 rounded-full shadow-inner"></div>
-							<div
-								className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform ${
-									pendingSettings.showTimer
-										? 'transform translate-x-6 bg-primary dark:bg-gray-400'
-										: 'bg-slate-300 dark:bg-naeg'
-								}`}></div>
-						</div>
-					</label>
-				</div>
-
-				{/* Save Button */}
-				<button
-					onClick={handleSave}
-					className={`w-full md:w-auto px-6 py-3 rounded-lg text-white dark:text-dark font-pmedium bg-highlights dark:bg-secondary`}>
-					Save
-				</button>
 
 				{/* Pomodoro Information Section */}
 				<section className="mt-10">

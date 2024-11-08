@@ -101,7 +101,7 @@ export default function QuizHistory() {
 				{/* Header section */}
 				<div className="flex flex-col lg:pl-9 p-4 sm:flex-row justify-between items-start sm:items-center mb-6 space-y-2 sm:space-y-0">
 					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-highlights dark:text-secondary">
-						Quiz History
+						Quizzes
 					</h1>
 					<div className="relative w-full sm:w-auto">
 						<select
@@ -126,10 +126,10 @@ export default function QuizHistory() {
 
 				{/* Main content wrapper with proper spacing and layout */}
 				<div className="flex flex-col min-h-[calc(100vh-200px)] lg:pl-9 relative">
-					{/* Quiz container with bottom padding for pagination */}
+					
 					<div className={`${slideIn ? 'slide-in' : 'slide-out'} flex-grow px-4`}>
 						{loading ? (
-							// Show loading skeletons while loading
+						
 							<div className="space-y-4">
 								{[...Array(4)].map((_, i) => (
 									<div
@@ -151,7 +151,7 @@ export default function QuizHistory() {
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleQuizClick(quiz.note)}>
 										<div className="flex justify-between items-center mb-2">
-											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">{quiz.notetitle} Quiz</h2>
+											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">{quiz.notetitle.replaceAll('*', '')} Quiz</h2>
 										</div>
 										<p className="text-xs text-review">
 											Score: {quiz.TestScore} / {quiz.TestTotalScore}

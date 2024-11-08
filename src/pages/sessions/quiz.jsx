@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import QuizQuestionCard from '../../components/quizQuestionCard';
 import Button from '../../components/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faFlag, faLightbulb, faTimes, faRoute } from '@fortawesome/free-solid-svg-icons';
 import {
 	fetchQuiz,
 	fetchQuizChoices,
@@ -15,6 +15,8 @@ import Modal from '../../components/Modals/Modal';
 import { useUserStats } from '../../features/badge/userStatsContext';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 import CircularProgress from '@mui/material/CircularProgress';
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 
 const Quiz = () => {
 	const navigate = useNavigate();
@@ -33,6 +35,69 @@ const Quiz = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const progressColor = 'white';
 	const darkProgressColor = '#4B5563';
+
+	const { isDarkMode } = useDarkMode();
+
+	const [run, setRun] = useState(false);
+	const [stepIndex, setStepIndex] = useState(0);
+
+	const steps = [
+		{
+			target: '.sidebar',
+			content: (
+				<div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm p-2 sm:p-4">
+					<FontAwesomeIcon icon={faBars} className="text-xl sm:text-2xl" />
+					<p>
+						<strong className="text-xs sm:text-sm">Navigator:</strong> Access all quiz
+						questions easily by selecting them here. Tap any number to jump directly to a
+						question.
+					</p>
+				</div>
+			),
+			placement: 'right',
+			disableBeacon: true,
+		},
+		{
+			target: '.quiz',
+			content: (
+				<div className="text-xs sm:text-sm flex flex-col gap-2 p-2 sm:p-4">
+					<div className="flex items-center gap-2">
+						<FontAwesomeIcon icon={faLightbulb} className="text-sm sm:text-xl mb-2" />
+						<p>
+							Read the question at the top and tap any option to select your answer. Use the
+							flag icon{' '}
+							<span>
+								<FontAwesomeIcon icon={faFlag} className="text-sm sm:text-base" />
+							</span>{' '}
+							in the top-right to mark questions for review.
+						</p>
+					</div>
+				</div>
+			),
+			placement: 'left',
+			disableBeacon: true,
+			disableScrolling: false,
+		},
+	];
+
+	const handleJoyrideCallback = (data) => {
+		const { action, status, type } = data;
+
+		if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+			setStepIndex((prev) => prev + (action === ACTIONS.PREV ? -1 : 1));
+		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+			setRun(false);
+			if (status === STATUS.SKIPPED) {
+				localStorage.setItem('hasSeenTour', 'skipped');
+			}
+		}
+	};
+
+	const handleResetTour = () => {
+		setStepIndex(0);
+		setRun(true);
+		localStorage.removeItem('hasSeenTour');
+	};
 
 	const shuffleArray = (array) => {
 		return array
@@ -212,10 +277,54 @@ const Quiz = () => {
 
 	return (
 		<div className="relative flex h-screen bg-secondary dark:bg-dark">
+			<Joyride
+				callback={handleJoyrideCallback}
+				continuous
+				hideCloseButton
+				run={run}
+				scrollToFirstStep
+				showProgress
+				showSkipButton
+				stepIndex={stepIndex}
+				steps={steps}
+				disableScrolling={true}
+				locale={{
+					back: 'Previous',
+					last: 'Finish',
+					next: 'Next',
+					skip: 'Skip',
+				}}
+				styles={{
+					options: {
+						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
+						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
+						overlayColor: 'rgba(0, 0, 0, 0.6)',
+						primaryColor: '#63A7FF',
+						textColor: isDarkMode ? '#fff' : '#333333',
+						zIndex: 1000,
+					},
+					tooltipContainer: {
+						fontFamily: '"Poppins", sans-serif',
+						fontSize: '0.8rem',
+						textAlign: 'center',
+						padding: '8px 12px',
+					},
+					buttonBack: {
+						color: isDarkMode ? '#C0C0C0' : '#213660',
+					},
+				}}
+			/>
+			<button
+				onClick={handleResetTour}
+				className="fixed bottom-4 right-4 flex items-center z-50 space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+				title="Reset Tour">
+				<FontAwesomeIcon icon={faRoute} />
+				<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
+			</button>
 			{/* Sidebar */}
 			<div
-				className={`fixed inset-y-0 left-0 z-30 w-64 p-4 py-16 bg-white dark:bg-darken transition-transform duration-300 ease-in-out transform ${
-					isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+				className={`fixed sidebar inset-y-0 left-0 z-30 w-64 p-4 py-16 bg-white dark:bg-darken transition-transform duration-300 ease-in-out transform ${
+					isSidebarOpen ? 'translate-x-0  ' : '-translate-x-full'
 				}`}
 				style={{
 					maxWidth: '250px',
@@ -238,7 +347,7 @@ const Quiz = () => {
 					{questions.map((quizItem, index) => (
 						<div
 							key={quizItem.id}
-							className={`w-12 h-12 flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer ${
+							className={`w-12 h-12  flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer ${
 								flags[index]
 									? 'bg-yellow-300 text-white'
 									: answers[index] !== null
@@ -296,7 +405,7 @@ const Quiz = () => {
 				)}
 
 				{questions.map((quizItem, index) => (
-					<div key={quizItem.id} id={`question-${index}`}>
+					<div key={quizItem.id} className="quiz" id={`question-${index}`}>
 						<QuizQuestionCard
 							questionNumber={index + 1}
 							question={quizItem.TestQuestion}

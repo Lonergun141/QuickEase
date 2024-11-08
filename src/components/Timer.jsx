@@ -28,6 +28,8 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	const quoteIntervalRef = useRef(null);
 	const lastQuoteChangeRef = useRef(Date.now());
 	const sound = new Audio(alarm);
+	const audioContextRef = useRef(null);
+	const audioBufferRef = useRef(null);
 
 	const navigate = useNavigate();
 
@@ -44,6 +46,51 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	}, []);
 
 	useEffect(() => {
+		const initAudio = async () => {
+			// Create AudioContext
+			audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+
+			try {
+				// Fetch and decode audio file
+				const response = await fetch(alarm);
+				const arrayBuffer = await response.arrayBuffer();
+				const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+				audioBufferRef.current = audioBuffer;
+			} catch (error) {
+				console.error('Failed to load audio:', error);
+			}
+		};
+
+		initAudio();
+
+		return () => {
+			if (audioContextRef.current?.state !== 'closed') {
+				audioContextRef.current?.close();
+			}
+		};
+	}, []);
+
+	// Play sound function using Web Audio API
+	const playSound = useCallback(() => {
+		if (audioContextRef.current && audioBufferRef.current) {
+			try {
+				// Resume AudioContext if it's suspended
+				if (audioContextRef.current.state === 'suspended') {
+					audioContextRef.current.resume();
+				}
+
+				// Create new buffer source for each play
+				const source = audioContextRef.current.createBufferSource();
+				source.buffer = audioBufferRef.current;
+				source.connect(audioContextRef.current.destination);
+				source.start(0);
+			} catch (error) {
+				console.error('Error playing sound:', error);
+			}
+		}
+	}, []);
+
+	useEffect(() => {
 		changeQuote();
 		quoteIntervalRef.current = setInterval(changeQuote, 8000);
 
@@ -56,19 +103,17 @@ const Timer = ({ isCollapsed, isMobile }) => {
 
 	useEffect(() => {
 		if (currentTime === 1) {
-			sound.play().catch((error) => {
-				console.error('Audio play failed:', error);
-			});
+			playSound();
 		}
 	}, [currentTime]);
 
 	const handleStartPause = () => {
 		if (isRunning) {
 			pauseTimer();
-			sound.play();
+			playSound();
 		} else {
 			startTimer();
-			sound.play();
+			playSound();
 		}
 	};
 

@@ -11,6 +11,7 @@ import {
 	faTimes,
 	faPlus,
 	faArrowLeft,
+	faRoute,
 } from '@fortawesome/free-solid-svg-icons';
 import {
 	fetchNote,
@@ -32,8 +33,9 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import FlashcardLoadingScreen from '../../components/Loaders/flashLoader';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 
-// For math formulas formatting
 const renderMath = (math, displayMode = false) => {
 	try {
 		return katex.renderToString(math, {
@@ -62,7 +64,7 @@ const renderContent = (content) => {
 							...domNode.attribs,
 							style: { marginLeft: '1.5rem', marginBottom: '1rem' },
 						},
-						domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+						domNode.children && domToReact(domNode.children, parseOptions)
 					);
 				}
 				if (domNode.name === 'li') {
@@ -72,7 +74,7 @@ const renderContent = (content) => {
 							...domNode.attribs,
 							style: { marginBottom: '0.5rem' },
 						},
-						domNode.children && domToReact(domNode.children, parseOptions) // Use domToReact
+						domNode.children && domToReact(domNode.children, parseOptions)
 					);
 				}
 			}
@@ -113,7 +115,6 @@ const renderContent = (content) => {
 		lastIndex = regex.lastIndex;
 	}
 
-	// Add any remaining text after the last math expression
 	if (lastIndex < content.length) {
 		parts.push(parse(content.slice(lastIndex), parseOptions));
 	}
@@ -139,9 +140,71 @@ export default function Notes() {
 	const [errorMessage, setErrorMessage] = useState('');
 	const { refreshUserStats } = useUserStats();
 
+	const { isDarkMode } = useDarkMode();
+
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const { userInfo } = useSelector((state) => state.auth);
+
+	const [run, setRun] = useState(false);
+	const [stepIndex, setStepIndex] = useState(0);
+
+	const steps = [
+		{
+			target: '.gflash',
+			content: (
+				<div className="flex items-center gap-4 text-base sm:text-lg lg:text-xl p-4 sm:p-6">
+					<FontAwesomeIcon icon={faClone} className="text-lg sm:text-2xl" />
+					<p>Click this button to create flashcards out of the summary notes</p>
+				</div>
+			),
+			placement: 'bottom',
+			disableBeacon: true,
+		},
+		{
+			target: '.quiz',
+			content: (
+				<div className="text-sm sm:text-base flex flex-col gap-3 p-4 sm:p-6">
+					<div className="flex items-center gap-2">
+						<FontAwesomeIcon icon={faLightbulb} className="text-base sm:text-xl" />
+						<p>Click this button to create quiz out of the summary notes</p>
+					</div>
+				</div>
+			),
+			placement: 'right',
+			disableBeacon: true,
+		},
+		{
+			target: '.edit',
+			content: (
+				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+					<FontAwesomeIcon icon={faPen} className="text-base sm:text-2xl" />
+					<p>You can also click this button to edit the generated summary note contents</p>
+				</div>
+			),
+			placement: 'right',
+			disableBeacon: true,
+		},
+	];
+
+	const handleJoyrideCallback = (data) => {
+		const { action, status, type } = data;
+
+		if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+			setStepIndex((prev) => prev + (action === ACTIONS.PREV ? -1 : 1));
+		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+			setRun(false);
+			if (status === STATUS.SKIPPED) {
+				localStorage.setItem('hasSeenTour', 'skipped');
+			}
+		}
+	};
+
+	const handleResetTour = () => {
+		setStepIndex(0);
+		setRun(true);
+		localStorage.removeItem('hasSeenTour');
+	};
 
 	useEffect(() => {
 		const getNoteData = async () => {
@@ -322,11 +385,57 @@ export default function Notes() {
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-white dark:bg-dark w-full">
+			<Joyride
+				callback={handleJoyrideCallback}
+				continuous
+				hideCloseButton
+				run={run}
+				scrollToFirstStep
+				showProgress
+				showSkipButton
+				stepIndex={stepIndex}
+				steps={steps}
+				disableScrolling={true}
+				locale={{
+					back: 'Previous',
+					last: 'Finish',
+					next: 'Next',
+					skip: 'Skip',
+				}}
+				styles={{
+					options: {
+						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
+						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
+						overlayColor: 'rgba(0, 0, 0, 0.6)',
+						primaryColor: '#63A7FF',
+						textColor: isDarkMode ? '#fff' : '#333333',
+						zIndex: 1000,
+					},
+					tooltipContainer: {
+						fontFamily: '"Poppins", sans-serif',
+						fontSize: '0.8rem',
+						textAlign: 'center',
+						padding: '8px 12px',
+					},
+					buttonBack: {
+						color: isDarkMode ? '#C0C0C0' : '#213660',
+					},
+				}}
+			/>
+
 			<Sidebar onToggle={handleSidebarToggle} />
 			<main
 				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
+				<button
+					onClick={handleResetTour}
+					className="fixed bottom-4 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+					title="Reset Tour">
+					<FontAwesomeIcon icon={faRoute} />
+					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
+				</button>
+
 				<section className="flex items-center mb-6 justify-between">
 					<button
 						onClick={() => navigate('/myNotes')}
@@ -345,7 +454,7 @@ export default function Notes() {
 					</div>
 
 					{!isEditing ? (
-						<div className="flex items-center xs:mr-2 sm:mr-5 md:mr-6 mr-4">
+						<div className="flex items-center xs:mr-2 sm:mr-5 md:mr-6 mr-4 edit">
 							<button
 								onClick={handleEdit}
 								title="Edit"
@@ -396,7 +505,7 @@ export default function Notes() {
 				<section className="mt-8">
 					<h2 className="text-xl font-pbold mb-4 dark:text-secondary">More Study Options</h2>
 					<div className="flex items-center md:flex-row md:justify-start md:space-x-6">
-						<div className="flex flex-col items-center mr-8">
+						<div className="flex flex-col items-center mr-8 gflash">
 							<button
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
                   ${
@@ -412,7 +521,8 @@ export default function Notes() {
 								{flashcardsExist ? 'Open Flashcards' : 'Generate Flashcards'}
 							</span>
 						</div>
-						<div className="flex flex-col items-center">
+
+						<div className="flex flex-col items-center quiz">
 							<button
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
                   ${quizExists ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'}`}
@@ -453,7 +563,7 @@ export default function Notes() {
 						) : (
 							<>
 								<h1 className="text-xl text-dark xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
-									{note.notetitle || (
+									{note.notetitle.replace(/["*]/g, '') || (
 										<Skeleton height={20} className="dark:bg-darkS rounded-full" />
 									)}
 								</h1>
@@ -480,21 +590,44 @@ export default function Notes() {
 					isOpen={isModalOpen}
 					onClose={() => setIsModalOpen(false)}
 					title={`Generate ${modalAction === 'flashcards' ? 'Flashcards' : 'Quiz'}`}>
-					<div className="space-y-4">
-						<p className="text-gray-600 dark:text-gray-300">
-							Are you sure you want to generate{' '}
-							{modalAction === 'flashcards' ? 'flashcards' : 'a quiz'} from this summary?
-							This action cannot be undone.
+					<div className="space-y-6 p-6  dark:bg-darken rounded-lg">
+						{/* Message Content */}
+						<p className="text-gray-700 dark:text-gray-300 text-md leading-relaxed font-pmedium">
+							Are you sure you want to create{' '}
+							<strong className="text-primary dark:text-primary-light font-pbold">
+								{modalAction === 'flashcards' ? 'flashcards' : 'a quiz'}
+							</strong>{' '}
+							from this summary?
+							{modalAction === 'flashcards'
+								? 'Flashcards will be generated based on the key points identified in the summary'
+								: 'A quiz will be generated based on the main concepts, and this action cannot be undone'}
 						</p>
-						<div className="flex justify-end space-x-4">
+
+						{/* Tips Section */}
+						<div className="rounded-md text-primary text-xs font-pregular">
+							<span className="font-pmedium">Tip:</span>{' '}
+							{modalAction === 'flashcards'
+								? 'Flashcards work best when the summary includes meaningful terms and definitions to aid learning and recall.'
+								: 'Quizzes are a great way to test your understanding of the summary content.'}
+						</div>
+
+						<div className="rounded-md text-darkS text-xs dark:text-naeg font-pregular">
+							<span className="font-pmedium">Note:</span>{' '}
+							{modalAction === 'flashcards'
+								? 'Once generated, you can edit individual flashcards to fine-tune the content.'
+								: 'Once generated, you can retake the quiz multipe times but cannot edit the test questions.'}
+						</div>
+
+						{/* Action Buttons */}
+						<div className="flex justify-end space-x-4 mt-6">
 							<button
 								onClick={() => setIsModalOpen(false)}
-								className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors">
+								className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-pmedium hover:bg-gray-300 transition duration-200">
 								Cancel
 							</button>
 							<button
 								onClick={handleModalConfirm}
-								className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
+								className="px-5 py-2 bg-primary text-white font-pmedium rounded-lg shadow-md hover:bg-primary-dark transition duration-200">
 								Generate
 							</button>
 						</div>

@@ -14,7 +14,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 export default function MyNotes() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
 	const [notes, setNotes] = useState([]);
-	const [loading, setLoading] = useState(true); // Added loading state
+	const [loading, setLoading] = useState(true);
 	const [showModal, setShowModal] = useState(false);
 	const [noteToDelete, setNoteToDelete] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -35,14 +35,14 @@ export default function MyNotes() {
 
 	const fetchNotes = async () => {
 		try {
-			setLoading(true); // Set loading to true when fetching starts
+			setLoading(true);
 			const fetchedNotes = await fetchAllNotes();
 			const sortedNotes = sortNotes(fetchedNotes, sortOption);
 			setNotes(sortedNotes);
 		} catch (error) {
 			console.error('Error fetching notes:', error);
 		} finally {
-			setLoading(false); // Set loading to false when fetching ends
+			setLoading(false);
 		}
 	};
 
@@ -112,7 +112,9 @@ export default function MyNotes() {
 				}`}>
 				{/* Header section */}
 				<div className="flex flex-col lg:pl-9 p-4 sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-highlights dark:text-secondary">Notes</h1>
+					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-highlights dark:text-secondary">
+						Summary Notes
+					</h1>
 					<div className="relative w-full sm:w-auto">
 						<select
 							value={sortOption}
@@ -145,11 +147,24 @@ export default function MyNotes() {
 										key={i}
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 relative transform transition-all duration-300">
 										<div className="flex justify-between items-center mb-2 ">
-											<Skeleton width={220} height={10} className="dark:bg-darkS" /> {/* Title */}
-											<Skeleton circle={true} width={5} height={4} className="rounded-full" /> {/* Icon */}
+											<Skeleton width={220} height={10} className="dark:bg-darkS" />{' '}
+											{/* Title */}
+											<Skeleton
+												circle={true}
+												width={5}
+												height={4}
+												className="rounded-full"
+											/>{' '}
+											{/* Icon */}
 										</div>
 										{/* Paragraph */}
-										<Skeleton width={100} count={2} height={6} className=" dark:bg-darkS" /> {/* Date */}
+										<Skeleton
+											width={100}
+											count={2}
+											height={6}
+											className=" dark:bg-darkS"
+										/>{' '}
+										{/* Date */}
 									</div>
 								))}
 							</div>
@@ -162,7 +177,7 @@ export default function MyNotes() {
 										onClick={() => handleNoteClick(note.id)}>
 										<div className="flex justify-between items-center mb-2">
 											<h3 className="sm:text-sm md:text-base lg:text-md xl:text-xl font-pbold text-highlights dark:text-secondary">
-												{note.notetitle}
+												{note.notetitle.replace(/["*]/g, '')}
 											</h3>
 
 											<button
@@ -171,17 +186,24 @@ export default function MyNotes() {
 													e.stopPropagation();
 													openDeleteModal(note);
 												}}>
-												<FontAwesomeIcon icon={faEllipsisH} className="text-xl text-highlights dark:text-secondary" />
+												<FontAwesomeIcon
+													icon={faEllipsisH}
+													className="text-xl text-highlights dark:text-secondary"
+												/>
 											</button>
 										</div>
-										<p className="text-xs text-gray-400">Date Created: {new Date(note.notedatecreated).toLocaleDateString()}</p>
+										<p className="text-xs text-gray-400">
+											Date Created: {new Date(note.notedatecreated).toLocaleDateString()}
+										</p>
 									</div>
 								))}
 							</div>
 						) : (
 							<div className="flex flex-col items-center justify-center h-full text-center mt-8">
 								<img src={SVG} alt="No notes available" className="w-64 h-64" />
-								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">No notes created yet!</h1>
+								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">
+									No notes created yet!
+								</h1>
 								<button
 									onClick={() => navigate('/home')}
 									className="mt-4 px-6 py-2 bg-highlights dark:bg-secondary text-white dark:text-dark rounded-full font-semibold hover:bg-opacity-90 transition-all">
@@ -194,7 +216,11 @@ export default function MyNotes() {
 					{/* Pagination */}
 					{notes.length > notesPerPage && (
 						<div className="mt-4 mb-4">
-							<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={handlePageChange}
+							/>
 						</div>
 					)}
 				</div>

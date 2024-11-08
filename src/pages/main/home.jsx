@@ -313,6 +313,12 @@ export default function Home() {
 				showSkipButton
 				stepIndex={stepIndex}
 				steps={steps}
+				locale={{
+					back: 'Previous',
+					last: 'Finish',
+					next: 'Next',
+					skip: 'Skip',
+				}}
 				styles={{
 					options: {
 						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
@@ -389,7 +395,7 @@ export default function Home() {
 								<div className="w-full">
 									<textarea
 										className="text-area w-full h-64 p-2 border rounded resize-none dark:bg-darken dark:text-secondary"
-										placeholder="Input your text here"
+										placeholder="Paste or type your text here to generate a summary note"
 										value={inputText}
 										onChange={handleTextChange}
 									/>
@@ -443,8 +449,9 @@ export default function Home() {
 													: 'pdf, doc, docx, ppt, pptx'}
 											</p>
 											<p className="text-xs text-gray-400 mb-4">
-												Make sure your document contains at least 200 words, but no more
-												than 10,000 characters and not more than 10MB of file size
+												Ensure your image/s approximately contains 200 words or more,
+												but no more than 10,000 characters, and the file size should not
+												exceed 10MB.
 											</p>
 											<div className="flex justify-center">
 												<button
@@ -535,7 +542,7 @@ export default function Home() {
 					</div>
 				</div>
 				<h2 className="text-2xl font-pbold mb-4 mt-12 text-primary dark:text-secondary">
-					How to Upload Your Materials
+				How to Generate Summary Notes
 				</h2>
 				<Instructions />
 				{loading && <NotesLoadingScreen />}

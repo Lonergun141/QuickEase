@@ -82,9 +82,9 @@ const Sidebar = ({ onToggle }) => {
 
 	const menuItems = [
 		{ icon: faCompass, text: 'Explore', path: '/Home' },
-		{ icon: faStickyNote, text: 'My notes', path: '/MyNotes' },
+		{ icon: faStickyNote, text: 'Summary Notes', path: '/MyNotes' },
 		{ icon: faClone, text: 'Flashcards', path: '/FlashCardhistory' },
-		{ icon: faLightbulb, text: 'Quiz history', path: '/QuizHistory' },
+		{ icon: faLightbulb, text: 'Quizzes', path: '/QuizHistory' },
 		{ icon: faClock, text: 'Pomodoro', path: '/PomodoroSettings' },
 		{ icon: faCog, text: 'Settings', path: '/Settings' },
 		{ icon: faUserCircle, text: 'Profile', path: '/Profile' },

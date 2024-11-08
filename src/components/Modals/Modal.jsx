@@ -11,11 +11,13 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
 	return (
 		<div
-			className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4"
+			className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-110 p-4"
 			onClick={handleOverlayClick}>
 			<div className="bg-white dark:bg-darken rounded-lg shadow-xl w-full max-w-2xl mx-auto overflow-hidden">
 				<header className="bg-secondary dark:bg-darken px-6 py-4 flex justify-between items-center">
-					<h1 className="font-pmedium text-2xl md:text-3xl text-gray-800 dark:text-secondary">{title}</h1>
+					<h1 className="font-pmedium text-2xl md:text-3xl text-gray-800 dark:text-secondary">
+						{title}
+					</h1>
 					<button
 						className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
 						onClick={onClose}
