@@ -58,17 +58,7 @@ export default function Pomodoro() {
 			placement: 'top',
 			disableBeacon: true,
 		},
-		{
-			target: '.edit',
-			content: (
-				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-					<FontAwesomeIcon icon={faClock} className="text-base sm:text-2xl" />
-					<p>You can also click this button to edit the generated summary note contents</p>
-				</div>
-			),
-			placement: 'right',
-			disableBeacon: true,
-		},
+		
 	];
 
 	const handleJoyrideCallback = (data) => {

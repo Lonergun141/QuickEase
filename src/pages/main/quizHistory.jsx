@@ -15,7 +15,7 @@ export default function QuizHistory() {
 	const [sortOption, setSortOption] = useState('dateDesc');
 	const [loading, setLoading] = useState(true);
 	const [slideIn, setSlideIn] = useState(false);
-	const quizzesPerPage = 4;
+	const quizzesPerPage = 3;
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.auth.user);
 
@@ -23,8 +23,6 @@ export default function QuizHistory() {
 		if (user) {
 			fetchQuizzes();
 		}
-
-		// Trigger slide-in animation
 		setTimeout(() => {
 			setSlideIn(true);
 		}, 100);
@@ -150,8 +148,8 @@ export default function QuizHistory() {
 										key={quiz.note}
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleQuizClick(quiz.note)}>
-										<div className="flex justify-between items-center mb-2">
-											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">{quiz.notetitle.replaceAll('*', '')} Quiz</h2>
+										<div className="flex justify-between items-center">
+											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">{quiz.notetitle.replace(/["*]/g, '')} Quiz</h2>
 										</div>
 										<p className="text-xs text-review">
 											Score: {quiz.TestScore} / {quiz.TestTotalScore}

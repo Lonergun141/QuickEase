@@ -4,6 +4,7 @@ import Tesseract, { createWorker, createScheduler } from 'tesseract.js';
 
 const API_BASE_URL = `https://d4ngk.pythonanywhere.com/quickease/api/v1`;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const GOOGLE_VISION_KEY = import.meta.env.VITE_GOOGLE_VISION_API_KEY;
 
 const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
@@ -87,92 +88,115 @@ export const updateNoteTitle = async (id, notetitle) => {
 
 export const generateSummaryFromImages = async (files, navigate, userId) => {
 	try {
-		// Determine worker count based on device capabilities
-		const maxWorkers = 4;
-		const defaultWorkers = 2;
-		const workerCount = navigator.hardwareConcurrency
-			? Math.min(navigator.hardwareConcurrency, maxWorkers)
-			: defaultWorkers;
+		const getTextFromImage = async (imageData) => {
+			try {
+				let base64String;
 
-		// Create a scheduler to manage multiple workers
-		const scheduler = Tesseract.createScheduler();
+				if (imageData instanceof Blob || imageData instanceof File) {
+					// Convert Blob/File to base64
+					base64String = await new Promise((resolve, reject) => {
+						const reader = new FileReader();
+						reader.onloadend = () => {
+							const result = reader.result.replace(/^data:.+;base64,/, '');
+							resolve(result);
+						};
+						reader.onerror = reject;
+						reader.readAsDataURL(imageData);
+					});
+				} else if (typeof imageData === 'string') {
+					base64String = imageData.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+				} else {
+					throw new Error('Unsupported image data type');
+				}
 
-		// Initialize workers and add them to the scheduler
-		const workerPromises = [];
-		for (let i = 0; i < workerCount; i++) {
-			workerPromises.push(
-				(async () => {
-					const worker = await Tesseract.createWorker('eng');
-					scheduler.addWorker(worker);
-				})()
-			);
-		}
-		await Promise.all(workerPromises);
+				const request = {
+					requests: [
+						{
+							image: {
+								content: base64String,
+							},
+							features: [
+								{
+									type: 'TEXT_DETECTION',
+								},
+							],
+						},
+					],
+				};
 
-		// Process files using the scheduler
+				// Make the API call to Google Vision
+				const response = await axios.post(
+					`https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_KEY}`,
+					request,
+					{
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					}
+				);
+
+				const textAnnotations = response.data.responses[0].textAnnotations;
+				const text = textAnnotations ? textAnnotations[0].description : '';
+
+				return text.trim();
+			} catch (error) {
+				console.error('Error processing image with Google Vision API:', error);
+				throw error;
+			}
+		};
+
+		// Process each file
 		const textPromises = files.map(async (file, index) => {
 			if (file.type.startsWith('image/')) {
-				const {
-					data: { text },
-				} = await scheduler.addJob('recognize', file);
-				console.log(`Tesseract result for image ${index + 1}:`, text);
-				// Return the text for this image
-				return text.trim();
+				const text = await getTextFromImage(file);
+				console.log(`Google Vision result for image ${index + 1}:`, text);
+				return text;
 			} else {
 				// Convert the document file to PNG images
 				const pngImages = await convertFileToPng(file);
-				// Process each PNG image with Tesseract
+				// Process each PNG image with Google Vision API
 				const texts = await Promise.all(
 					pngImages.map(async (pngImage, pngIndex) => {
-						const {
-							data: { text },
-						} = await scheduler.addJob('recognize', pngImage);
+						// pngImage is a base64 string
+						const text = await getTextFromImage(pngImage);
 						console.log(
-							`Tesseract result for converted image ${index + 1}.${pngIndex + 1}:`,
+							`Google Vision result for converted image ${index + 1}.${pngIndex + 1}:`,
 							text
 						);
-						// Return the text for this page
-						return text.trim();
+						return text;
 					})
 				);
-				// Log texts from pages of this document
 				console.log(`Texts from document ${file.name}:`, texts);
-				// Join the texts of the pages with '<break>'
 				return texts.join('<break>');
 			}
 		});
 
 		const textContents = await Promise.all(textPromises);
 
-		// Terminate the scheduler and all workers
-		await scheduler.terminate();
-
-		// Log texts before joining
 		console.log('Text contents before joining:', textContents);
 
 		// Add a '<break>' between each file's text
 		const combinedText = textContents.join('<break>');
 
-		// Log the combined text with <break>
 		console.log('Combined text from all images with <break>:', combinedText);
 
 		// Proceed with the rest of your code
 		const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
-		if (wordCount < 100) {
-			console.log('Extracted text is less than 100 words.');
-			navigate('/TranscribeError');
+		if (wordCount < 200) {
+			console.log('Extracted text is less than 200 words.');
+
 			return null;
 		}
 
 		if (combinedText.length === 0) {
 			console.log('No text extracted from images');
-			navigate('/TranscribeError');
+
 			return null;
 		}
 
-		if (combinedText.length === 10000) {
-			console.log('The content of your file contains more than 10000 characters.');
-			navigate('/TranscribeError');
+		if (combinedText.length > 10000) {
+			console.log('The content of your file contains more than 10,000 characters.');
+
 			return null;
 		}
 
@@ -185,7 +209,6 @@ export const generateSummaryFromImages = async (files, navigate, userId) => {
 		return response;
 	} catch (error) {
 		console.error('Error in generateSummaryFromImages:', error);
-		navigate('/TranscribeError');
 		throw new Error(`Failed to generate summary: ${error.message}`);
 	}
 };

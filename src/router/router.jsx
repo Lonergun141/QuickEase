@@ -184,10 +184,6 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/TranscribeError',
-		element: (
-			<ProtectedRoute>
-				<TranscribeError />
-			</ProtectedRoute>
-		),
+		element: <TranscribeError />,
 	},
 ]);
