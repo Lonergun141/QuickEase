@@ -60,6 +60,12 @@
   url('./assets/fonts/Poppins/Poppins-Medium.ttf') format("truetype");
 }
 
+@font-face {
+  font-family: "aceh";
+  src: local("Poppins-Medium"),
+  url('./assets/fonts/Aceh/Aceh-Light.ttf') format("truetype");
+}
+
 /* App.css or your CSS file */
 @keyframes fadeInScale {
   0% {
@@ -84,12 +90,12 @@ body{
 }
 
 h1 {
-  @apply text-4xl font-pBold mb-4 text-gray-900 dark:text-secondary; /* Bigger and bold */
+  @apply text-4xl font-pBold mb-4 text-newTxt dark:text-secondary; /* Bigger and bold */
 }
 
 
 h2 {
-  @apply text-3xl font-pBold mb-4 text-gray-900 dark:text-secondary; /* Bigger and bold */
+  @apply text-3xl font-pBold mb-4 text-newTxt dark:text-secondary; /* Bigger and bold */
 }
 
 ul {
@@ -97,11 +103,11 @@ ul {
 }
 
 ol {
-  @apply list-inside  list-decimal pl-5; /* Ensure ordered lists show numbers */
+  @apply list-inside text-newTxt  list-decimal pl-5; /* Ensure ordered lists show numbers */
 }
 
 ul li, ol li {
-  @apply mb-2 text-gray-800 dark:text-gray-300; /* Spacing and text color for list items */
+  @apply mb-2 text-newTxt dark:text-gray-300; /* Spacing and text color for list items */
 }
 
 

@@ -27,6 +27,7 @@ export default function SignIn() {
 	useEffect(() => {
 		if (isSuccess || user) {
 			navigate('/Home');
+			window.location.reload(); 
 		}
 
 		if (isError) {

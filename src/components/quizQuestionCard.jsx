@@ -10,7 +10,7 @@ const QuizQuestionCard = ({ questionNumber, question, choices, selectedAnswer, o
     <div className="border p-8 rounded-xl max-w-3xl w-full mx-auto bg-white dark:bg-darken my-4 relative">
       <FontAwesomeIcon
         icon={faFlag}
-        className={`absolute top-4 right-4 cursor-pointer ${isFlagged ? 'text-yellow-300' : 'text-gray-400'}`}
+        className={`absolute top-4 right-4 cursor-pointer ${isFlagged ? 'text-review' : 'text-gray-400'}`}
         onClick={onFlag}
       />
 

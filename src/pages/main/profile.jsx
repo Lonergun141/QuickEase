@@ -74,7 +74,7 @@ export default function Profile() {
 					<div className="mt-6 bg-white dark:bg-darken p-6 rounded-lg">
 						<div className="flex items-center mb-4">
 							<FontAwesomeIcon icon={faTrophy} className="text-yellow-500 w-8 h-8 mr-3" />
-							<h3 className="lg:text-xl sm:text-base md:text-md font-bold text-dark dark:text-secondary">
+							<h3 className="lg:text-xl animate-gradientText sm:text-base md:text-md font-pbold text-dark dark:text-secondary">
 								Achievements Earned
 							</h3>
 						</div>
@@ -109,11 +109,11 @@ export default function Profile() {
 							{/* Quiz Evaluation Card */}
 							<div
 								onClick={openModal}
-								className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white cursor-pointer transition-transform hover:scale-105">
+								className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-xl p-6 text-white cursor-pointer transition-transform hover:scale-105 transform hover:shadow-2xl dark:bg-gradient-to-r dark:from-purple-700 dark:to-indigo-800 dark:shadow-2xl">
 								<FontAwesomeIcon icon={faTrophy} className="text-6xl mb-3 animate-bounce" />
 								<div className="text-3xl font-extrabold">{averageScore}%</div>
 								<p className="text-lg mt-1">Quiz Evaluation</p>
-								<div className="w-full h-2 mt-3 bg-gray-300 rounded-full overflow-hidden">
+								<div className="w-full h-2 mt-3 bg-gray-300 rounded-full overflow-hidden dark:bg-gray-700">
 									<div
 										className="h-full bg-yellow-400"
 										style={{ width: `${averageScore}%` }}></div>
@@ -123,7 +123,7 @@ export default function Profile() {
 							{/* Notes Card */}
 							<Link
 								to="/MyNotes"
-								className="relative p-6 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-lg text-white flex flex-col items-center transition hover:shadow-2xl hover:scale-105 transform">
+								className="relative p-6 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-lg text-white flex flex-col items-center transition hover:shadow-2xl hover:scale-105 transform dark:bg-gradient-to-r dark:from-green-600 dark:to-blue-700 dark:shadow-xl">
 								<FontAwesomeIcon icon={faStickyNote} className="text-6xl mb-3" />
 								<div className="text-3xl font-extrabold">{notesCount}</div>
 								<p className="text-lg mt-1">Notes Generated</p>
@@ -132,7 +132,7 @@ export default function Profile() {
 							{/* Flashcards Card */}
 							<Link
 								to="/FlashCardhistory"
-								className="relative p-6 bg-gradient-to-r from-pink-400 to-purple-500 rounded-lg shadow-lg text-white flex flex-col items-center transition hover:shadow-2xl hover:scale-105 transform">
+								className="relative p-6 bg-gradient-to-r from-pink-400 to-purple-500 rounded-lg shadow-lg text-white flex flex-col items-center transition hover:shadow-2xl hover:scale-105 transform dark:bg-gradient-to-r dark:from-pink-600 dark:to-purple-700 dark:shadow-xl">
 								<FontAwesomeIcon icon={faClone} className="text-6xl mb-3" />
 								<div className="text-3xl font-extrabold">{flashcardCount}</div>
 								<p className="text-lg mt-1">Flashcards Created</p>

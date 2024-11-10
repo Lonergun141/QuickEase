@@ -14,7 +14,7 @@ export const BadgeProvider = ({ children }) => {
 	const [shownAchievements, setShownAchievements] = useState(new Set());
 
 	const { userInfo } = useSelector((state) => state.auth);
-	const { flashcardCount, notesCount, averageScore, perfectQuizAchieved, statsLoaded } = useUserStats();
+	const { flashcardCount, notesCount, averageScore, perfectQuizAchieved, statsLoaded, perfectQuizCount } = useUserStats();
 
 	const badgeDefinitions = {
 		NOTE_TAKER: {
@@ -45,6 +45,27 @@ export const BadgeProvider = ({ children }) => {
 			description: 'Achieved a perfect score on a quiz!',
 			condition: (stats) => stats.perfectQuizAchieved === true,
 		},
+		NOTERER: {
+			id: '8f75f97c-ad51-408e-868d-cfe347057e0c',
+			image: img.Badge5,
+			title: 'Noterer',
+			description: 'Generate 5 notes',
+			condition: (stats) => stats.notesCount >= 5
+		},
+		DOUBLE_PERFECT: {
+			id: '94a316ae-e416-47a4-9cc5-9a403d28649a',
+			image: img.Badge6, 
+			title: 'What a Nice',
+			description: 'Achieved two perfect scores on quizzes!',
+			condition: (stats) => stats.perfectQuizCount >= 2,
+		},
+		HMMM: {
+			id: '2846831f-015d-4c45-8721-05a4061abe70',
+			image: img.Badge7, 
+			title: 'Accidental Genius Award',
+			description: 'Achieved three perfect scores on quizzes!',
+			condition: (stats) => stats.perfectQuizCount >= 3,
+		},
 	};
 
 	useEffect(() => {
@@ -57,11 +78,12 @@ export const BadgeProvider = ({ children }) => {
 					flashcardCount,
 					averageScore,
 					perfectQuizAchieved,
+					perfectQuizCount
 				});
 			}
 		};
 		fetchAndCheckAchievements();
-	}, [statsLoaded, notesCount, flashcardCount, averageScore, perfectQuizAchieved]);
+	}, [statsLoaded, notesCount, flashcardCount, averageScore, perfectQuizAchieved, perfectQuizCount]);
 
 	const checkAchievements = async (stats) => {
 		try {

@@ -124,19 +124,25 @@ export default function QuizHistory() {
 
 				{/* Main content wrapper with proper spacing and layout */}
 				<div className="flex flex-col min-h-[calc(100vh-200px)] lg:pl-9 relative">
-					
 					<div className={`${slideIn ? 'slide-in' : 'slide-out'} flex-grow px-4`}>
 						{loading ? (
-						
 							<div className="space-y-4">
 								{[...Array(4)].map((_, i) => (
 									<div
 										key={i}
 										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 relative transform transition-all duration-300">
 										<div className="flex justify-between items-center mb-2">
-											<Skeleton width={190} height={10} className="rounded dark:bg-darkS" />
+											<Skeleton
+												width={190}
+												height={10}
+												className="rounded dark:bg-darkS"
+											/>
 										</div>
-										<Skeleton width={100} height={8} className="rounded mb-2 dark:bg-darkS" />
+										<Skeleton
+											width={100}
+											height={8}
+											className="rounded mb-2 dark:bg-darkS"
+										/>
 										<Skeleton width={150} height={6} className="rounded dark:bg-darkS" />
 									</div>
 								))}
@@ -146,10 +152,12 @@ export default function QuizHistory() {
 								{currentQuizzes.map((quiz) => (
 									<div
 										key={quiz.note}
-										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
+										className="bg-white border border-[#E5E7EB] dark:border-stone-800  dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleQuizClick(quiz.note)}>
 										<div className="flex justify-between items-center">
-											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">{quiz.notetitle.replace(/["*]/g, '')} Quiz</h2>
+											<h2 className="text-lg font-pbold text-highlights dark:text-secondary">
+												{quiz.notetitle.replace(/["*]/g, '')} Quiz
+											</h2>
 										</div>
 										<p className="text-xs text-review">
 											Score: {quiz.TestScore} / {quiz.TestTotalScore}
@@ -167,7 +175,9 @@ export default function QuizHistory() {
 							</div>
 						) : (
 							<div className="flex flex-col items-center justify-center h-full text-center mt-8">
-								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">No quizzes available!</h1>
+								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">
+									No quizzes available!
+								</h1>
 							</div>
 						)}
 					</div>
@@ -175,7 +185,11 @@ export default function QuizHistory() {
 					{/* Pagination container */}
 					{quizzes.length > quizzesPerPage && (
 						<div className="mt-4">
-							<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={handlePageChange}
+							/>
 						</div>
 					)}
 				</div>

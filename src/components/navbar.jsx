@@ -17,12 +17,12 @@ const Navbar = () => {
                 <div className="hidden sm:flex space-x-6 items-center justify-center">
                     <Link
                         to="/SignIn"
-                        className="text-white font-medium hover:text-primary transition duration-200">
+                        className="text-white font-aceh hover:text-primary transition duration-200">
                         SIGN IN
                     </Link>
                     <Link
                         to="/SignUp"
-                        className="text-dark bg-white px-8 py-3 rounded-lg font-medium hover:text-primary transition duration-200">
+                        className="text-dark bg-white px-8 py-3 rounded-lg font-aceh hover:text-primary transition duration-200">
                         JOIN NOW
                     </Link>
                 </div>

@@ -26,8 +26,9 @@ const Results = () => {
 	}, [noteId, score, total]);
 
 	const handleRetake = () => {
+		localStorage.removeItem(`quiz-question-order-${noteId}`);
 		navigate(`/Quiz/${noteId}`);
-	};
+	  };
 
 	const handleClose = () => {
 		navigate(`/Notes/${noteId}`);

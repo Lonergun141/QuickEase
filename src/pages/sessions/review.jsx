@@ -18,14 +18,21 @@ const Review = () => {
 		const fetchReviewData = async () => {
 			try {
 				const data = await fetchQuizReviewData(id);
+				const questionOrder =
+					JSON.parse(localStorage.getItem(`quiz-question-order-${id}`)) || [];
+
+				if (questionOrder.length > 0) {
+					data.questions.sort((a, b) => {
+						return questionOrder.indexOf(a.id) - questionOrder.indexOf(b.id);
+					});
+				}
+
 				setQuizData(data);
 
-				
 				const quizExists = data.questions && data.questions.length > 0;
 				const quizTaken =
 					data.userTest && (data.userTest.TestScore > 0 || data.userTest.TestTotalScore > 0);
 
-			
 				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
 				localStorage.setItem(
 					'noteData',
@@ -220,7 +227,7 @@ const Review = () => {
 									id={`question-${questionIndex}`}
 									className="mb-12 p-8 border rounded-lg bg-white dark:bg-darken shadow-sm">
 									<p className="font-pbold text-xl mb-6 text-highlights dark:text-secondary">
-										{question.TestQuestion}
+										{questionIndex + 1}. {question.TestQuestion}
 									</p>
 
 									<div

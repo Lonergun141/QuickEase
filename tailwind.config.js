@@ -9,7 +9,7 @@ export default {
 				secondary: '#F6F7FB',
 				highlights: '#213660',
 				secondhighlights: '#060321',
-				backgroundColor: '#FFFFFF',
+				backgroundColor: '#F8FAFC',
 				onBoardingbg: '#DEECFA',
 				pomodoro: '#7EC3FA',
 				review: '#EE924F',
@@ -20,12 +20,14 @@ export default {
 				checkText: '#0D5F07',
 				checkbg: '#d4fbd2',
 				darkS: '#424242',
+				newTxt:'#292929'
 			},
 			fontFamily: {
 				inc: ['Regular'],
 				pregular: ['pRegular'],
 				pbold: ['pBold'],
 				pmedium: ['pMedium'],
+				aceh: ['aceh'],
 			},
 			screens: {
 				md: '768px',

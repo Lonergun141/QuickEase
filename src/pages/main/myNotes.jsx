@@ -104,7 +104,7 @@ export default function MyNotes() {
 	const totalPages = Math.ceil(notes.length / notesPerPage);
 
 	return (
-		<div className="flex flex-col lg:flex-row min-h-screen bg-secondary dark:bg-dark w-full">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-backgroundColor dark:bg-dark w-full">
 			<Sidebar onToggle={handleSidebarToggle} />
 			<main
 				className={`transition-all duration-300 flex-grow lg:p-8 mt-16 lg:mt-0 ${
@@ -145,7 +145,7 @@ export default function MyNotes() {
 								{[...Array(4)].map((_, i) => (
 									<div
 										key={i}
-										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 relative transform transition-all duration-300">
+										className="bg-white shadow-lg dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 relative transform transition-all duration-300">
 										<div className="flex justify-between items-center mb-2 ">
 											<Skeleton width={220} height={10} className="dark:bg-darkS" />{' '}
 											{/* Title */}
@@ -173,7 +173,7 @@ export default function MyNotes() {
 								{currentNotes.map((note) => (
 									<div
 										key={note.id}
-										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
+										className="bg-white border border-[#E5E7EB] dark:border-stone-800 dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleNoteClick(note.id)}>
 										<div className="flex justify-between items-center mb-2">
 											<h3 className="sm:text-sm md:text-base lg:text-md xl:text-xl font-pbold text-highlights dark:text-secondary">

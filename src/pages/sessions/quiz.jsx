@@ -30,6 +30,8 @@ const Quiz = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalContent, setModalContent] = useState('');
 	const [modalAction, setModalAction] = useState(null);
+	const [questionOrder, setQuestionOrder] = useState([]);
+
 	const { refreshUserStats } = useUserStats();
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,10 +128,25 @@ const Quiz = () => {
 			try {
 				const savedAnswers = JSON.parse(localStorage.getItem(`quiz-answers-${id}`)) || [];
 				const savedFlags = JSON.parse(localStorage.getItem(`quiz-flags-${id}`)) || [];
+				const savedQuestionOrder =
+					JSON.parse(localStorage.getItem(`quiz-question-order-${id}`)) || [];
 
 				const quizData = await fetchQuiz(id);
 				if (Array.isArray(quizData) && quizData.length > 0) {
-					const shuffledQuestions = shuffleArray(quizData);
+					let shuffledQuestions;
+
+					if (savedAnswers.length > 0 && savedQuestionOrder.length > 0) {
+						// Resuming an ongoing quiz
+						shuffledQuestions = savedQuestionOrder.map((questionId) =>
+							quizData.find((question) => question.id === questionId)
+						);
+					} else {
+						// Starting a new quiz attempt
+						shuffledQuestions = shuffleArray(quizData);
+						const questionOrder = shuffledQuestions.map((q) => q.id);
+						localStorage.setItem(`quiz-question-order-${id}`, JSON.stringify(questionOrder));
+					}
+
 					const questionsWithChoices = await Promise.all(
 						shuffledQuestions.map(async (question) => {
 							let choices = await fetchQuizChoices(question.id);
@@ -229,6 +246,7 @@ const Quiz = () => {
 
 			localStorage.removeItem(`quiz-answers-${id}`);
 			localStorage.removeItem(`quiz-flags-${id}`);
+
 			refreshUserStats();
 			navigate(`/Results/${id}`, {
 				state: { score: calculatedScore, total: questions.length, noteId: id },
@@ -349,7 +367,7 @@ const Quiz = () => {
 							key={quizItem.id}
 							className={`w-12 h-12  flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer ${
 								flags[index]
-									? 'bg-yellow-300 text-white'
+									? 'bg-review text-white'
 									: answers[index] !== null
 									? 'bg-primary text-white dark:bg-darkS'
 									: 'bg-white dark:bg-dark text-gray-900 dark:text-gray-300'

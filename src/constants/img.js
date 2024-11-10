@@ -11,6 +11,9 @@ import Badge1 from '../assets/Badges/badgesImage/badge1.png'
 import Badge2 from '../assets/Badges/badgesImage/badge2.png'
 import Badge3 from '../assets/Badges/badgesImage/badge3.png'
 import Badge4 from '../assets/Badges/badgesImage/badge4.png'
+import Badge5 from '../assets/Badges/badgesImage/badge5.png'
+import Badge6 from '../assets/Badges/badgesImage/badge6.png'
+import Badge7 from '../assets/Badges/badgesImage/badge7.png'
 
-export default {Mascot, ustp, email, sadboi, Pomo, QrCode,Loader, pomoMethod, quick, Badge1, Badge4, Badge2, Badge3,
+export default {Mascot, ustp, email, sadboi, Pomo, QrCode,Loader, pomoMethod, quick, Badge1, Badge4, Badge2, Badge3,Badge5, Badge6, Badge7
 }

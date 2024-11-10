@@ -134,6 +134,7 @@ export default function Home() {
 
 	useEffect(() => {
 		dispatch(fetchUserInfo());
+		refreshUserStats();
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -394,31 +395,33 @@ export default function Home() {
 							{activeTab === 'text' && (
 								<div className="w-full">
 									<textarea
-										className="text-area w-full h-64 p-2 border rounded resize-none dark:bg-darken dark:text-secondary"
+										className="w-full h-64 p-4 border border-zinc-300 dark:border-zinc-800 rounded-md  dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
 										placeholder="Paste or type your text here to generate a summary note"
 										value={inputText}
 										onChange={handleTextChange}
+									
 									/>
 									<div className="mt-2 flex justify-between items-center text-sm">
 										<span
 											className={`${
 												characterCount > 10000 || characterCount < 200
-													? 'text-gray-400'
-													: 'text-gray-500'
+													? 'text-zinc-500'
+													: 'text-zinc-700'
 											}`}>
 											{characterCount}/10000 characters
 										</span>
 										{textError && (
-											<span className="text-red-500 font-pmedium">{textError}</span>
+											<span className="text-red-500 font-medium">{textError}</span>
 										)}
 									</div>
 								</div>
 							)}
+
 							{(activeTab === 'documents' || activeTab === 'images') && (
 								<div
-									className={`file-upload border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 text-center ${
+									className={`file-upload border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-6 text-center ${
 										filesToDisplay.length > 0 ? 'h-64 overflow-y-auto' : ''
-									} ${isDragOver ? 'bg-gray-100 dark:bg-dark' : ''}`}
+									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
 									onDragOver={handleDragOver}
 									onDragEnter={handleDragOver}
 									onDragLeave={handleDragLeave}
@@ -427,9 +430,9 @@ export default function Home() {
 										<>
 											<FontAwesomeIcon
 												icon={faUpload}
-												className="text-3xl md:text-4xl text-gray-400 mb-4 animate-bounce"
+												className="text-3xl text-zinc-500 mb-4 animate-bounce"
 											/>
-											<h2 className="text-lg md:text-xl font-semibold mb-2 dark:text-secondary">
+											<h2 className="text-lg font-psemibold mb-2 dark:text-zinc-300">
 												Drop your files here
 											</h2>
 										</>
@@ -437,18 +440,18 @@ export default function Home() {
 										<>
 											<FontAwesomeIcon
 												icon={faUpload}
-												className="text-3xl md:text-4xl text-gray-400 mb-4"
+												className="text-3xl text-zinc-500 mb-4"
 											/>
-											<h1 className="text-lg md:text-xl font-semibold mb-2 dark:text-secondary">
+											<h1 className="text-lg font-semibold mb-2 dark:text-zinc-300">
 												Upload from your computer or drag files here
 											</h1>
-											<p className="text-xs md:text-sm text-gray-500 mb-4">
+											<p className="text-xs text-zinc-500 mb-4">
 												Supported file types:{' '}
 												{activeTab === 'images'
 													? 'jpg, jpeg, png'
 													: 'pdf, doc, docx, ppt, pptx'}
 											</p>
-											<p className="text-xs text-gray-400 mb-4">
+											<p className="text-xs text-zinc-400 mb-4">
 												Ensure your image/s approximately contains 200 words or more,
 												but no more than 10,000 characters, and the file size should not
 												exceed 10MB.
@@ -456,7 +459,7 @@ export default function Home() {
 											<div className="flex justify-center">
 												<button
 													onClick={triggerFileInput}
-													className="px-4 md:px-6 py-2 bg-primary dark:bg-naeg text-white text-sm md:text-base rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center">
+													className="px-4 py-2 bg-highlights text-white rounded-md hover:bg-blue-700 dark:bg-darkS transition-colors duration-300 flex items-center">
 													<FontAwesomeIcon icon={faUpload} className="mr-2" />
 													Choose Files
 												</button>
@@ -467,13 +470,13 @@ export default function Home() {
 											{filesToDisplay.map((file, index) => (
 												<div
 													key={index}
-													className="flex items-center justify-between bg-white dark:bg-darken p-4 rounded-md hover:border hover:cursor-pointer">
-													<span className="text-sm md:text-base truncate dark:text-secondary">
+													className="flex items-center justify-between bg-white dark:bg-darkS p-4 rounded-md hover:border hover:cursor-pointer border border-zinc-00 dark:border-zinc-800">
+													<span className="text-sm truncate dark:text-zinc-300">
 														{file.name}
 													</span>
 													<button
 														onClick={() => handleFileDelete(index)}
-														className="text-primary dark:text-naeg hover:text-red-700 ml-2">
+														className="text-red-500 hover:text-red-700 dark:text-white dark:hover:text-red-500 ml-2">
 														<FontAwesomeIcon icon={faTimes} />
 													</button>
 												</div>
@@ -482,12 +485,14 @@ export default function Home() {
 									)}
 								</div>
 							)}
+
 							{fileError && (
 								<div className="mt-2 text-red-500 flex items-center text-sm">
 									<FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
 									{fileError}
 								</div>
 							)}
+
 							<input
 								ref={fileInputRef}
 								type="file"
@@ -498,6 +503,7 @@ export default function Home() {
 								onChange={handleFileUpload}
 								className="hidden"
 							/>
+
 							<div className="mt-4 flex justify-end">
 								<Button
 									onClick={handleGenerate}
@@ -519,11 +525,11 @@ export default function Home() {
 									<button
 										key={tab}
 										onClick={() => handleTabChange(tab)}
-										className={`w-full p-4 md:p-6 text-left dark:text-secondary ${
+										className={`w-full p-4 md:p-6 text-left font-medium ${
 											activeTab === tab
-												? 'bg-highlights dark:bg-darkS text-white'
-												: 'bg-white dark:bg-darken'
-										} rounded flex items-center`}>
+												? 'bg-highlights text-secondary dark:bg-darkS'
+												: 'bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-300'
+										} rounded-md dark:border  dark:border-zinc-800 shadow-sm flex items-center transition-colors duration-200`}>
 										<FontAwesomeIcon
 											icon={
 												tab === 'text'
@@ -532,7 +538,7 @@ export default function Home() {
 													? faFileAlt
 													: faImage
 											}
-											className="mr-2"
+											className="mr-2 "
 										/>
 										{tab === 'text' ? 'Input text' : `Upload ${tab}`}
 									</button>
@@ -541,8 +547,8 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<h2 className="text-2xl font-pbold mb-4 mt-12 text-primary dark:text-secondary">
-				How to Generate Summary Notes
+				<h2 className="text-2xl font-pbold mb-4 mt-12 text-newTxt dark:text-secondary">
+					How to Generate Summary Notes
 				</h2>
 				<Instructions />
 				{loading && <NotesLoadingScreen />}

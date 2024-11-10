@@ -183,7 +183,7 @@ export default function FlashCardHistory() {
 								{currentFlashcards.map((flashcard) => (
 									<div
 										key={flashcard.id}
-										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
+										className="bg-white border-[#E5E7EB] dark:border-stone-800 dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
 										onClick={() => handleCardClick(flashcard.id)}>
 										<div className="flex justify-between items-center mb-2">
 											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-lg font-pbold text-highlights dark:text-secondary">{flashcard.title.replace(/["*]/g, '')}</h3>

@@ -38,10 +38,20 @@ export default function SignUp() {
 	const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 	const handleChange = (e) => {
-		setFormData((prev) => ({
-			...prev,
-			[e.target.name]: e.target.value,
-		}));
+		const { name, value } = e.target;
+
+		if (name === 'firstname' || name === 'lastname') {
+			const filteredValue = value.replace(/[^a-zA-Z\s]/g, '');
+			setFormData((prev) => ({
+				...prev,
+				[name]: filteredValue,
+			}));
+		} else {
+			setFormData((prev) => ({
+				...prev,
+				[name]: value,
+			}));
+		}
 	};
 
 	const handleSubmit = (e) => {
@@ -188,7 +198,9 @@ export default function SignUp() {
 					<div>
 						<p className="text-center text-gray-700 mt-6 font-pregular dark:text-naeg">
 							Already have an account?{' '}
-							<span onClick={back} className="text-primary dark:text-secondary cursor-pointer">
+							<span
+								onClick={back}
+								className="text-primary dark:text-secondary cursor-pointer">
 								Sign In Now!
 							</span>
 						</p>

@@ -384,7 +384,7 @@ export default function Notes() {
 	}
 
 	return (
-		<div className="flex flex-col lg:flex-row min-h-screen bg-white dark:bg-dark w-full">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-backgroundColor dark:bg-dark w-full">
 			<Joyride
 				callback={handleJoyrideCallback}
 				continuous
@@ -503,7 +503,7 @@ export default function Notes() {
 				</section>
 
 				<section className="mt-8">
-					<h2 className="text-xl font-pbold mb-4 dark:text-secondary">More Study Options</h2>
+					<h2 className="text-xl font-aceh mb-4 text-newTxt dark:text-secondary">More Study Options</h2>
 					<div className="flex items-center md:flex-row md:justify-start md:space-x-6">
 						<div className="flex flex-col items-center mr-8 gflash">
 							<button
@@ -562,7 +562,7 @@ export default function Notes() {
 							</>
 						) : (
 							<>
-								<h1 className="text-xl text-dark xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
+								<h1 className="text-xl text-newTxt xs:text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-pbold mb-20 dark:text-secondary">
 									{note.notetitle.replace(/["*]/g, '') || (
 										<Skeleton height={20} className="dark:bg-darkS rounded-full" />
 									)}
@@ -622,12 +622,12 @@ export default function Notes() {
 						<div className="flex justify-end space-x-4 mt-6">
 							<button
 								onClick={() => setIsModalOpen(false)}
-								className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-pmedium hover:bg-gray-300 transition duration-200">
+								className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-aceh hover:bg-gray-300 transition duration-200">
 								Cancel
 							</button>
 							<button
 								onClick={handleModalConfirm}
-								className="px-5 py-2 bg-primary text-white font-pmedium rounded-lg shadow-md hover:bg-primary-dark transition duration-200">
+								className="px-5 py-2 bg-primary text-white font-aceh rounded-lg shadow-md hover:bg-primary-dark transition duration-200">
 								Generate
 							</button>
 						</div>
