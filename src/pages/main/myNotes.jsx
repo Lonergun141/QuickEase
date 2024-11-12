@@ -223,7 +223,7 @@ export default function MyNotes() {
 								<button
 									onClick={() => navigate('/home')}
 									className="inline-flex items-center px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
-										text-white font-pmedium transition-all hover:opacity-90">
+										text-white dark:text-dark font-pmedium transition-all hover:opacity-90">
 									Create Your First Note
 								</button>
 							</div>

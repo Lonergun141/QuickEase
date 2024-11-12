@@ -179,11 +179,7 @@ const Sidebar = ({ onToggle }) => {
 						<div className="h-[calc(100%-4rem)] overflow-y-auto">
 							{renderSidebarContent()}
 
-							{activeSettings.showTimer && (
-								<div className="p-2 m-2">
-									<Timer isCollapsed={false} isMobile={true} />
-								</div>
-							)}
+						
 						</div>
 					</div>
 				</>
@@ -223,7 +219,7 @@ const Sidebar = ({ onToggle }) => {
 					<div className="border-t border-zinc-200 dark:border-zinc-800 p-3">
 						<button
 							onClick={handleLogout}
-							className={`flex w-full items-center justify-center gap-x-2 rounded-md bg-highlights/90 px-3 py-2 text-sm font-medium text-white dark:text-dark 
+							className={`flex w-full items-center justify-center gap-x-2 rounded-md bg-highlights px-3 py-4 text-sm font-medium text-white dark:text-dark 
 								hover:bg-highlights dark:bg-secondary/90 dark:hover:bg-secondary transition-colors duration-150`}>
 							<FontAwesomeIcon icon={faSignOutAlt} className="h-4 w-4" />
 							{!isCollapsed && <span>Logout</span>}

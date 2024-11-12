@@ -106,7 +106,7 @@ export default function Profile() {
 						{/* Quiz Card */}
 						<div
 							onClick={openModal}
-							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary/20 dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
+							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
 							<div className="flex items-center justify-between mb-4">
 								<div className="flex items-center gap-4">
 									<div className="p-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary">
@@ -132,7 +132,7 @@ export default function Profile() {
 						{/* Notes Card */}
 						<Link
 							to="/MyNotes"
-							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary/20 dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
+							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
 							<div className="flex items-center gap-4">
 								<div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500">
 									<FontAwesomeIcon icon={faStickyNote} className="text-xl sm:text-2xl" />
@@ -151,7 +151,7 @@ export default function Profile() {
 						{/* Flashcards Card */}
 						<Link
 							to="/FlashCardhistory"
-							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary/20 dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
+							className="group bg-white dark:bg-darken rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 hover:border-primary dark:hover:border-secondary/20 transition-all duration-200 cursor-pointer">
 							<div className="flex items-center gap-4">
 								<div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-500">
 									<FontAwesomeIcon icon={faClone} className="text-xl sm:text-2xl" />

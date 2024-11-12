@@ -591,45 +591,48 @@ export default function Notes() {
 				<Modal
 					isOpen={isModalOpen}
 					onClose={() => setIsModalOpen(false)}
-					title={`Generate ${modalAction === 'flashcards' ? 'Flashcards' : 'Quiz'}`}>
-					<div className="space-y-6 p-6  dark:bg-darken rounded-lg">
+					title={`Generate ${modalAction === 'flashcards' ? 'Flashcards' : 'Quiz'}`}
+					className="max-w-lg mx-auto bg-white dark:bg-darken rounded-xl shadow-lg p-6">
+					<div className="space-y-6">
 						{/* Message Content */}
-						<p className="text-gray-700 dark:text-gray-300 text-md leading-relaxed font-pmedium">
+						<p className="text-zinc-700 dark:text-zinc-300 text-md leading-relaxed font-medium">
 							Are you sure you want to create{' '}
-							<strong className="text-primary dark:text-primary-light font-pbold">
+							<strong className="text-primary dark:text-primary-light font-semibold">
 								{modalAction === 'flashcards' ? 'flashcards' : 'a quiz'}
 							</strong>{' '}
-							from this summary?
-							{modalAction === 'flashcards'
-								? 'Flashcards will be generated based on the key points identified in the summary'
-								: 'A quiz will be generated based on the main concepts, and this action cannot be undone'}
+								from this summary?
+							<span className="block mt-2">
+								{modalAction === 'flashcards'
+									? 'Flashcards will be generated based on the key points identified in the summary.'
+									: 'A quiz will be generated based on the main concepts, and this action cannot be undone.'}
+							</span>
 						</p>
 
 						{/* Tips Section */}
-						<div className="rounded-md text-primary text-xs font-pregular">
-							<span className="font-pmedium">Tip:</span>{' '}
+						<div className="p-4 bg-primary/10 dark:bg-primary-dark/20 rounded-md text-primary text-sm font-regular">
+							<span className="font-medium">Tip:</span>{' '}
 							{modalAction === 'flashcards'
 								? 'Flashcards work best when the summary includes meaningful terms and definitions to aid learning and recall.'
 								: 'Quizzes are a great way to test your understanding of the summary content.'}
 						</div>
 
-						<div className="rounded-md text-darkS text-xs dark:text-naeg font-pregular">
-							<span className="font-pmedium">Note:</span>{' '}
+						<div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-md text-zinc-700 dark:text-zinc-300 text-sm font-regular">
+							<span className="font-medium">Note:</span>{' '}
 							{modalAction === 'flashcards'
 								? 'Once generated, you can edit individual flashcards to fine-tune the content.'
-								: 'Once generated, you can retake the quiz multipe times but cannot edit the test questions.'}
+								: 'Once generated, you can retake the quiz multiple times but cannot edit the test questions.'}
 						</div>
 
 						{/* Action Buttons */}
 						<div className="flex justify-end space-x-4 mt-6">
 							<button
 								onClick={() => setIsModalOpen(false)}
-								className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-aceh hover:bg-gray-300 transition duration-200">
+								className="px-5 py-2 bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-zinc-600 transition duration-200">
 								Cancel
 							</button>
 							<button
 								onClick={handleModalConfirm}
-								className="px-5 py-2 bg-primary text-white font-aceh rounded-lg shadow-md hover:bg-primary-dark transition duration-200">
+								className="px-5 py-2 bg-primary text-white font-medium rounded-lg shadow-md hover:bg-primary-dark transition duration-200">
 								Generate
 							</button>
 						</div>

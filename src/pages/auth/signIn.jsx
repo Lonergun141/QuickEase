@@ -93,121 +93,47 @@ export default function SignIn() {
 	};
 
 	return (
-		<div className="min-h-screen bg-white dark:bg-dark flex">
-			{/* Left Panel - Professional Branding */}
-			<div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-darken">
-				{/* Enhanced Background Elements */}
+		<div className="min-h-screen bg-zinc-50 dark:bg-dark flex">
+			{/* Left Panel - Professional Branding with Dynamic Background */}
+			<div
+				className="hidden lg:flex lg:w-1/2 relative overflow-hidden 
+				bg-zinc-50 dark:bg-dark border-r border-zinc-100 dark:border-zinc-800">
+				{/* Background Elements */}
 				<div className="absolute inset-0">
-					{/* Modern Grid Pattern */}
-					<div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
-					
-					{/* Animated Accent Elements */}
+					{/* Light/Dark Mode Optimized Gradient */}
+					<div
+						className="absolute inset-0 bg-gradient-to-br 
+						from-primary/5 via-zinc-50 to-secondary/5 
+						dark:from-secondary/5 dark:via-dark dark:to-primary/5"
+					/>
+
+					{/* Dynamic Grid Pattern */}
 					<div className="absolute inset-0">
-						<div className="absolute w-[600px] h-[600px] bg-primary/10 rounded-full blur-[80px] -top-1/4 -left-1/4 animate-pulse-slow"></div>
-						<div className="absolute w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[80px] bottom-0 right-0 animate-pulse-slower"></div>
-					</div>
-					
-					{/* Decorative Elements */}
-					<div className="absolute inset-0">
-						{[...Array(3)].map((_, i) => (
-							<div
-								key={i}
-								className="absolute w-72 h-72 border border-primary/10 rounded-2xl"
-								style={{
-									top: `${20 + i * 30}%`,
-									left: `${10 + i * 20}%`,
-									transform: `rotate(${i * 15}deg)`,
-									transition: 'all 0.5s ease-out',
-								}}
-							/>
-						))}
+						<div
+							className="absolute w-full h-full pulse-bg 
+							bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] 
+							dark:bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]
+							bg-[size:48px_48px]"
+						/>
 					</div>
 				</div>
 
 				{/* Branding Content */}
-				<div className="relative z-10 flex flex-col justify-center w-full p-16">
-					<div className="max-w-xl mx-auto space-y-16">
-						{/* Logo & Title Section */}
-						<div className="space-y-8">
-							<div className="space-y-4">
-								<h1 className="font-inc text-6xl tracking-tight text-white">
-									QUICK<span className="text-primary">EASE</span>
-								</h1>
-								<p className="text-2xl text-smenu font-plight leading-relaxed max-w-md">
-									Where AI meets education for a smarter learning experience
-								</p>
-							</div>
-							
-							{/* Feature Tags */}
-							<div className="flex items-center gap-4">
-								{[
-									{ text: 'AI-Powered', color: 'border-primary bg-primary/5' },
-									{ text: 'Smart Learning', color: 'border-review bg-review/5' },
-									{ text: 'Personalized', color: 'border-secondary bg-secondary/5' }
-								].map((tag, index) => (
-									<span 
-										key={index}
-										className={`px-4 py-1.5 rounded-lg text-white text-sm border ${tag.color}`}
-									>
-										{tag.text}
-									</span>
-								))}
-							</div>
-						</div>
-
-						{/* Feature Cards - Enhanced Design */}
-						<div className="space-y-5">
-							{[
-								{
-									title: 'AI Summary',
-									description: 'Transform lengthy content into concise key points',
-									color: 'border-primary',
-									hoverColor: 'group-hover:text-primary'
-								},
-								{
-									title: 'Interactive Flashcards',
-									description: 'Engage with dynamic learning materials',
-									color: 'border-review',
-									hoverColor: 'group-hover:text-review'
-								},
-								{
-									title: 'AI-Powered Quizzes',
-									description: 'Test your knowledge with adaptive assessments',
-									color: 'border-secondary',
-									hoverColor: 'group-hover:text-secondary'
-								}
-							].map((feature, index) => (
-								<div 
-									key={index} 
-									className="group relative transform transition-all duration-300 hover:translate-x-2"
-								>
-									<div className={`p-6 rounded-xl bg-darkS/5 border-l-4 ${feature.color} hover:bg-darkS/10 transition-all duration-300`}>
-										<h3 className={`text-lg font-psemibold text-white ${feature.hoverColor} transition-colors`}>
-											{feature.title}
-										</h3>
-										<p className="mt-2 text-smenu group-hover:text-smenu/80 transition-colors">
-											{feature.description}
-										</p>
-									</div>
-								</div>
-							))}
-						</div>
-
-						{/* Trust Indicators */}
-						<div className="pt-8 border-t border-darkS/20">
-							<div className="flex items-center gap-8">
-								<div className="text-smenu text-sm">
-									Trusted by USTP students
-								</div>
-								<div className="flex -space-x-2">
-									{[...Array(4)].map((_, i) => (
-										<div 
-											key={i}
-											className="w-8 h-8 rounded-full border-2 border-darken bg-primary/10"
-										/>
-									))}
-								</div>
-							</div>
+				<div className="relative w-full h-full flex flex-col items-center justify-center p-16">
+					{/* Logo & Brand Container */}
+					<div className="text-center space-y-12">
+						{/* Brand Name with Adaptive Glow */}
+						<div className="relative">
+							<div
+								className="absolute -inset-2 bg-gradient-to-r 
+								from-primary/20 to-secondary/20 
+								dark:from-secondary/20 dark:to-primary/20 
+								blur-2xl rounded-full opacity-75"
+							/>
+							<h1 className="relative font-inc text-8xl tracking-tight">
+								<span className="text-zinc-800 dark:text-white">QUICK</span>
+								<span className="text-primary dark:text-secondary">EASE</span>
+							</h1>
 						</div>
 					</div>
 				</div>
@@ -265,8 +191,7 @@ export default function SignIn() {
 							<div className="flex justify-end">
 								<Link
 									to="/ForgotPass"
-										className="text-sm text-primary hover:text-primary/80 transition-colors"
-								>
+									className="text-sm text-primary dark:text-secondary hover:text-primary/80 transition-colors">
 									Forgot password?
 								</Link>
 							</div>
@@ -275,16 +200,13 @@ export default function SignIn() {
 								type="submit"
 								isLoading={isLoading}
 								disabled={!canRetryLogin}
-								className="w-full bg-highlights hover:bg-primary/90 text-white py-3 transition-colors"
-							>
+								className="w-full bg-highlights hover:bg-primary/90 text-white py-3 transition-colors">
 								{canRetryLogin ? 'Sign In' : `Too many attempts. Retry in ${retryTimer}s`}
 							</Button>
 
 							{formErrors.global && (
 								<div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-									<p className="text-sm text-red-400">
-										{formErrors.global}
-									</p>
+									<p className="text-sm text-red-400">{formErrors.global}</p>
 								</div>
 							)}
 						</form>
@@ -294,8 +216,7 @@ export default function SignIn() {
 								Don't have an account?{' '}
 								<span
 									onClick={go}
-									className="text-primary hover:text-primary/80 cursor-pointer transition-colors"
-								>
+									className="text-primary dark:text-secondary hover:text-primary/80 cursor-pointer transition-colors">
 									Register Now
 								</span>
 							</p>

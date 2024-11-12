@@ -40,11 +40,33 @@ export default {
 				},
 				'pulse-scale': {
 					'0%, 100%': { transform: 'scale(1)' },
-					'50%': { transform: 'scale(1.1)' }, // Slight scale up at the mid-point
+					'50%': { transform: 'scale(1.1)' }, 
 				},
 				'pulse-bg': {
 					'0%, 100%': { backgroundSize: '100%' },
-					'50%': { backgroundSize: '105%' }, // Slight pulse in background size
+					'50%': { backgroundSize: '105%' }, 
+				},
+				'float-gentle': {
+					'0%, 100%': { 
+						transform: 'translateY(0) scale(1)',
+					},
+					'50%': { 
+						transform: 'translateY(-20px) scale(1.01)',
+					},
+				},
+				'slide': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' },
+				},
+				'float-particle': {
+					'0%, 100%': {
+						transform: 'translate(0, 0)',
+						opacity: 0.3,
+					},
+					'50%': {
+						transform: 'translate(20px, -20px)',
+						opacity: 0.8,
+					},
 				},
 			},
 			animation: {
@@ -53,7 +75,9 @@ export default {
 				'pulse-bg': 'pulse-bg 2s ease-in-out infinite',
 				'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 				'pulse-slower': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-			
+				'float-gentle': 'float-gentle 6s ease-in-out infinite',
+				'slide-slow': 'slide 15s linear infinite',
+				'float-particle': 'float-particle 8s ease-in-out infinite',
 			},
 			boxShadow: {
 				neumorphism:
@@ -65,6 +89,9 @@ export default {
 			},
 			dropShadow: {
 				glow: '0 0 10px rgba(255, 255, 255, 0.5)',
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 			},
 		},
 	},
