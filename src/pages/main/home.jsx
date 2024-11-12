@@ -63,6 +63,7 @@ export default function Home() {
 				</div>
 			),
 			placement: 'bottom',
+			disableBeacon: true,
 		},
 		{
 			target: '.input-methods',
@@ -78,7 +79,7 @@ export default function Home() {
 				</div>
 			),
 			placement: 'right',
-			spotlightClassName: 'rounded-lg border-2 border-yellow-300 animate-pulse',
+			disableBeacon: true,
 		},
 		{
 			target: '.text-area',
@@ -92,7 +93,7 @@ export default function Home() {
 				</div>
 			),
 			placement: 'bottom',
-			spotlightClassName: 'rounded-lg border-2 border-pink-400 animate-pulse',
+			disableBeacon: true,
 		},
 		{
 			target: '.generate-button',
@@ -106,7 +107,7 @@ export default function Home() {
 				</div>
 			),
 			placement: 'top',
-			spotlightClassName: 'rounded-lg border-2 border-green-400 animate-pulse',
+			disableBeacon: true,
 		},
 	];
 
@@ -135,15 +136,16 @@ export default function Home() {
 	useEffect(() => {
 		dispatch(fetchUserInfo());
 		refreshUserStats();
-	}, [dispatch]);
 
-	useEffect(() => {
 		const hasSeenTour = localStorage.getItem('hasSeenTour');
 		if (!hasSeenTour) {
-			setRun(true);
-			localStorage.setItem('hasSeenTour', 'true');
+			setTimeout(() => {
+				setStepIndex(0);
+				setRun(true);
+				localStorage.setItem('hasSeenTour', 'true');
+			}, 500);
 		}
-	}, []);
+	}, [dispatch]);
 
 	const handleSidebarToggle = (isExpanded) => {
 		setSidebarExpanded(isExpanded);
@@ -314,6 +316,7 @@ export default function Home() {
 				showSkipButton
 				stepIndex={stepIndex}
 				steps={steps}
+				disableBeacon={true}
 				locale={{
 					back: 'Previous',
 					last: 'Finish',
@@ -344,27 +347,26 @@ export default function Home() {
 			<Sidebar onToggle={handleSidebarToggle} />
 
 			<main
-				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
+				className={`transition-all duration-300 flex-grow p-2 lg:p-4 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
 				<button
 					onClick={handleResetTour}
-					className="fixed bottom-4 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+					className="fixed bottom-4 z-50 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
 					title="Reset Tour">
 					<FontAwesomeIcon icon={faRoute} />
 					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
 				</button>
 
 				<div className="rounded-lg overflow-hidden">
-					{/* Quickie Mascot - Highlighted First */}
-					<div className="quickie-greeting">
+					<div className="quickie-greeting mb-2">
 						<QuickieGreetings />
 					</div>
 
 					<div className="input-methods flex flex-col lg:flex-row">
-						<div className="w-full lg:w-3/4 p-2">
+						<div className="w-full lg:w-3/4 p-1">
 							{/* Mobile tab selector */}
-							<div className="input-methods lg:hidden flex justify-center mb-4 bg-gray-100 dark:bg-dark rounded-lg p-2">
+							<div className="input-methods lg:hidden flex justify-center mb-2 bg-gray-100 dark:bg-dark rounded-lg p-1">
 								{['text', 'documents', 'images'].map((tab) => (
 									<button
 										key={tab}
@@ -395,11 +397,10 @@ export default function Home() {
 							{activeTab === 'text' && (
 								<div className="w-full">
 									<textarea
-										className="w-full h-64 p-4 border border-zinc-300 dark:border-zinc-800 rounded-md  dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										className="w-full h-48 p-3 border border-zinc-300 dark:border-zinc-800 rounded-md dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
 										placeholder="Paste or type your text here to generate a summary note"
 										value={inputText}
 										onChange={handleTextChange}
-									
 									/>
 									<div className="mt-2 flex justify-between items-center text-sm">
 										<span
@@ -419,8 +420,8 @@ export default function Home() {
 
 							{(activeTab === 'documents' || activeTab === 'images') && (
 								<div
-									className={`file-upload border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-6 text-center ${
-										filesToDisplay.length > 0 ? 'h-64 overflow-y-auto' : ''
+									className={`file-upload border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
+										filesToDisplay.length > 0 ? 'h-48 overflow-y-auto' : ''
 									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
 									onDragOver={handleDragOver}
 									onDragEnter={handleDragOver}
@@ -504,7 +505,7 @@ export default function Home() {
 								className="hidden"
 							/>
 
-							<div className="mt-4 flex justify-end">
+							<div className="mt-2 flex justify-end">
 								<Button
 									onClick={handleGenerate}
 									className="w-full lg:w-2/3 generate-button"
@@ -519,17 +520,17 @@ export default function Home() {
 							</div>
 						</div>
 
-						<div className="input-methods hidden lg:block w-1/4 p-4">
+						<div className="input-methods hidden lg:block w-1/4 p-2">
 							<div className="space-y-2">
 								{['text', 'documents', 'images'].map((tab) => (
 									<button
 										key={tab}
 										onClick={() => handleTabChange(tab)}
-										className={`w-full p-4 md:p-6 text-left font-medium ${
+										className={`w-full p-3 md:p-4 text-left font-medium ${
 											activeTab === tab
 												? 'bg-highlights text-secondary dark:bg-darkS'
 												: 'bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-300'
-										} rounded-md dark:border  dark:border-zinc-800 shadow-sm flex items-center transition-colors duration-200`}>
+										} rounded-md dark:border dark:border-zinc-800 shadow-sm flex items-center transition-colors duration-200`}>
 										<FontAwesomeIcon
 											icon={
 												tab === 'text'
@@ -547,7 +548,7 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<h2 className="text-2xl font-pbold mb-4 mt-12 text-newTxt dark:text-secondary">
+				<h2 className="text-xl font-pbold mb-2 mt-4 text-newTxt dark:text-secondary">
 					How to Generate Summary Notes
 				</h2>
 				<Instructions />

@@ -2,72 +2,140 @@ import React, { useState } from 'react';
 import { img } from '../constants';
 import { useDarkMode } from '../features/Darkmode/darkmodeProvider';
 import TermsAndConditionsModal from './Policies/termsAndConditions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+	faEnvelope, 
+	faPhone, 
+	faArrowRight,
+	faQrcode,
+	faShieldHalved
+} from '@fortawesome/free-solid-svg-icons';
+import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 
 const Footer = () => {
 	const currentYear = new Date().getFullYear();
 	const { isDarkMode } = useDarkMode();
 	const [showModal, setShowModal] = useState(false);
 
-	const toggleModal = () => {
-		setShowModal(!showModal);
-	};
-
 	return (
-		<>
-			<footer className="relative min-h-screen flex flex-col md:flex-row justify-between items-end overflow-hidden bg-[#DEECFA] dark:bg-dark">
-				<div className="absolute bottom-0 left-0 right-0 h-[50%] md:h-[60%] bg-gradient-to-t from-[#DEECFA] to-transparent z-10 dark:bg-gradient-to-t dark:from-[#171717] dark:to-transparent"></div>
+		<footer className="relative bg-gradient-to-b from-[#171717] to-[#0A0A0A] overflow-hidden">
+			{/* Enhanced Background Effects */}
+			<div className="absolute inset-0">
+				<div className="absolute w-[800px] h-[800px] bg-gradient-conic from-primary/10 via-review/10 to-secondary/10 rounded-full blur-[120px] -bottom-1/2 -left-1/4 animate-spin-slower"></div>
+				<div className="absolute w-[600px] h-[600px] bg-gradient-conic from-secondary/10 via-primary/10 to-review/10 rounded-full blur-[100px] -top-1/4 -right-1/4 animate-spin-slow"></div>
+				<div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+			</div>
 
-				<div className="flex justify-center md:justify-start items-end z-0 w-full md:w-1/2">
-					<img
-						src={isDarkMode ? img.quick : img.Mascot}
-						alt={isDarkMode ? 'NightWing Mascot' : 'Quickie Mascot'}
-						className="w-full h-auto max-h-full object-contain opacity-80 animate-float"
-					/>
-				</div>
+			<div className="relative max-w-7xl mx-auto px-6 pt-32 pb-12">
+				{/* Main Content */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+					{/* Left Column - Mascot & App Download */}
+					<div className="relative">
+						<div className="relative z-10 space-y-8">
+							{/* App Download Section */}
+							<div className="max-w-md">
+								<h2 className="text-5xl sm:text-6xl font-pbold leading-tight">
+									<span className="bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+										Get Our App
+									</span>
+								</h2>
+								<p className="mt-4 text-lg text-white/60">
+									Transform your learning experience with QuickEase
+								</p>
+							</div>
 
-				<div className="relative z-20 p-6 w-full md:w-1/2 flex flex-col items-center md:items-start space-y-6 mb-16">
-					<h2 className="text-3xl md:text-4xl font-pmedium mb-4 text-center md:text-left">
-						GET OUR APP NOW
-					</h2>
-					<img src={img.QrCode} alt="QR code" className="w-40 md:w-64 mb-4 rounded-lg" />
-					<p className="text-center md:text-left font-pregular dark:text-secondary">
-						Scan the code to download
-					</p>
-					<div className="flex flex-col sm:flex-row sm:justify-start sm:space-x-20 text-center md:text-left mt-10 text-sm">
-						<div className="mb-6 sm:mb-0">
-							<p className="font-semibold dark:text-secondary">LEGAL</p>
-							<ul className="mt-2 space-y-2 cursor-pointer">
-								<li onClick={toggleModal}>Privacy Policy & Terms of Service</li>
-							</ul>
+							{/* QR Code */}
+							<div className="relative group w-fit">
+								<div className="absolute -inset-1 bg-gradient-to-r from-primary via-review to-secondary rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
+								<div className="relative bg-zinc-900/50 backdrop-blur-sm p-6 rounded-2xl flex items-center gap-6">
+									<img 
+										src={img.QrCode} 
+										alt="QR code" 
+										className="w-32 h-32"
+									/>
+									<div>
+										<div className="flex items-center gap-2 text-white/80 mb-2">
+											<FontAwesomeIcon icon={faQrcode} className="text-primary" />
+											<span className="font-pmedium">Scan to Download</span>
+										</div>
+										<p className="text-sm text-white/40">Available for Android Only</p>
+									</div>
+								</div>
+							</div>
 						</div>
-						<div>
-							<p className="font-semibold dark:text-secondary">TALK TO US</p>
-							<ul className="mt-2 space-y-2 dark:text-naeg cursor-pointer">
-								<li onClick={() => window.open('mailto:quickease.team@gmail.com')}>
-									quickease.team@gmail.com
-								</li>
-								<li>0967 665 3378</li>
-								<li
-									onClick={() =>
-										window.open('https://www.facebook.com/quickease.ph', '_blank')
-									}>
-									Facebook
-								</li>
-							</ul>
+
+						{/* Mascot Image */}
+						<div className="absolute bottom-0 right-0 w-72 h-72 opacity-80">
+							<img
+								src={isDarkMode ? img.quick : img.Mascot}
+								alt={isDarkMode ? 'NightWing Mascot' : 'Quickie Mascot'}
+								className="w-full h-full object-contain animate-float"
+							/>
+						</div>
+					</div>
+
+					{/* Right Column - Links & Contact */}
+					<div className="relative">
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+							{/* Contact Section */}
+							<div className="space-y-6">
+								<h3 className="text-lg font-psemibold text-white tracking-wider">CONNECT WITH US</h3>
+								<div className="space-y-4">
+									<a href="mailto:quickease.team@gmail.com" 
+										className="group flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+										<div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+											<FontAwesomeIcon icon={faEnvelope} className="text-primary" />
+										</div>
+										<span>quickease.team@gmail.com</span>
+									</a>
+									<div className="group flex items-center gap-3 text-white/60">
+										<div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+											<FontAwesomeIcon icon={faPhone} className="text-review" />
+										</div>
+										<span>0967 665 3378</span>
+									</div>
+									<a href="https://www.facebook.com/quickease.ph" 
+										target="_blank"
+										className="group flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+										<div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
+											<FontAwesomeIcon icon={faFacebookF} className="text-secondary" />
+										</div>
+										<span>Facebook</span>
+									</a>
+								</div>
+							</div>
+
+							{/* Legal Section */}
+							<div className="space-y-6">
+								<h3 className="text-lg font-psemibold text-white tracking-wider">LEGAL</h3>
+								<button 
+									onClick={() => setShowModal(true)}
+									className="group flex items-center gap-3 text-white/60 hover:text-white transition-colors"
+								>
+									<div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-review/10 transition-colors">
+										<FontAwesomeIcon icon={faShieldHalved} className="text-review" />
+									</div>
+									<span>Privacy Policy & Terms</span>
+									<FontAwesomeIcon 
+										icon={faArrowRight} 
+										className="text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" 
+									/>
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 
-				<div className="w-full text-center py-4 mt-6 z-20 absolute bottom-0 left-0 right-0">
-					<p className="text-sm text-gray-600">
-						© {currentYear} QuickEase. All rights reserved.
+				{/* Copyright */}
+				<div className="mt-20 pt-8 border-t border-white/5">
+					<p className="text-center text-white/40 font-plight">
+						© {currentYear} <span className="font-pmedium text-white/60">QuickEase</span>. All rights reserved.
 					</p>
 				</div>
-			</footer>
+			</div>
 
-			{/* Use the Terms and Conditions Modal */}
-			<TermsAndConditionsModal isOpen={showModal} onClose={toggleModal} />
-		</>
+			<TermsAndConditionsModal isOpen={showModal} onClose={() => setShowModal(false)} />
+		</footer>
 	);
 };
 

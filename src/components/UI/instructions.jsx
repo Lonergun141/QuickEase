@@ -17,9 +17,9 @@ export const Instructions = () => {
 					<li>
 						Select the <span className="font-bold">"Input Text"</span> tab on the right.
 					</li>
-					<li>Click in the text area below.</li>
+					<li>Click in the text area on the left.</li>
 					<li>Type or paste your content.</li>
-					<li>Ensure your text is at least 200 words for accurate summarization.</li>
+					<li>Ensure your text is <strong>at least 200 words</strong> for accurate summarization.</li>
 					<li>
 						Click the <span className="font-bold">"Generate"</span> button when you're ready.
 					</li>
@@ -45,8 +45,8 @@ export const Instructions = () => {
 						Press <span className="font-bold">"Choose Files"</span> to browse and select your
 						document.
 					</li>
-					<li>Select one or more documents (e.g., DOCX, PDF, PPTX).</li>
-					<li>Ensure each document is no larger than 10MB.</li>
+					<li>Select one or more documents <strong>(e.g., DOCX, PDF, PPTX)</strong>.</li>
+					<li>Ensure each document is <strong>no larger than 10MB</strong>.</li>
 					<li>
 						Click <span className="font-bold">"Generate"</span> to process your documents.
 					</li>
@@ -72,8 +72,8 @@ export const Instructions = () => {
 						Click <span className="font-bold">"Choose Files"</span> or drag and drop images
 						into the space provided.
 					</li>
-					<li>Choose one or more images (supported formats: JPG, PNG, JPEG).</li>
-					<li>Ensure each image is under 10MB for optimal processing.</li>
+					<li>Choose one or more images <strong>(supported formats: JPG, PNG, JPEG)</strong>.</li>
+					<li>Ensure each image is <strong>under 10MB</strong> for optimal processing.</li>
 					<li>
 						Press <span className="font-bold">"Generate"</span> to begin the summarization.
 					</li>

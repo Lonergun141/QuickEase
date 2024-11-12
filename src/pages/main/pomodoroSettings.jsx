@@ -24,21 +24,19 @@ export default function Pomodoro() {
 	const userInfo = useSelector((state) => state.auth.userInfo);
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
 	const dispatch = useDispatch();
-
+	const { isDarkMode } = useDarkMode();
 	const [run, setRun] = useState(false);
 	const [stepIndex, setStepIndex] = useState(0);
-
-	const { isDarkMode } = useDarkMode();
+	const TOUR_KEY = 'hasSeenTour_pomodoro';
 
 	const steps = [
 		{
 			target: '.togglePom',
 			content: (
-				<div className="flex items-center gap-4 text-base sm:text-lg lg:text-xl p-4 sm:p-6">
-					<FontAwesomeIcon icon={faClock} className="text-lg sm:text-2xl" />
-					<p>
-						Toggle this switch to enable or disable the Pomodoro timer during your study
-						sessions.
+				<div className="flex items-center gap-3 p-4">
+					<FontAwesomeIcon icon={faClock} className="text-lg text-primary" />
+					<p className="text-sm">
+						Toggle this switch to enable or disable the Pomodoro timer during your study sessions.
 					</p>
 				</div>
 			),
@@ -48,17 +46,16 @@ export default function Pomodoro() {
 		{
 			target: '.time',
 			content: (
-				<div className="text-sm sm:text-base flex flex-col gap-3 p-4 sm:p-6">
-					<div className="flex items-center gap-2">
-						<FontAwesomeIcon icon={faClock} className="text-base sm:text-xl" />
-						<p>Adjust your study and break durations here. Remember, balance is key!</p>
-					</div>
+				<div className="flex items-center gap-3 p-4">
+					<FontAwesomeIcon icon={faClock} className="text-lg text-primary" />
+					<p className="text-sm">
+						Adjust your study and break durations here. Remember, balance is key!
+					</p>
 				</div>
 			),
 			placement: 'top',
 			disableBeacon: true,
 		},
-		
 	];
 
 	const handleJoyrideCallback = (data) => {
@@ -69,7 +66,7 @@ export default function Pomodoro() {
 		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
 			setRun(false);
 			if (status === STATUS.SKIPPED) {
-				localStorage.setItem('hasSeenTour', 'skipped');
+				localStorage.setItem(TOUR_KEY, 'skipped');
 			}
 		}
 	};
@@ -77,12 +74,20 @@ export default function Pomodoro() {
 	const handleResetTour = () => {
 		setStepIndex(0);
 		setRun(true);
-		localStorage.removeItem('hasSeenTour');
+		localStorage.removeItem(TOUR_KEY);
 	};
 
 	useEffect(() => {
 		dispatch(fetchUserInfo());
 		dispatch(fetchPomodoroSettings());
+		const hasSeenTour = localStorage.getItem(TOUR_KEY);
+		if (!hasSeenTour) {
+			setTimeout(() => {
+				setStepIndex(0);
+				setRun(true);
+				localStorage.setItem(TOUR_KEY, 'true');
+			}, 500);
+		}
 	}, [dispatch]);
 
 	const saveSettings = async (newSettings) => {
@@ -131,11 +136,258 @@ export default function Pomodoro() {
 	};
 
 	if (error) {
-		return <div>Error: {error}</div>;
+		return (
+			<div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg">
+				Error: {typeof error === 'object' ? error.message : error}
+			</div>
+		);
 	}
 
 	return (
-		<div className="flex flex-col lg:flex-row min-h-screen bg-secondary dark:bg-dark w-full">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 dark:bg-dark w-full">
+			<Sidebar onToggle={handleSidebarToggle} />
+			
+			<main
+				className={`transition-all duration-300 flex-grow p-6 lg:p-8 mt-16 lg:mt-0 ${
+					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
+				}`}>
+				<div className="max-w-6xl space-y-8">
+					
+					<div className="relative overflow-hidden bg-white dark:bg-darken rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+						<div className="relative p-8 lg:p-10">
+							
+							<div className="grid md:grid-cols-[1fr,auto] gap-8 items-center">
+								
+								<div className="space-y-6">
+									{/* Header */}
+									<div className="space-y-3">
+										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+											<div className="p-2 rounded-full">
+												<FontAwesomeIcon 
+													icon={faClock} 
+													className="text-base text-primary dark:text-secondary" 
+												/>
+											</div>
+											<span className="text-sm font-pmedium text-zinc-600 dark:text-zinc-300">
+												Timer Settings
+											</span>
+										</div>
+										<h1 className="text-3xl font-pbold text-newTxt dark:text-white">
+											Customize Your Study Sessions
+										</h1>
+										<p className="text-base text-darkS dark:text-smenu font-pregular max-w-2xl">
+											Fine-tune your work intervals and breaks to match your productivity rhythm
+										</p>
+									</div>
+
+								</div>
+
+								{/* Right Visual Element */}
+								<div className="hidden md:block relative">
+									<div className="relative w-40 h-40">
+										{/* Circular Timer Visual */}
+										<svg 
+											className="w-full h-full transform -rotate-90"
+											viewBox="0 0 100 100"
+										>
+											{/* Background Circle */}
+											<circle
+												className="text-zinc-100 dark:text-zinc-800 stroke-current"
+												strokeWidth="6"
+												fill="none"
+												r="44"
+												cx="50"
+												cy="50"
+											/>
+											{/* Progress Circle */}
+											<circle
+												className="text-primary dark:text-secondary stroke-current"
+												strokeWidth="6"
+												strokeLinecap="round"
+												fill="none"
+												r="44"
+												cx="50"
+												cy="50"
+												strokeDasharray="276"
+												strokeDashoffset="69"
+											/>
+										</svg>
+										{/* Center Content */}
+										<div className="absolute inset-0 flex flex-col items-center justify-center">
+											<FontAwesomeIcon 
+												icon={faClock} 
+												className="text-2xl text-primary dark:text-secondary mb-1" 
+											/>
+											<span className="text-sm font-pmedium text-zinc-600 dark:text-zinc-400">
+												Timer
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{/* Subtle Pattern Overlay */}
+						<div className="absolute inset-0 bg-pattern opacity-[0.02] pointer-events-none"></div>
+					</div>
+
+					{/* Settings Container */}
+					<div className="grid gap-8">
+						{/* Timer Toggle */}
+						<div className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6 shadow-sm">
+							<div className="flex items-center justify-between togglePom">
+								<div className="space-y-1">
+									<h2 className="text-lg font-psemibold text-zinc-900 dark:text-zinc-100">
+										Enable Pomodoro Timer
+									</h2>
+									<p className="text-sm text-zinc-500 dark:text-zinc-400">
+										Show timer during your study sessions
+									</p>
+								</div>
+								<label className="relative inline-flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										checked={pendingSettings.showTimer}
+										onChange={(e) => handleSettingChange('showTimer', e.target.checked)}
+										className="sr-only peer"
+									/>
+									<div className="w-14 h-8 rounded-full 
+										bg-zinc-200 dark:bg-zinc-700/50 
+										peer-focus:outline-none 
+										peer-focus:ring-4 
+										peer-focus:ring-primary/20 
+										dark:peer-focus:ring-secondary/20 
+										peer-checked:bg-primary/90 
+										dark:peer-checked:bg-secondary/90 
+										after:content-[''] 
+										after:absolute 
+										after:top-1 
+										after:left-1 
+										after:bg-white 
+										after:border
+										after:border-zinc-200
+										dark:after:border-zinc-600
+										after:rounded-full 
+										after:h-6 
+										after:w-6 
+										after:shadow-sm
+										after:transition-all 
+										dark:after:bg-primary
+										peer-checked:after:translate-x-6
+										peer-checked:after:border-primary/20
+										dark:peer-checked:after:border-secondary/20
+										transition-colors">
+									</div>
+								</label>
+							</div>
+						</div>
+
+						{/* Time Settings */}
+						<div className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6 shadow-sm time">
+							<div className="mb-6">
+								<h2 className="text-lg font-psemibold text-zinc-900 dark:text-zinc-100">
+									Time Intervals
+								</h2>
+								<p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+									Customize your work and break durations (in minutes)
+								</p>
+							</div>
+							
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+								{[
+									{ key: 'studyTime', label: 'Study Sessions', icon: faClock },
+									{ key: 'shortBreak', label: 'Short Break', icon: faCoffee },
+									{ key: 'longBreak', label: 'Long Break', icon: faBolt }
+								].map(({ key, label, icon }) => (
+									<div key={key} className="space-y-2">
+										<label htmlFor={key} className="flex items-center gap-2 text-sm font-pmedium text-zinc-700 dark:text-zinc-300">
+											<FontAwesomeIcon icon={icon} className="text-primary/70 dark:text-secondary/70" />
+											{label}
+										</label>
+										<input
+											type="number"
+											id={key}
+											value={pendingSettings[key]}
+											onChange={(e) => handleSettingChange(key, e.target.value)}
+											className="w-full px-4 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 
+												bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100
+												focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-secondary
+												transition-all duration-200"
+											min="1"
+										/>
+									</div>
+								))}
+							</div>
+						</div>
+
+						{/* How to Use Section */}
+						<div className="space-y-6">
+							<h2 className="text-xl font-psemibold text-zinc-900 dark:text-zinc-100">
+								How to Use the Pomodoro Technique
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								{[
+									{ 
+										icon: faCheckCircle, 
+										color: 'text-emerald-500', 
+										bgColor: 'bg-emerald-50 dark:bg-emerald-500/10',
+										title: 'Pick a Task', 
+										description: 'Choose a note you want to study on, and set your mind to it.' 
+									},
+									{ 
+										icon: faClock, 
+										color: 'text-primary', 
+										bgColor: 'bg-primary-50 dark:bg-primary/10',
+										title: 'Work for 25 Minutes', 
+										description: 'Set your timer for 25 minutes and work without distractions.' 
+									},
+									{ 
+										icon: faCoffee, 
+										color: 'text-amber-500', 
+										bgColor: 'bg-amber-50 dark:bg-amber-500/10',
+										title: 'Take a 5-Minute Break', 
+										description: 'After 25 minutes of work, reward yourself with a short break.' 
+									},
+									{ 
+										icon: faBolt, 
+										color: 'text-orange-500', 
+										bgColor: 'bg-orange-50 dark:bg-orange-500/10',
+										title: 'Repeat & Long Break', 
+										description: 'After 4 Pomodoros, take a longer break of 15-30 minutes to recharge.' 
+									}
+								].map((item, index) => (
+									<div key={index} 
+										className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors duration-200">
+										<div className="flex gap-4">
+											<div className={`${item.color} ${item.bgColor} rounded-lg p-3`}>
+												<FontAwesomeIcon icon={item.icon} className="text-lg" />
+											</div>
+											<div>
+												<h3 className="font-psemibold text-zinc-900 dark:text-zinc-100">
+													{item.title}
+												</h3>
+												<p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+													{item.description}
+												</p>
+											</div>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{/* Tour Button */}
+				<button
+					onClick={handleResetTour}
+					className="fixed bottom-4 right-4 flex items-center gap-2 bg-highlights/90 dark:bg-darkS/90 hover:bg-primary text-white px-4 py-2.5 rounded-full shadow-lg transition-all duration-200 hover:scale-105">
+					<FontAwesomeIcon icon={faRoute} className="text-sm" />
+					<span className="hidden sm:block text-sm font-medium">Take a Tour</span>
+				</button>
+			</main>
+
+			{/* Joyride Tour */}
 			<Joyride
 				callback={handleJoyrideCallback}
 				continuous
@@ -147,173 +399,25 @@ export default function Pomodoro() {
 				stepIndex={stepIndex}
 				steps={steps}
 				disableScrolling={true}
-				locale={{
-					back: 'Previous',
-					last: 'Finish',
-					next: 'Next',
-					skip: 'Skip',
-				}}
 				styles={{
 					options: {
+						zIndex: 1000,
 						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
 						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
-						overlayColor: 'rgba(0, 0, 0, 0.6)',
-						primaryColor: '#63A7FF',
-						textColor: isDarkMode ? '#fff' : '#333333',
-						zIndex: 1000,
+							overlayColor: 'rgba(0, 0, 0, 0.6)',
+							primaryColor: '#63A7FF',
+							textColor: isDarkMode ? '#fff' : '#333333',
 					},
 					tooltipContainer: {
 						fontFamily: '"Poppins", sans-serif',
 						fontSize: '0.8rem',
 						textAlign: 'center',
-						padding: '8px 12px',
 					},
 					buttonBack: {
 						color: isDarkMode ? '#C0C0C0' : '#213660',
 					},
 				}}
 			/>
-			<Sidebar onToggle={handleSidebarToggle} />
-			<main
-				className={`transition-all duration-300 flex-grow p-6 lg:p-10 mt-16 lg:mt-0 ${
-					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
-				}`}>
-				<button
-					onClick={handleResetTour}
-					className="fixed bottom-4 right-4 flex items-center space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-					title="Reset Tour">
-					<FontAwesomeIcon icon={faRoute} />
-					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
-				</button>
-				{/* Banner Section */}
-				<div className="relative bg-gradient-to-r from-blue-500 to-review rounded-xl p-12 shadow-lg mb-12 animate-gradientMove">
-					<h3 className="sm:text-3xl md:text-3xl lg:text-5xl font-extrabold text-white drop-shadow-lg mb-2 animate-slideIn">
-						Pomodoro Technique
-					</h3>
-					<p className="sm:text-3xl md:text-3xl lg:text-xl text-white drop-shadow-lg animate-fadeIn">
-						Boost your productivity with timed work intervals and regular breaks.
-					</p>
-					<FontAwesomeIcon
-						icon={faClock}
-						className="absolute top-5 right-8 text-white opacity-20 text-9xl animate-rotateClock"
-					/>
-				</div>
-
-				{/* Toggle Switch for Show Timer */}
-				<div className="mb-8 ">
-					<label className="flex items-center ">
-						<span className="text-lg text-gray-700 dark:text-gray-300 font-pmedium">
-							Enable Pomodoro
-						</span>
-						<div className="ml-4 relative togglePom">
-							<input
-								type="checkbox"
-								className="sr-only"
-								checked={pendingSettings.showTimer}
-								onChange={(e) => handleSettingChange('showTimer', e.target.checked)}
-							/>
-							<div className="block bg-secondary dark:bg-dark border w-14 h-8 rounded-full shadow-inner"></div>
-							<div
-								className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform ${
-									pendingSettings.showTimer
-										? 'transform translate-x-6 bg-primary dark:bg-gray-400'
-										: 'bg-slate-300 dark:bg-naeg'
-								}`}></div>
-						</div>
-					</label>
-				</div>
-
-				{/* Time Settings */}
-				<div className="mb-8 time">
-					<p className="text-lg mb-4 text-gray-700 dark:text-gray-300 font-pregular">
-						Time (minutes)
-					</p>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-						{['studyTime', 'shortBreak', 'longBreak'].map((setting) => (
-							<div key={setting} className="neumorphism-card">
-								<label
-									htmlFor={setting}
-									className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{setting
-										.replace(/([A-Z])/g, ' $1')
-										.replace(/^./, (str) => str.toUpperCase())}
-								</label>
-								<input
-									type="number"
-									id={setting}
-									value={pendingSettings[setting]}
-									onChange={(e) => handleSettingChange(setting, e.target.value)}
-									className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-primary neumorphic-input dark:bg-darken dark:text-white"
-									min="1"
-								/>
-							</div>
-						))}
-					</div>
-				</div>
-
-				{/* Pomodoro Information Section */}
-				<section className="mt-10">
-					<h2 className="text-3xl text-highlights dark:text-white mb-6">
-						How to Use the Pomodoro Technique
-					</h2>
-
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-						<div className="bg-white dark:bg-darken p-6 rounded-xl shadow-lg">
-							<div className="flex items-center mb-4">
-								<FontAwesomeIcon
-									icon={faCheckCircle}
-									className="text-green-500 text-3xl mr-4"
-								/>
-								<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-									Step 1: Pick a Task
-								</h3>
-							</div>
-							<p className="text-gray-700 dark:text-gray-300">
-								Choose a note you want to study on, and set your mind to it.
-							</p>
-						</div>
-
-						<div className="bg-white dark:bg-darken p-6 rounded-xl shadow-lg">
-							<div className="flex items-center mb-4">
-								<FontAwesomeIcon icon={faClock} className="text-blue-500 text-3xl mr-4" />
-								<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-									Step 2: Work for 25 Minutes
-								</h3>
-							</div>
-							<p className="text-gray-700 dark:text-gray-300">
-								Set your timer for 25 minutes and work without distractions.
-							</p>
-						</div>
-
-						<div className="bg-white dark:bg-darken p-6 rounded-xl shadow-lg">
-							<div className="flex items-center mb-4">
-								<FontAwesomeIcon
-									icon={faCoffee}
-									className="text-yellow-500 text-3xl mr-4"
-								/>
-								<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-									Step 3: Take a 5-Minute Break
-								</h3>
-							</div>
-							<p className="text-gray-700 dark:text-gray-300">
-								After 25 minutes of work, reward yourself with a short break.
-							</p>
-						</div>
-
-						<div className="bg-white dark:bg-darken p-6 rounded-xl shadow-lg">
-							<div className="flex items-center mb-4">
-								<FontAwesomeIcon icon={faBolt} className="text-orange-500 text-3xl mr-4" />
-								<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-									Step 4: Repeat & Take a Long Break
-								</h3>
-							</div>
-							<p className="text-gray-700 dark:text-gray-300">
-								After 4 Pomodoros, take a longer break of 15-30 minutes to recharge.
-							</p>
-						</div>
-					</div>
-				</section>
-			</main>
 		</div>
 	);
 }

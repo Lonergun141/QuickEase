@@ -6,6 +6,7 @@ const PasswordStrengthMeter = ({ password }) => {
     hasUppercase: false,
     hasNumber: false,
     hasSpecialChar: false,
+    hasMinLength: false,
   });
   const [isTyping, setIsTyping] = useState(false);
 
@@ -25,11 +26,13 @@ const PasswordStrengthMeter = ({ password }) => {
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasMinLength = password.length >= 12;
 
     setPasswordRequirements({
       hasUppercase,
       hasNumber,
       hasSpecialChar,
+      hasMinLength,
     });
   };
 
@@ -47,12 +50,20 @@ const PasswordStrengthMeter = ({ password }) => {
       {isTyping && !hidePasswordMeter && (
         <div className="w-full mt-2">
           <ul className="mt-2 text-sm text-gray-600 dark:text-gray-300 space-y-1 font-pregular">
-            {!passwordRequirements.hasUppercase && <li className="text-red-500">Add at least one uppercase letter</li>}
-            {!passwordRequirements.hasNumber && <li className="text-red-500">Include at least one number</li>}
-            {!passwordRequirements.hasSpecialChar && <li className="text-red-500">Use at least one special character (!, @, #, etc.)</li>}
+            {!passwordRequirements.hasMinLength && (
+              <li className="text-red-500">Password must be at least 12 characters long</li>
+            )}
+            {!passwordRequirements.hasUppercase && (
+              <li className="text-red-500">Add at least one uppercase letter</li>
+            )}
+            {!passwordRequirements.hasNumber && (
+              <li className="text-red-500">Include at least one number</li>
+            )}
+            {!passwordRequirements.hasSpecialChar && (
+              <li className="text-red-500">Use at least one special character (!, @, #, etc.)</li>
+            )}
           </ul>
 
-         
           <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
             <div
               className={`h-1.5 rounded-full ${

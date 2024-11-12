@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faClone, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from '../../components/sidebar';
 import { fetchUserFlashcards } from '../../features/Flashcard/flashCard';
 import { useSelector } from 'react-redux';
@@ -129,85 +129,132 @@ export default function FlashCardHistory() {
 	const totalPages = Math.ceil(flashcards.length / flashcardsPerPage);
 
 	return (
-		<div className="flex flex-col lg:flex-row min-h-screen bg-secondary dark:bg-dark w-full">
+		<div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 dark:bg-dark w-full">
 			<Sidebar onToggle={handleSidebarToggle} />
 			<main
-				className={`transition-all duration-300 flex-grow lg:p-8 mt-16 lg:mt-0 ${
+				className={`transition-all duration-300 flex-grow p-6 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
-				{/* Header section */}
-				<div className="flex flex-col lg:pl-9 p-4 sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-					<h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-highlights dark:text-secondary">Flashcards</h1>
-					<div className="relative w-full sm:w-auto">
-						<select
-							value={sortOption}
-							onChange={(e) => handleSortChange(e.target.value)}
-							className="w-full sm:w-auto bg-white dark:bg-darken dark:text-secondary border border-gray-300 rounded-md p-2 sm:p-1.5 text-sm sm:text-sm lg:text-base cursor-pointer font-pregular">
-							<option value="dateDesc" className="text-sm lg:text-base">
-								Newest to Oldest
-							</option>
-							<option value="dateAsc" className="text-sm lg:text-base">
-								Oldest to Newest
-							</option>
-							<option value="titleAsc" className="text-sm lg:text-base">
-								Title A-Z
-							</option>
-							<option value="titleDesc" className="text-sm lg:text-base">
-								Title Z-A
-							</option>
-						</select>
-					</div>
-				</div>
-
-				{/* Main content wrapper */}
-				<div className="flex flex-col min-h-[calc(100vh-200px)] lg:pl-9 relative">
-					<div className={`${slideIn ? 'slide-in' : 'slide-out'} flex-grow px-4`}>
-						{loading ? (
-							// Show loading skeletons while loading
-							<div className="space-y-2">
-								{[...Array(4)].map((_, i) => (
-									<div
-										key={i}
-										className="bg-white dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 relative transform transition-all duration-300">
-										<div className="flex justify-between items-center mb-2 ">
-											<Skeleton width={220} height={6} className="rounded dark:bg-darkS" /> {/* Title */}
-											<Skeleton circle={true} width={5} height={4} className="rounded-full" /> {/* Icon */}
+				<div className="max-w-7xl space-y-8">
+					{/* Enhanced Header Section */}
+					<div className="relative overflow-hidden bg-white dark:bg-darken rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+						<div className="relative p-8">
+							<div className="grid md:grid-cols-[1fr,auto] gap-6 items-center">
+								{/* Title and Description */}
+								<div className="space-y-4">
+									<div className="space-y-3">
+										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+											<div className="p-2 rounded-full bg-primary/10 dark:bg-secondary/10">
+												<FontAwesomeIcon 
+													icon={faClone} 
+													className="text-base text-primary dark:text-secondary" 
+												/>
+											</div>
+											<span className="text-sm font-pmedium text-zinc-600 dark:text-zinc-300">
+												Flashcards
+											</span>
 										</div>
-										{/* Paragraph */}
-										<Skeleton width={100} count={2} height={3} className="rounded dark:bg-darkS" /> {/* Date */}
+										<h1 className="text-3xl font-pbold text-newTxt dark:text-white">
+											Flashcard Sets
+										</h1>
+										<p className="text-base text-darkS dark:text-smenu font-pregular max-w-2xl">
+											Review and practice with your flashcard collections
+										</p>
+									</div>
+								</div>
+
+								{/* Enhanced Sort Dropdown */}
+								<div className="relative">
+									<select
+										value={sortOption}
+										onChange={(e) => handleSortChange(e.target.value)}
+										className="w-full appearance-none bg-white dark:bg-zinc-900 text-newTxt dark:text-white 
+											border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 pr-10
+											focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-secondary/20
+											cursor-pointer font-pmedium text-sm transition-all">
+										<option value="dateDesc">Newest First</option>
+										<option value="dateAsc">Oldest First</option>
+										<option value="titleAsc">Title A-Z</option>
+										<option value="titleDesc">Title Z-A</option>
+									</select>
+									<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+										<FontAwesomeIcon icon={faChevronDown} className="text-sm" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Flashcards Grid */}
+					<div className={`${slideIn ? 'slide-in' : 'slide-out'} space-y-4`}>
+						{loading ? (
+							// Enhanced Loading Skeletons
+							<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+								{[...Array(6)].map((_, i) => (
+									<div key={i} className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6">
+										<Skeleton height={24} width="70%" className="mb-4" />
+										<Skeleton height={16} width="40%" className="mb-2" />
+										<Skeleton height={16} width="30%" />
 									</div>
 								))}
 							</div>
 						) : currentFlashcards.length > 0 ? (
-							<div className="space-y-4">
+							<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
 								{currentFlashcards.map((flashcard) => (
 									<div
 										key={flashcard.id}
-										className="bg-white border-[#E5E7EB] dark:border-stone-800 dark:bg-darken lg:w-1/2 md:w-full rounded-lg p-4 cursor-pointer relative transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-blue-50 dark:hover:bg-darkS"
-										onClick={() => handleCardClick(flashcard.id)}>
-										<div className="flex justify-between items-center mb-2">
-											<h3 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-lg font-pbold text-highlights dark:text-secondary">{flashcard.title.replace(/["*]/g, '')}</h3>
+										onClick={() => handleCardClick(flashcard.id)}
+										className="group relative bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
+											dark:border-zinc-800 p-6 cursor-pointer transition-all duration-200
+											hover:border-primary/20 dark:hover:border-secondary/20 hover:shadow-lg">
+										<div className="space-y-3">
+											<h3 className="font-psemibold text-lg text-newTxt dark:text-white line-clamp-2">
+												{flashcard.title.replace(/["*]/g, '')}
+											</h3>
+											<div className="space-y-2">
+												<p className="text-sm text-review  font-pmedium">
+													{flashcard.count} Cards
+												</p>
+												<p className="text-sm text-darkS dark:text-smenu">
+													Created {new Date(flashcard.dateCreated).toLocaleDateString('en-US', {
+														month: 'short',
+														day: 'numeric',
+														year: 'numeric'
+													})}
+												</p>
+											</div>
 										</div>
-										<p className="text-xs text-review font-pregular">Flashcards: {flashcard.count}</p>
-										<p className="text-xs text-gray-400 font-pregular">
-											Date Created: {new Date(flashcard.dateCreated).toLocaleDateString()}
-										</p>
 									</div>
 								))}
 							</div>
 						) : (
-							<div className="flex flex-col items-center justify-center h-full text-center mt-8">
-								
-								<h1 className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-4">No flashcards created yet!</h1>
-								
+							// Enhanced Empty State
+							<div className="flex flex-col items-center justify-center py-16 px-4">
+								<img src={SVG} alt="No flashcards" className="w-64 h-64 mb-6 opacity-80" />
+								<h2 className="text-xl font-psemibold text-newTxt dark:text-white mb-2">
+									No Flashcard Sets Yet
+								</h2>
+								<p className="text-darkS dark:text-smenu mb-6 text-center max-w-md">
+									Create flashcards from your notes to start practicing
+								</p>
+								<button
+									onClick={() => navigate('/home')}
+									className="inline-flex items-center px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
+										text-white font-pmedium transition-all hover:opacity-90">
+									Create Your First Set
+								</button>
 							</div>
 						)}
 					</div>
 
-					{/* Pagination */}
+					{/* Enhanced Pagination */}
 					{flashcards.length > flashcardsPerPage && (
-						<div className="mt-4 mb-4">
-							<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+						<div className="flex justify-center mt-8">
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={handlePageChange}
+							/>
 						</div>
 					)}
 				</div>

@@ -8,7 +8,6 @@ const Results = () => {
 	const location = useLocation();
 	const { score, total, noteId } = location.state || { score: 0, total: 0, noteId: null };
 
-
 	useEffect(() => {
 		const postResults = async () => {
 			try {
@@ -28,7 +27,7 @@ const Results = () => {
 	const handleRetake = () => {
 		localStorage.removeItem(`quiz-question-order-${noteId}`);
 		navigate(`/Quiz/${noteId}`);
-	  };
+	};
 
 	const handleClose = () => {
 		navigate(`/Notes/${noteId}`);
@@ -39,27 +38,78 @@ const Results = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-white dark:bg-dark">
-			<div className="p-8 rounded-lg max-w-md w-full text-center">
-				<div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-pregular bg-primary dark:bg-naeg dark:text-darken text-white rounded-full w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex items-center justify-center mx-auto">
-					{score}
-				</div>
-				<h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-pbold mt-4 text-highlights">
-					Congratulations! You have scored
-				</h2>
-				<p className="text-md sm:text-lg md:text-xl lg:text-2xl font-pregular text-dark dark:text-secondary">
-					{score} out of {total} items
-				</p>
-				<a href="#" className="mt-2 underline font-pregular text-review" onClick={handleReview}>
-					Review quiz
-				</a>
-				<div className="mt-8 md:mt-16 space-y-2">
-					<Button onClick={handleRetake} className="w-full">
-						Retake
-					</Button>
-					<button onClick={handleClose} className="w-full py-2 px-4 border rounded-lg text-dark dark:text-secondary">
-						Close
-					</button>
+		<div className="flex min-h-screen bg-zinc-50 dark:bg-dark">
+			<div className="relative w-full max-w-4xl mx-auto p-6 md:p-8">
+			
+				{/* Main Content */}
+				<div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
+					<div className="w-full max-w-2xl bg-white dark:bg-darken rounded-2xl 
+						border border-zinc-200/80 dark:border-zinc-800 p-8 md:p-10">
+						
+						{/* Score Display */}
+						<div className="flex flex-col items-center text-center">
+							{/* Score Circle */}
+							<div className="relative group">
+								<div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-secondary/20 
+									dark:from-secondary/20 dark:to-primary/20 rounded-full blur-2xl opacity-0 
+									group-hover:opacity-100 transition-opacity duration-500" />
+								<div className="w-40 h-40 md:w-48 md:h-48 rounded-full 
+									bg-primary/10 dark:bg-secondary/10
+									flex items-center justify-center">
+									<div className="text-center">
+										<div className="flex items-baseline justify-center gap-2">
+											<span className="text-6xl md:text-7xl font-pbold text-primary dark:text-secondary">
+												{score}
+											</span>
+											<span className="text-3xl text-zinc-400 dark:text-zinc-500">
+												/{total}
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Result Message */}
+							<div className="mt-8">
+								<h2 className="text-2xl md:text-3xl font-pbold text-primary dark:text-secondary">
+									{score / total >= 0.8 
+										? 'Outstanding' 
+										: score / total >= 0.6 
+										? 'Well Done' 
+										: 'Keep Going'}
+								</h2>
+							</div>
+						</div>
+
+						{/* Action Buttons */}
+						<div className="mt-10 space-y-3">
+							<button
+								onClick={handleReview}
+								className="w-full py-3.5 px-4 rounded-xl 
+									bg-primary dark:bg-secondary text-white dark:text-dark
+									font-pmedium hover:opacity-90 transition-all">
+								Review Answers
+							</button>
+							<div className="flex gap-3">
+								<button
+									onClick={handleRetake}
+									className="flex-1 py-3.5 px-4 rounded-xl 
+										bg-zinc-100 dark:bg-zinc-800 
+										text-zinc-700 dark:text-zinc-300 font-pmedium 
+										hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+									Retake Quiz
+								</button>
+								<button
+									onClick={handleClose}
+									className="flex-1 py-3.5 px-4 rounded-xl 
+										bg-zinc-100 dark:bg-zinc-800
+										text-zinc-700 dark:text-zinc-300 font-pmedium 
+										hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
+									Back to Notes
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -20,7 +20,7 @@ export default {
 				checkText: '#0D5F07',
 				checkbg: '#d4fbd2',
 				darkS: '#424242',
-				newTxt:'#292929'
+				newTxt: '#292929',
 			},
 			fontFamily: {
 				inc: ['Regular'],
@@ -50,12 +50,18 @@ export default {
 			animation: {
 				float: 'float 3s ease-in-out infinite',
 				'pulse-scale': 'pulse-scale 1s ease-in-out infinite',
-				'pulse-bg': 'pulse-bg 2s ease-in-out infinite', // Smooth background pulsing
+				'pulse-bg': 'pulse-bg 2s ease-in-out infinite',
+				'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'pulse-slower': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			
 			},
 			boxShadow: {
-				neumorphism: '8px 8px 16px rgba(189, 195, 199, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.7)',
-				'neumorphism-btn': '4px 4px 8px rgba(189, 195, 199, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.7)',
-				'neumorphism-inset': 'inset 8px 8px 16px rgba(189, 195, 199, 0.5), inset -8px -8px 16px rgba(255, 255, 255, 0.7)',
+				neumorphism:
+					'8px 8px 16px rgba(189, 195, 199, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.7)',
+				'neumorphism-btn':
+					'4px 4px 8px rgba(189, 195, 199, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.7)',
+				'neumorphism-inset':
+					'inset 8px 8px 16px rgba(189, 195, 199, 0.5), inset -8px -8px 16px rgba(255, 255, 255, 0.7)',
 			},
 			dropShadow: {
 				glow: '0 0 10px rgba(255, 255, 255, 0.5)',

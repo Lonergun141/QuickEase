@@ -503,7 +503,9 @@ export default function Notes() {
 				</section>
 
 				<section className="mt-8">
-					<h2 className="text-xl font-aceh mb-4 text-newTxt dark:text-secondary">More Study Options</h2>
+					<h2 className="text-xl font-aceh mb-4 text-newTxt dark:text-secondary">
+						More Study Options
+					</h2>
 					<div className="flex items-center md:flex-row md:justify-start md:space-x-6">
 						<div className="flex flex-col items-center mr-8 gflash">
 							<button

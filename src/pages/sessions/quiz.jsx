@@ -3,7 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import QuizQuestionCard from '../../components/quizQuestionCard';
 import Button from '../../components/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faFlag, faLightbulb, faTimes, faRoute } from '@fortawesome/free-solid-svg-icons';
+import {
+	faBars,
+	faFlag,
+	faLightbulb,
+	faTimes,
+	faRoute,
+	faExclamationTriangle,
+} from '@fortawesome/free-solid-svg-icons';
 import {
 	fetchQuiz,
 	fetchQuizChoices,
@@ -42,6 +49,8 @@ const Quiz = () => {
 
 	const [run, setRun] = useState(false);
 	const [stepIndex, setStepIndex] = useState(0);
+
+	const TOUR_KEY = 'hasSeenTour_quiz'; 
 
 	const steps = [
 		{
@@ -90,7 +99,7 @@ const Quiz = () => {
 		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
 			setRun(false);
 			if (status === STATUS.SKIPPED) {
-				localStorage.setItem('hasSeenTour', 'skipped');
+				localStorage.setItem(TOUR_KEY, 'skipped');
 			}
 		}
 	};
@@ -98,7 +107,7 @@ const Quiz = () => {
 	const handleResetTour = () => {
 		setStepIndex(0);
 		setRun(true);
-		localStorage.removeItem('hasSeenTour');
+		localStorage.removeItem(TOUR_KEY);
 	};
 
 	const shuffleArray = (array) => {
@@ -278,6 +287,18 @@ const Quiz = () => {
 		setIsSidebarOpen(!isSidebarOpen);
 	};
 
+	// Add useEffect for tour initialization
+	useEffect(() => {
+		const hasSeenTour = localStorage.getItem(TOUR_KEY);
+		if (!hasSeenTour) {
+			setTimeout(() => {
+				setStepIndex(0);
+				setRun(true);
+				localStorage.setItem(TOUR_KEY, 'true');
+			}, 500);
+		}
+	}, []); // Empty dependency array since we only want this to run once
+
 	if (isLoading) {
 		return <QuizLoadingScreen />;
 	}
@@ -294,7 +315,8 @@ const Quiz = () => {
 	}
 
 	return (
-		<div className="relative flex h-screen bg-secondary dark:bg-dark">
+		<div className="relative flex min-h-screen bg-zinc-50 dark:bg-dark">
+			{/* Enhanced Joyride Tour */}
 			<Joyride
 				callback={handleJoyrideCallback}
 				continuous
@@ -306,6 +328,7 @@ const Quiz = () => {
 				stepIndex={stepIndex}
 				steps={steps}
 				disableScrolling={true}
+				disableBeacon={true}
 				locale={{
 					back: 'Previous',
 					last: 'Finish',
@@ -314,162 +337,181 @@ const Quiz = () => {
 				}}
 				styles={{
 					options: {
-						arrowColor: isDarkMode ? '#424242' : '#f9f9fb',
-						backgroundColor: isDarkMode ? '#424242' : '#f9f9fb',
-						overlayColor: 'rgba(0, 0, 0, 0.6)',
-						primaryColor: '#63A7FF',
-						textColor: isDarkMode ? '#fff' : '#333333',
+						arrowColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+						backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',
+						overlayColor: 'rgba(0, 0, 0, 0.75)',
+						primaryColor: isDarkMode ? '#63A7FF' : '#2563eb',
+						textColor: isDarkMode ? '#fff' : '#1e1e1e',
 						zIndex: 1000,
 					},
 					tooltipContainer: {
 						fontFamily: '"Poppins", sans-serif',
-						fontSize: '0.8rem',
 						textAlign: 'center',
-						padding: '8px 12px',
-					},
-					buttonBack: {
-						color: isDarkMode ? '#C0C0C0' : '#213660',
+						padding: '16px 20px',
 					},
 				}}
 			/>
-			<button
-				onClick={handleResetTour}
-				className="fixed bottom-4 right-4 flex items-center z-50 space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
-				title="Reset Tour">
-				<FontAwesomeIcon icon={faRoute} />
-				<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
-			</button>
-			{/* Sidebar */}
+
+			{/* Enhanced Sidebar */}
 			<div
-				className={`fixed sidebar inset-y-0 left-0 z-30 w-64 p-4 py-16 bg-white dark:bg-darken transition-transform duration-300 ease-in-out transform ${
-					isSidebarOpen ? 'translate-x-0  ' : '-translate-x-full'
-				}`}
-				style={{
-					maxWidth: '250px',
-					transform:
-						isSidebarOpen || window.innerWidth >= 768 ? 'translateX(0)' : 'translateX(-100%)',
-				}}>
-				<div>
-					<h2>Navigator</h2>
-				</div>
-
-				<div className="flex justify-end p-4 md:hidden">
-					<FontAwesomeIcon
-						icon={faTimes}
-						className="cursor-pointer text-lg text-dark dark:text-secondary hover:text-gray-700"
-						onClick={handleToggleSidebar}
-					/>
-				</div>
-
-				<div className="grid grid-cols-4 gap-2 mb-6">
-					{questions.map((quizItem, index) => (
-						<div
-							key={quizItem.id}
-							className={`w-12 h-12  flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer ${
-								flags[index]
-									? 'bg-review text-white'
-									: answers[index] !== null
-									? 'bg-primary text-white dark:bg-darkS'
-									: 'bg-white dark:bg-dark text-gray-900 dark:text-gray-300'
-							}`}
-							onClick={() =>
-								document
-									.getElementById(`question-${index}`)
-									.scrollIntoView({ behavior: 'smooth' })
-							}>
-							{index + 1}
+				className={`fixed sidebar inset-y-0 left-0 z-30 w-72 bg-white dark:bg-darken border-r 
+				border-zinc-200 dark:border-zinc-800 transition-transform duration-300 ease-in-out transform 
+				${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+				{/* Sidebar Header */}
+				<div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
+					<div className="flex items-center justify-between">
+						<div className="space-y-1">
+							<h2 className="text-lg font-pbold text-newTxt dark:text-white">
+								Quiz Navigator
+							</h2>
+							<p className="text-sm text-zinc-600 dark:text-zinc-400">Track your progress</p>
 						</div>
-					))}
+						<button
+							onClick={handleToggleSidebar}
+							className="md:hidden p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
+							<FontAwesomeIcon icon={faTimes} className="text-zinc-600 dark:text-zinc-400" />
+						</button>
+					</div>
 				</div>
 
-				<Button onClick={handleSubmit} className="w-full max-w-lg" disabled={isSubmitting}>
-					{isSubmitting ? (
-						<div className="flex items-center justify-center">
-							<CircularProgress size={24} style={{ color: 'currentColor' }} />
-							<style>
-								{`.dark .MuiCircularProgress-root {
-								color: ${darkProgressColor} !important;
-							}`}
-							</style>
-						</div>
-					) : (
-						'Submit Quiz'
-					)}
-				</Button>
+				{/* Question Navigation */}
+				<div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
+					<div className="grid grid-cols-4 gap-3">
+						{questions.map((quizItem, index) => (
+							<button
+								key={quizItem.id}
+								onClick={() =>
+									document
+										.getElementById(`question-${index}`)
+										.scrollIntoView({ behavior: 'smooth' })
+								}
+								className={`relative group h-12 flex items-center justify-center rounded-xl font-pmedium 
+									transition-all hover:scale-95 ${
+										flags[index]
+											? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400'
+											: answers[index] !== null
+											? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+											: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+									}`}>
+								{index + 1}
+								{flags[index] && (
+									<div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-500" />
+								)}
+							</button>
+						))}
+					</div>
+				</div>
 
-				<div
-					onClick={handleCancel}
-					className="flex justify-center items-center mt-2 cursor-pointer p-4 hover:bg-gray-100 transition ease-in-out rounded-md">
-					<p className="font-pregular text-dark dark:text-naeg">Cancel</p>
+				{/* Action Buttons */}
+				<div className="p-6 mt-auto">
+					<button
+						onClick={handleSubmit}
+						disabled={isSubmitting}
+						className="w-full py-3 px-4 rounded-xl bg-primary dark:bg-secondary text-white dark:text-dark 
+							font-pmedium hover:opacity-90 transition-all disabled:opacity-50 
+							disabled:cursor-not-allowed">
+						{isSubmitting ? (
+							<div className="flex items-center justify-center gap-2">
+								<CircularProgress size={20} style={{ color: 'currentColor' }} />
+								<span>Submitting...</span>
+							</div>
+						) : (
+							'Submit Quiz'
+						)}
+					</button>
+					<button
+						onClick={handleCancel}
+						className="w-full mt-3 py-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700
+							text-zinc-700 dark:text-zinc-300 font-pmedium 
+							hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all">
+						Cancel Quiz
+					</button>
 				</div>
 			</div>
 
 			{/* Main Content */}
 			<div
-				className="flex-grow p-4 py-28 space-y-4 overflow-y-auto bg-secondary dark:bg-dark w-full transition-all"
-				style={{
-					marginLeft: window.innerWidth >= 768 ? '250px' : isSidebarOpen ? '250px' : '0px',
-					transition: 'margin-left 0.3s ease-in-out',
-				}}>
-				{/* Fixed faBars for Mobile */}
+				className={`flex-grow transition-all duration-300 ${isSidebarOpen ? 'lg:ml-72' : ''}`}>
+				{/* Mobile Header */}
 				{!isSidebarOpen && (
-					<div className="md:hidden fixed top-0 left-0 z-50 p-6  ">
-						<FontAwesomeIcon
-							icon={faBars}
-							className="cursor-pointer text-dark dark:text-secondary hover:text-gray-700 text-xl"
-							onClick={handleToggleSidebar}
-						/>
+					<div
+						className="fixed top-0 left-0 right-0 z-20 bg-white dark:bg-darken 
+						border-b border-zinc-200 dark:border-zinc-800 md:hidden">
+						<div className="p-4 flex items-center">
+							<button
+								onClick={handleToggleSidebar}
+								className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
+								<FontAwesomeIcon
+									icon={faBars}
+									className="text-zinc-600 dark:text-zinc-400"
+								/>
+							</button>
+						</div>
 					</div>
 				)}
 
-				{questions.map((quizItem, index) => (
-					<div key={quizItem.id} className="quiz" id={`question-${index}`}>
-						<QuizQuestionCard
-							questionNumber={index + 1}
-							question={quizItem.TestQuestion}
-							choices={quizItem.choices.map((choice) => choice.item_choice_text)}
-							selectedAnswer={answers[index]}
-							onAnswer={(answerIndex) => handleAnswer(index, answerIndex)}
-							onFlag={() => handleFlag(index)}
-							isFlagged={flags[index]}
-						/>
-					</div>
-				))}
-
-				<div className="flex justify-center md:hidden">
-					<Button onClick={handleSubmit} className="w-full max-w-lg">
-						{isSubmitting ? (
-							<div className="flex items-center justify-center">
-								<CircularProgress size={24} style={{ color: 'currentColor' }} />
-								<style>
-									{`.dark .MuiCircularProgress-root {
-						color: ${darkProgressColor} !important;
-					}`}
-								</style>
-							</div>
-						) : (
-							'Submit Quiz'
-						)}
-					</Button>
+				{/* Questions */}
+				<div className="max-w-4xl mx-auto p-6 pt-20 md:pt-6 space-y-6">
+					{questions.map((quizItem, index) => (
+						<div key={quizItem.id} className="quiz" id={`question-${index}`}>
+							<QuizQuestionCard
+								questionNumber={index + 1}
+								question={quizItem.TestQuestion}
+								choices={quizItem.choices.map((choice) => choice.item_choice_text)}
+								selectedAnswer={answers[index]}
+								onAnswer={(answerIndex) => handleAnswer(index, answerIndex)}
+								onFlag={() => handleFlag(index)}
+								isFlagged={flags[index]}
+							/>
+						</div>
+					))}
 				</div>
 			</div>
 
-			{/* Modal */}
-			<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Confirm Action">
-				<p className="text-dark dark:text-secondary">{modalContent}</p>
-				<div className="mt-4 flex justify-end space-x-2">
-					<button
-						onClick={() => setIsModalOpen(false)}
-						className="px-4 py-2 text-black dark:text-secondary rounded hover:bg-gray-200 transition-colors">
-						Cancel
-					</button>
-					<button
-						onClick={executeModalAction}
-						className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
-						{modalAction === 'submit' ? 'Submit Anyway' : 'Confirm Cancel'}
-					</button>
+			{/* Enhanced Modal */}
+			<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+				<div className="p-6 space-y-6">
+					<div className="flex items-center gap-4">
+						<div className="p-3 rounded-full bg-amber-50 dark:bg-amber-500/10">
+							<FontAwesomeIcon
+								icon={faExclamationTriangle}
+								className="text-xl text-amber-500"
+							/>
+						</div>
+						<h3 className="text-xl font-pbold text-newTxt dark:text-white">
+							{modalAction === 'submit' ? 'Confirm Submission' : 'Cancel Quiz'}
+						</h3>
+					</div>
+
+					<p className="text-base text-zinc-600 dark:text-zinc-400">{modalContent}</p>
+
+					<div className="flex items-center justify-end gap-3">
+						<button
+							onClick={() => setIsModalOpen(false)}
+							className="px-4 py-2 rounded-lg font-pmedium text-zinc-700 dark:text-zinc-300
+								hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+							Go Back
+						</button>
+						<button
+							onClick={executeModalAction}
+							className="px-4 py-2 rounded-lg font-pmedium text-white dark:text-dark
+								bg-primary dark:bg-secondary hover:opacity-90 transition-all">
+							{modalAction === 'submit' ? 'Submit Anyway' : 'Confirm Cancel'}
+						</button>
+					</div>
 				</div>
 			</Modal>
+
+			{/* Tour Button */}
+			<button
+				onClick={handleResetTour}
+				className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 
+					rounded-full bg-highlights dark:bg-darkS text-white
+					
+					hover:opacity-90 transition-all">
+				<FontAwesomeIcon icon={faRoute} className="text-sm" />
+				<span className="text-sm font-pmedium">Take a Tour</span>
+			</button>
 		</div>
 	);
 };

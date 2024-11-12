@@ -51,13 +51,17 @@ export default function Flashcards() {
 	const [run, setRun] = useState(false);
 	const [stepIndex, setStepIndex] = useState(0);
 
+	const TOUR_KEY_VIEW = 'hasSeenTour_flash_view';
+	const TOUR_KEY_EDIT = 'hasSeenTour_flash_edit';
+
 	const stepsNonEditing = [
 		{
 			target: '.bigCard',
 			content: (
 				<div className="flex items-center gap-2 text-base ">
 					<p>
-						You can <strong>click</strong> and <strong>press space</strong> to flip this flashcard
+						You can <strong>click</strong> and <strong>press space</strong> to flip this
+						flashcard
 					</p>
 				</div>
 			),
@@ -71,8 +75,9 @@ export default function Flashcards() {
 					<div className="flex items-center gap-2">
 						<FontAwesomeIcon icon={faChevronLeft} className="text-base sm:text-xl" />
 						<p>
-							<strong>Click this button</strong> to go to previous card you may also press <strong>A</strong> or the <strong> arrow left </strong>
-							 on your keyboard
+							<strong>Click this button</strong> to go to previous card you may also press{' '}
+							<strong>A</strong> or the <strong> arrow left </strong>
+							on your keyboard
 						</p>
 					</div>
 				</div>
@@ -86,8 +91,8 @@ export default function Flashcards() {
 				<div className="text-sm sm:text-base flex flex-col gap-3 p-4 sm:p-6">
 					<div className="flex items-center gap-2">
 						<p>
-						<strong>Click this button</strong> to go to next card you may also press <strong>D</strong> or the <strong> arrow right </strong> on
-							your keyboard
+							<strong>Click this button</strong> to go to next card you may also press{' '}
+							<strong>D</strong> or the <strong> arrow right </strong> on your keyboard
 						</p>
 						<FontAwesomeIcon icon={faChevronRight} className="text-base sm:text-xl" />
 					</div>
@@ -101,7 +106,10 @@ export default function Flashcards() {
 			content: (
 				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
 					<FontAwesomeIcon icon={faClone} className="text-base sm:text-2xl" />
-					<p>You can also click any of these preview cards to select what you want to be reflected on the flashcard</p>
+					<p>
+						You can also click any of these preview cards to select what you want to be
+						reflected on the flashcard
+					</p>
 				</div>
 			),
 			placement: 'top',
@@ -215,7 +223,11 @@ export default function Flashcards() {
 			}
 		} else if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
 			setRun(false);
-			localStorage.setItem('hasSeenTour', 'skipped');
+			if (isEditing) {
+				localStorage.setItem(TOUR_KEY_EDIT, 'skipped');
+			} else {
+				localStorage.setItem(TOUR_KEY_VIEW, 'skipped');
+			}
 			setIsOpen(false);
 		}
 	};
@@ -223,12 +235,32 @@ export default function Flashcards() {
 	const handleResetTour = () => {
 		setStepIndex(0);
 		setRun(true);
-		localStorage.removeItem('hasSeenTour');
+		localStorage.removeItem(TOUR_KEY_VIEW);
+		localStorage.removeItem(TOUR_KEY_EDIT);
 	};
 
 	useEffect(() => {
 		loadFlashcards();
-	}, [noteId]);
+
+		const hasSeenViewTour = localStorage.getItem(TOUR_KEY_VIEW);
+		const hasSeenEditTour = localStorage.getItem(TOUR_KEY_EDIT);
+
+		if (!hasSeenViewTour && !isEditing) {
+			setTimeout(() => {
+				setStepIndex(0);
+				setRun(true);
+				localStorage.setItem(TOUR_KEY_VIEW, 'true');
+			}, 500);
+		}
+
+		if (!hasSeenEditTour && isEditing) {
+			setTimeout(() => {
+				setStepIndex(0);
+				setRun(true);
+				localStorage.setItem(TOUR_KEY_EDIT, 'true');
+			}, 500);
+		}
+	}, [noteId, isEditing]);
 
 	const loadFlashcards = async () => {
 		setIsLoading(true);
