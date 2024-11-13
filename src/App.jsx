@@ -78,24 +78,24 @@ export default function App() {
 									{[
 										{
 											number: '01',
-											title: 'AI Summary',
-											description: 'Transform lengthy content into concise, memorable key points.',
+											title: 'Summarize with AI',
+											description: 'Quickly turn long content into key points.',
 											gradient: 'from-primary via-review to-primary',
 											icon: faRobot,
 											accentColor: 'text-primary'
 										},
 										{
 											number: '02',
-											title: 'Smart Flashcards',
-											description: 'Interactive cards that adapt to your learning style.',
+											title: 'Review with AI Flashcard',
+											description: 'Reinforce key concepts for better learning.',
 											gradient: 'from-review via-secondary to-review',
 											icon: faLayerGroup,
 											accentColor: 'text-review'
 										},
 										{
 											number: '03',
-											title: 'Dynamic Quizzes',
-											description: 'AI-powered assessments that evolve with your progress.',
+											title: 'Test with AI Quizzes',
+											description: 'Challenge your knowledge with tailored questions.',
 											gradient: 'from-secondary via-primary to-secondary',
 											icon: faSquareCheck,
 											accentColor: 'text-secondary'
