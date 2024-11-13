@@ -81,20 +81,7 @@ export default function Home() {
 			placement: 'right',
 			disableBeacon: true,
 		},
-		{
-			target: '.text-area',
-			content: (
-				<div className="text-sm sm:text-base flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-					<FontAwesomeIcon icon={faFileAlt} className="text-base sm:text-2xl" />
-					<p>
-						Enter your content here! This section will change depending on what input type you
-						want to generate with. It’s time to make it shine!
-					</p>
-				</div>
-			),
-			placement: 'bottom',
-			disableBeacon: true,
-		},
+	
 		{
 			target: '.generate-button',
 			content: (
@@ -397,7 +384,7 @@ export default function Home() {
 							{activeTab === 'text' && (
 								<div className="w-full">
 									<textarea
-										className="w-full h-48 p-3 border border-zinc-300 dark:border-zinc-800 rounded-md dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+										className="w-full h-60 p-3 rounded-md shadow-sm dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
 										placeholder="Paste or type your text here to generate a summary note"
 										value={inputText}
 										onChange={handleTextChange}
@@ -418,10 +405,10 @@ export default function Home() {
 								</div>
 							)}
 
-							{(activeTab === 'documents' || activeTab === 'images') && (
+							{activeTab === 'images' && (
 								<div
-									className={`file-upload border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
-										filesToDisplay.length > 0 ? 'h-48 overflow-y-auto' : ''
+									className={`file-upload border-2 h-60 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
+										filesToDisplay.length > 0 ? 'h-60 overflow-y-auto' : ''
 									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
 									onDragOver={handleDragOver}
 									onDragEnter={handleDragOver}
@@ -434,7 +421,7 @@ export default function Home() {
 												className="text-3xl text-zinc-500 mb-4 animate-bounce"
 											/>
 											<h2 className="text-lg font-psemibold mb-2 dark:text-zinc-300">
-												Drop your files here
+												Drop your images here
 											</h2>
 										</>
 									) : filesToDisplay.length === 0 ? (
@@ -444,13 +431,10 @@ export default function Home() {
 												className="text-3xl text-zinc-500 mb-4"
 											/>
 											<h1 className="text-lg font-semibold mb-2 dark:text-zinc-300">
-												Upload from your computer or drag files here
+												Upload from your computer or drag images here
 											</h1>
 											<p className="text-xs text-zinc-500 mb-4">
-												Supported file types:{' '}
-												{activeTab === 'images'
-													? 'jpg, jpeg, png'
-													: 'pdf, doc, docx, ppt, pptx'}
+												Supported file types: jpg, jpeg, png
 											</p>
 											<p className="text-xs text-zinc-400 mb-4">
 												Ensure your image/s approximately contains 200 words or more,
@@ -462,7 +446,73 @@ export default function Home() {
 													onClick={triggerFileInput}
 													className="px-4 py-2 bg-highlights text-white rounded-md hover:bg-blue-700 dark:bg-darkS transition-colors duration-300 flex items-center">
 													<FontAwesomeIcon icon={faUpload} className="mr-2" />
-													Choose Files
+													Choose Images
+												</button>
+											</div>
+										</>
+									) : (
+										<div className="space-y-2">
+											{filesToDisplay.map((file, index) => (
+												<div
+													key={index}
+													className="flex items-center justify-between bg-white dark:bg-darkS p-4 rounded-md hover:border hover:cursor-pointer border border-zinc-00 dark:border-zinc-800">
+													<span className="text-sm truncate dark:text-zinc-300">
+														{file.name}
+													</span>
+													<button
+														onClick={() => handleFileDelete(index)}
+														className="text-red-500 hover:text-red-700 dark:text-white dark:hover:text-red-500 ml-2">
+														<FontAwesomeIcon icon={faTimes} />
+													</button>
+												</div>
+											))}
+										</div>
+									)}
+								</div>
+							)}
+
+							{activeTab === 'documents' && (
+								<div
+									className={`file-upload border-2 h-60 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
+										filesToDisplay.length > 0 ? 'h-60 overflow-y-auto' : ''
+									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
+									onDragOver={handleDragOver}
+									onDragEnter={handleDragOver}
+									onDragLeave={handleDragLeave}
+									onDrop={handleDrop}>
+									{isDragOver ? (
+										<>
+											<FontAwesomeIcon
+												icon={faUpload}
+												className="text-3xl text-zinc-500 mb-4 animate-bounce"
+											/>
+											<h2 className="text-lg font-psemibold mb-2 dark:text-zinc-300">
+												Drop your documents here
+											</h2>
+										</>
+									) : filesToDisplay.length === 0 ? (
+										<>
+											<FontAwesomeIcon
+												icon={faUpload}
+												className="text-3xl text-zinc-500 mb-4"
+											/>
+											<h1 className="text-lg font-semibold mb-2 dark:text-zinc-300">
+												Upload from your computer or drag documents here
+											</h1>
+											<p className="text-xs text-zinc-500 mb-4">
+												Supported file types: pdf, doc, docx, ppt, pptx
+											</p>
+											<p className="text-xs text-zinc-400 mb-4">
+												Ensure your document/s approximately contains 200 words or more,
+												but no more than 10,000 characters, and the file size should not
+												exceed 10MB.
+											</p>
+											<div className="flex justify-center">
+												<button
+													onClick={triggerFileInput}
+													className="px-4 py-2 bg-highlights text-white rounded-md hover:bg-blue-700 dark:bg-darkS transition-colors duration-300 flex items-center">
+													<FontAwesomeIcon icon={faUpload} className="mr-2" />
+													Choose Documents
 												</button>
 											</div>
 										</>
@@ -526,7 +576,7 @@ export default function Home() {
 									<button
 										key={tab}
 										onClick={() => handleTabChange(tab)}
-										className={`w-full p-3 md:p-4 text-left font-medium ${
+										className={`w-full p-4 md:p-6 text-sm md:text-base text-left font-psemibold ${
 											activeTab === tab
 												? 'bg-highlights text-secondary dark:bg-darkS'
 												: 'bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-300'
@@ -548,9 +598,7 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				<h2 className="text-xl font-pbold mb-2 mt-4 text-newTxt dark:text-secondary">
-					How to Generate Summary Notes
-				</h2>
+
 				<Instructions />
 				{loading && <NotesLoadingScreen />}
 				{isModalOpen && (

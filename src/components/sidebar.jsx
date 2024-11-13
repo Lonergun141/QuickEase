@@ -178,8 +178,6 @@ const Sidebar = ({ onToggle }) => {
 						</div>
 						<div className="h-[calc(100%-4rem)] overflow-y-auto">
 							{renderSidebarContent()}
-
-						
 						</div>
 					</div>
 				</>
@@ -189,7 +187,7 @@ const Sidebar = ({ onToggle }) => {
 						isCollapsed ? 'w-20' : 'w-64'
 					} h-screen border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-darken flex flex-col gap-4 transition-all duration-300 z-50`}>
 					{/* Logo Section */}
-					<div className="flex h-14 items-center border-b border-zinc-200 dark:border-zinc-800 px-3 py-4">
+					<div className="flex h-14 items-center  px-3 py-4">
 						{!isCollapsed && renderLogo()}
 						<button
 							onClick={toggleSidebar}
@@ -216,7 +214,7 @@ const Sidebar = ({ onToggle }) => {
 					)}
 
 					{/* Logout Section */}
-					<div className="border-t border-zinc-200 dark:border-zinc-800 p-3">
+					<div className=" p-3">
 						<button
 							onClick={handleLogout}
 							className={`flex w-full items-center justify-center gap-x-2 rounded-md bg-highlights px-3 py-4 text-sm font-medium text-white dark:text-dark 

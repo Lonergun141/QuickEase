@@ -4,84 +4,137 @@ import { faFileAlt, faImage, faPenToSquare } from '@fortawesome/free-solid-svg-i
 
 export const Instructions = () => {
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-			{/* Input Text Section */}
-			<div className="bg-white dark:bg-darken rounded-lg shadow-md p-6 border border-zinc-300 dark:border-zinc-800 hover:shadow-lg transition-shadow duration-300">
-				<h3 className=" text-lg font-bold mb-4 flex items-center text-zinc-900 dark:text-zinc-100">
-					<div className="text-zinc-800 dark:text-zinc-300 p-2 rounded-full mr-3">
-						<FontAwesomeIcon icon={faPenToSquare} />
-					</div>
-					Input Text
-				</h3>
-				<ol className=" text-zinc-700 dark:text-zinc-300 list-decimal list-inside space-y-2 pl-4">
-					<li>
-						Select the <span className="font-bold">"Input Text"</span> tab on the right.
-					</li>
-					<li>Click in the text area on the left.</li>
-					<li>Type or paste your content.</li>
-					<li>Ensure your text is <strong>at least 200 words</strong> for accurate summarization.</li>
-					<li>
-						Click the <span className="font-bold">"Generate"</span> button when you're ready.
-					</li>
-				</ol>
-				<p className="text-sm text-zinc-600 dark:text-zinc-400 mt-4 italic">
-					<strong>Tip:</strong> Use plain text for best results.
-				</p>
+		<div className="space-y-4 sm:space-y-2 lg:space-y-4 p-2 sm:p-4">
+			<div className="text-center sm:text-left">
+				<h2 className="text-lg sm:text-xl lg:text-2xl font-pbold text-zinc-800 dark:text-zinc-100">
+					How to Generate Summary Notes
+				</h2>
 			</div>
+			
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+				{/* Input Text Section */}
+				<div className="group bg-white dark:bg-zinc-900/50 
+					backdrop-blur-sm rounded-lg sm:rounded-xl
+					border border-zinc-100 dark:border-zinc-800
+					hover:border-primary/20 dark:hover:border-secondary/20
+					transition-all duration-300">
+					<div className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-5">
+						<h3 className="flex items-center gap-2 sm:gap-3 text-zinc-800 dark:text-zinc-100 
+							text-base sm:text-lg font-semibold">
+							<strong className="p-2 sm:p-2.5 bg-primary/10 dark:bg-secondary/10 rounded-lg">
+								<FontAwesomeIcon 
+									icon={faPenToSquare} 
+									className="text-primary dark:text-secondary text-base sm:text-lg" 
+								/>
+							</strong>
+							Input Text
+						</h3>
 
-			{/* Upload Documents Section */}
-			<div className="bg-white dark:bg-darken rounded-lg shadow-md p-6 border border-zinc-300 dark:border-zinc-800 hover:shadow-lg transition-shadow duration-300">
-				<h3 className=" text-lg mb-4 font-bold flex items-center text-zinc-900 dark:text-zinc-100">
-					<div className="text-zinc-800 dark:text-zinc-300 p-2 rounded-full mr-3">
-						<FontAwesomeIcon icon={faFileAlt} />
-					</div>
-					Upload Documents
-				</h3>
-				<ol className=" text-zinc-700 dark:text-zinc-300 list-decimal list-inside space-y-2 pl-4">
-					<li>
-						Click the <span className="font-bold">"Upload Documents"</span> tab on the right.
-					</li>
-					<li>
-						Press <span className="font-bold">"Choose Files"</span> to browse and select your
-						document.
-					</li>
-					<li>Select one or more documents <strong>(e.g., DOCX, PDF, PPTX)</strong>.</li>
-					<li>Ensure each document is <strong>no larger than 10MB</strong>.</li>
-					<li>
-						Click <span className="font-bold">"Generate"</span> to process your documents.
-					</li>
-				</ol>
-				<p className=" text-sm text-zinc-600 dark:text-zinc-400 mt-4 italic">
-					<strong>Note:</strong> Multi-file uploads can increase processing time.
-				</p>
-			</div>
+						<ol className="space-y-2 sm:space-y-2.5 ml-4 list-decimal 
+							text-sm sm:text-base text-zinc-600 dark:text-zinc-300 
+							marker:text-primary/70 dark:marker:text-secondary/70">
+							<li>
+								Select the <strong className="text-zinc-800 dark:text-zinc-100">"Input Text"</strong> tab
+							</li>
+							<li>Click in the text area</li>
+							<li>Type or paste your content</li>
+							<li>Ensure text is <strong className="text-zinc-800 dark:text-zinc-100">at least 200 words</strong></li>
+							<li>
+								Click <strong className="text-zinc-800 dark:text-zinc-100">"Generate"</strong>
+							</li>
+						</ol>
 
-			{/* Upload Images Section */}
-			<div className="bg-white dark:bg-darken rounded-lg shadow-md p-6 border border-zinc-300 dark:border-zinc-800 hover:shadow-lg transition-shadow duration-300">
-				<h3 className=" text-lg mb-4 font-bold flex items-center text-zinc-900 dark:text-zinc-100">
-					<div className="text-zinc-800 dark:text-zinc-300 p-2 rounded-full mr-3">
-						<FontAwesomeIcon icon={faImage} />
+						<div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+							<p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+								<strong className="font-medium">Tip:</strong> Use plain text for best results
+							</p>
+						</div>
 					</div>
-					Upload Images
-				</h3>
-				<ol className=" text-zinc-700 dark:text-zinc-300 list-decimal list-inside space-y-2 pl-4">
-					<li>
-						Select the <span className="font-bold">"Upload Images"</span> tab on the right.
-					</li>
-					<li>
-						Click <span className="font-bold">"Choose Files"</span> or drag and drop images
-						into the space provided.
-					</li>
-					<li>Choose one or more images <strong>(supported formats: JPG, PNG, JPEG)</strong>.</li>
-					<li>Ensure each image is <strong>under 10MB</strong> for optimal processing.</li>
-					<li>
-						Press <span className="font-bold">"Generate"</span> to begin the summarization.
-					</li>
-				</ol>
-				<p className=" text-sm text-zinc-600 dark:text-zinc-400 mt-4 italic">
-					<strong>Tip:</strong> For best results, use clear, high-quality images of your notes
-					or documents.
-				</p>
+				</div>
+
+				{/* Upload Documents Section */}
+				<div className="group bg-white dark:bg-zinc-900/50 
+					backdrop-blur-sm rounded-lg sm:rounded-xl
+					border border-zinc-100 dark:border-zinc-800
+					hover:border-primary/20 dark:hover:border-secondary/20
+					transition-all duration-300">
+					<div className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-5">
+						<h3 className="flex items-center gap-2 sm:gap-3 text-zinc-800 dark:text-zinc-100 
+							text-base sm:text-lg font-semibold">
+							<strong className="p-2 sm:p-2.5 bg-primary/10 dark:bg-secondary/10 rounded-lg">
+								<FontAwesomeIcon 
+									icon={faFileAlt} 
+									className="text-primary dark:text-secondary text-base sm:text-lg" 
+								/>
+							</strong>
+							Upload Documents
+						</h3>
+
+						<ol className="space-y-2 sm:space-y-2.5 ml-4 list-decimal 
+							text-sm sm:text-base text-zinc-600 dark:text-zinc-300 
+							marker:text-primary/70 dark:marker:text-secondary/70">
+							<li>
+								Select <strong className="text-zinc-800 dark:text-zinc-100">"Upload Documents"</strong> tab
+							</li>
+							<li>
+								Click <strong className="text-zinc-800 dark:text-zinc-100">"Choose Files"</strong>
+							</li>
+							<li>Select one or more documents <strong className="text-zinc-800 dark:text-zinc-100">(PDF, DOCX, PPTX)</strong></li>
+							<li>Ensure each document is no larger than <strong className="text-zinc-800 dark:text-zinc-100">under 10MB</strong></li>
+							<li>
+								Click <strong className="text-zinc-800 dark:text-zinc-100">"Generate"</strong>
+							</li>
+						</ol>
+
+						<div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+							<p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+								<strong className="font-medium">Note:</strong> Multi-file uploads can increase processing time.
+							</p>
+						</div>
+					</div>
+				</div>
+
+				{/* Upload Images Section */}
+				<div className="group bg-white dark:bg-zinc-900/50 
+					backdrop-blur-sm rounded-lg sm:rounded-xl
+					border border-zinc-100 dark:border-zinc-800
+					hover:border-primary/20 dark:hover:border-secondary/20
+					transition-all duration-300">
+					<div className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-5">
+						<h3 className="flex items-center gap-2 sm:gap-3 text-zinc-800 dark:text-zinc-100 
+							text-base sm:text-lg font-semibold">
+							<strong className="p-2 sm:p-2.5 bg-primary/10 dark:bg-secondary/10 rounded-lg">
+								<FontAwesomeIcon 
+									icon={faImage} 
+									className="text-primary dark:text-secondary text-base sm:text-lg" 
+								/>
+							</strong>
+							Upload Images
+						</h3>
+
+						<ol className="space-y-2 sm:space-y-2.5 ml-4 list-decimal 
+							text-sm sm:text-base text-zinc-600 dark:text-zinc-300 
+							marker:text-primary/70 dark:marker:text-secondary/70">
+							<li>
+								Select <strong className="text-zinc-800 dark:text-zinc-100">"Upload Images"</strong> tab
+							</li>
+							<li>
+								Click <strong className="text-zinc-800 dark:text-zinc-100">"Choose Files"</strong> or drag and drop images into the space provided.
+							</li>
+							<li>Upload images <strong className="text-zinc-800 dark:text-zinc-100">(JPG, PNG, JPEG)</strong></li>
+							<li>Ensure each image is <strong className="text-zinc-800 dark:text-zinc-100">under 10MB</strong></li>
+							<li>
+								Click <strong className="text-zinc-800 dark:text-zinc-100">"Generate"</strong>
+							</li>
+						</ol>
+
+						<div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+							<p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+								<strong className="font-medium">Tip:</strong> For best results, use clear, high-quality images of your notes or documents.
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

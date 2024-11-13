@@ -399,6 +399,12 @@ export default function Pomodoro() {
 				stepIndex={stepIndex}
 				steps={steps}
 				disableScrolling={true}
+				locale={{
+					back: 'Previous',
+					last: 'Finish',
+					next: 'Next',
+					skip: 'Skip',
+				}}
 				styles={{
 					options: {
 						zIndex: 1000,

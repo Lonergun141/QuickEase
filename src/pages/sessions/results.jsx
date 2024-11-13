@@ -73,10 +73,10 @@ const Results = () => {
 							<div className="mt-8">
 								<h2 className="text-2xl md:text-3xl font-pbold text-primary dark:text-secondary">
 									{score / total >= 0.8 
-										? 'Outstanding' 
+										? 'Outstanding Work!' 
 										: score / total >= 0.6 
-										? 'Well Done' 
-										: 'Keep Going'}
+										? 'Well Done! Keep it up!' 
+										: 'Keep Going! Don\'t give up! You can do this!'}
 								</h2>
 							</div>
 						</div>

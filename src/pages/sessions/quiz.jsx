@@ -67,6 +67,7 @@ const Quiz = () => {
 			),
 			placement: 'right',
 			disableBeacon: true,
+			disableScrolling: false,
 		},
 		{
 			target: '.quiz',
@@ -85,7 +86,7 @@ const Quiz = () => {
 					</div>
 				</div>
 			),
-			placement: 'left',
+			placement: 'bottom',
 			disableBeacon: true,
 			disableScrolling: false,
 		},
@@ -327,7 +328,7 @@ const Quiz = () => {
 				showSkipButton
 				stepIndex={stepIndex}
 				steps={steps}
-				disableScrolling={true}
+				disableScrolling={false}
 				disableBeacon={true}
 				locale={{
 					back: 'Previous',
@@ -340,7 +341,7 @@ const Quiz = () => {
 						arrowColor: isDarkMode ? '#1e1e1e' : '#ffffff',
 						backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',
 						overlayColor: 'rgba(0, 0, 0, 0.75)',
-						primaryColor: isDarkMode ? '#63A7FF' : '#2563eb',
+						primaryColor: '#63A7FF',
 						textColor: isDarkMode ? '#fff' : '#1e1e1e',
 						zIndex: 1000,
 					},
