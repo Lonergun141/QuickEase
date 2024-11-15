@@ -2,7 +2,7 @@ import axios from 'axios';
 import { convertFileToPng } from '../Converter/convertAPI';
 import Tesseract, { createWorker, createScheduler } from 'tesseract.js';
 
-const API_BASE_URL = `https://d4ngk.pythonanywhere.com/quickease/api/v1`;
+const API_BASE_URL = `https://quickease.xyz/quickease/api/v1`;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const GOOGLE_VISION_KEY = import.meta.env.VITE_GOOGLE_VISION_API_KEY;
 

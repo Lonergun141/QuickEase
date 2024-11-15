@@ -139,6 +139,40 @@ ul li, ol li {
   animation: float 8s ease-in-out infinite;
 }
 
+@keyframes bounce-gentle {
+  0%, 100% {
+      transform: translateY(-5%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+      opacity: 0.5;
+  }
+  50% {
+      opacity: 0.15;
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 @keyframes float {
   0% { transform: translateY(0px) translateX(0px); }
   50% { transform: translateY(-20px) translateX(10px); }

@@ -350,250 +350,196 @@ export default function Home() {
 						<QuickieGreetings />
 					</div>
 
-					<div className="input-methods flex flex-col lg:flex-row">
-						<div className="w-full lg:w-3/4 p-1">
-							{/* Mobile tab selector */}
-							<div className="input-methods lg:hidden flex justify-center mb-2 bg-gray-100 dark:bg-dark rounded-lg p-1">
-								{['text', 'documents', 'images'].map((tab) => (
-									<button
-										key={tab}
-										onClick={() => handleTabChange(tab)}
-										className={`flex-1 p-2 ${
-											activeTab === tab
-												? 'bg-highlights dark:bg-darkS text-white'
-												: 'bg-white dark:bg-darken dark:text-secondary'
-										} rounded-md mx-1 flex items-center justify-center transition-transform transform hover:scale-105`}>
-										<FontAwesomeIcon
-											icon={
-												tab === 'text'
-													? faPenToSquare
-													: tab === 'documents'
-													? faFileAlt
-													: faImage
-											}
-											className="mr-2 text-sm sm:text-base"
-										/>
-										{/* Hide text on extra small screens */}
-										<span className="hidden sm:inline text-xs sm:text-sm">
-											{tab === 'text' ? 'Input text' : `Upload ${tab}`}
-										</span>
-									</button>
-								))}
-							</div>
-
-							{activeTab === 'text' && (
-								<div className="w-full">
-									<textarea
-										className="w-full h-60 p-3 rounded-md shadow-sm dark:bg-darken dark:text-zinc-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-										placeholder="Paste or type your text here to generate a summary note"
-										value={inputText}
-										onChange={handleTextChange}
-									/>
-									<div className="mt-2 flex justify-between items-center text-sm">
-										<span
-											className={`${
-												characterCount > 10000 || characterCount < 200
-													? 'text-zinc-500'
-													: 'text-zinc-700'
-											}`}>
-											{characterCount}/10000 characters
-										</span>
-										{textError && (
-											<span className="text-red-500 font-medium">{textError}</span>
-										)}
+					<div className="bg-white/50 mb-4 dark:bg-zinc-800/50 backdrop-blur-sm rounded-xl border border-zinc-100 dark:border-zinc-800 p-3 xs:p-4 sm:p-5">
+						<div className="input-methods flex flex-col lg:flex-row gap-4 lg:gap-6">
+							{/* Main Input Area */}
+							<div className="w-full lg:w-3/4">
+								{/* Mobile Tab Selector - Improved */}
+								<div className="lg:hidden mb-4">
+									<div className="flex justify-between gap-2 bg-gray-50 dark:bg-dark p-1.5 rounded-xl">
+										{['text', 'documents', 'images'].map((tab) => (
+											<button
+												key={tab}
+												onClick={() => handleTabChange(tab)}
+												className={`flex-1 py-2.5 px-3 ${
+													activeTab === tab
+														? 'bg-highlights dark:bg-darkS text-white shadow-sm'
+														: 'bg-white dark:bg-darken dark:text-zinc-300'
+												} rounded-lg flex items-center justify-center gap-2 transition-all duration-200`}>
+												<FontAwesomeIcon
+													icon={
+														tab === 'text'
+															? faPenToSquare
+															: tab === 'documents'
+															? faFileAlt
+															: faImage
+													}
+													className="text-base"
+												/>
+												<span className="hidden xs:inline text-sm font-medium">
+													{tab === 'text' ? 'Text' : tab}
+												</span>
+											</button>
+										))}
 									</div>
 								</div>
-							)}
 
-							{activeTab === 'images' && (
-								<div
-									className={`file-upload border-2 h-60 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
-										filesToDisplay.length > 0 ? 'h-60 overflow-y-auto' : ''
-									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
-									onDragOver={handleDragOver}
-									onDragEnter={handleDragOver}
-									onDragLeave={handleDragLeave}
-									onDrop={handleDrop}>
-									{isDragOver ? (
-										<>
-											<FontAwesomeIcon
-												icon={faUpload}
-												className="text-3xl text-zinc-500 mb-4 animate-bounce"
-											/>
-											<h2 className="text-lg font-psemibold mb-2 dark:text-zinc-300">
-												Drop your images here
-											</h2>
-										</>
-									) : filesToDisplay.length === 0 ? (
-										<>
-											<FontAwesomeIcon
-												icon={faUpload}
-												className="text-3xl text-zinc-500 mb-4"
-											/>
-											<h1 className="text-lg font-semibold mb-2 dark:text-zinc-300">
-												Upload from your computer or drag images here
-											</h1>
-											<p className="text-xs text-zinc-500 mb-4">
-												Supported file types: jpg, jpeg, png
-											</p>
-											<p className="text-xs text-zinc-400 mb-4">
-												Ensure your image/s approximately contains 200 words or more,
-												but no more than 10,000 characters, and the file size should not
-												exceed 10MB.
-											</p>
-											<div className="flex justify-center">
-												<button
-													onClick={triggerFileInput}
-													className="px-4 py-2 bg-highlights text-white rounded-md hover:bg-blue-700 dark:bg-darkS transition-colors duration-300 flex items-center">
-													<FontAwesomeIcon icon={faUpload} className="mr-2" />
-													Choose Images
-												</button>
-											</div>
-										</>
-									) : (
-										<div className="space-y-2">
-											{filesToDisplay.map((file, index) => (
-												<div
-													key={index}
-													className="flex items-center justify-between bg-white dark:bg-darkS p-4 rounded-md hover:border hover:cursor-pointer border border-zinc-00 dark:border-zinc-800">
-													<span className="text-sm truncate dark:text-zinc-300">
-														{file.name}
-													</span>
-													<button
-														onClick={() => handleFileDelete(index)}
-														className="text-red-500 hover:text-red-700 dark:text-white dark:hover:text-red-500 ml-2">
-														<FontAwesomeIcon icon={faTimes} />
-													</button>
-												</div>
-											))}
-										</div>
-									)}
-								</div>
-							)}
-
-							{activeTab === 'documents' && (
-								<div
-									className={`file-upload border-2 h-60 border-dashed border-zinc-300 dark:border-zinc-800 rounded-lg p-4 text-center ${
-										filesToDisplay.length > 0 ? 'h-60 overflow-y-auto' : ''
-									} ${isDragOver ? 'bg-zinc-100 dark:bg-darkS' : ''}`}
-									onDragOver={handleDragOver}
-									onDragEnter={handleDragOver}
-									onDragLeave={handleDragLeave}
-									onDrop={handleDrop}>
-									{isDragOver ? (
-										<>
-											<FontAwesomeIcon
-												icon={faUpload}
-												className="text-3xl text-zinc-500 mb-4 animate-bounce"
-											/>
-											<h2 className="text-lg font-psemibold mb-2 dark:text-zinc-300">
-												Drop your documents here
-											</h2>
-										</>
-									) : filesToDisplay.length === 0 ? (
-										<>
-											<FontAwesomeIcon
-												icon={faUpload}
-												className="text-3xl text-zinc-500 mb-4"
-											/>
-											<h1 className="text-lg font-semibold mb-2 dark:text-zinc-300">
-												Upload from your computer or drag documents here
-											</h1>
-											<p className="text-xs text-zinc-500 mb-4">
-												Supported file types: pdf, doc, docx, ppt, pptx
-											</p>
-											<p className="text-xs text-zinc-400 mb-4">
-												Ensure your document/s approximately contains 200 words or more,
-												but no more than 10,000 characters, and the file size should not
-												exceed 10MB.
-											</p>
-											<div className="flex justify-center">
-												<button
-													onClick={triggerFileInput}
-													className="px-4 py-2 bg-highlights text-white rounded-md hover:bg-blue-700 dark:bg-darkS transition-colors duration-300 flex items-center">
-													<FontAwesomeIcon icon={faUpload} className="mr-2" />
-													Choose Documents
-												</button>
-											</div>
-										</>
-									) : (
-										<div className="space-y-2">
-											{filesToDisplay.map((file, index) => (
-												<div
-													key={index}
-													className="flex items-center justify-between bg-white dark:bg-darkS p-4 rounded-md hover:border hover:cursor-pointer border border-zinc-00 dark:border-zinc-800">
-													<span className="text-sm truncate dark:text-zinc-300">
-														{file.name}
-													</span>
-													<button
-														onClick={() => handleFileDelete(index)}
-														className="text-red-500 hover:text-red-700 dark:text-white dark:hover:text-red-500 ml-2">
-														<FontAwesomeIcon icon={faTimes} />
-													</button>
-												</div>
-											))}
-										</div>
-									)}
-								</div>
-							)}
-
-							{fileError && (
-								<div className="mt-2 text-red-500 flex items-center text-sm">
-									<FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
-									{fileError}
-								</div>
-							)}
-
-							<input
-								ref={fileInputRef}
-								type="file"
-								multiple
-								accept={
-									activeTab === 'images' ? '.jpg,.jpeg,.png' : '.pdf,.doc,.docx,.ppt,.pptx'
-								}
-								onChange={handleFileUpload}
-								className="hidden"
-							/>
-
-							<div className="mt-2 flex justify-end">
-								<Button
-									onClick={handleGenerate}
-									className="w-full lg:w-2/3 generate-button"
-									disabled={
-										(activeTab === 'text' &&
-											(characterCount < 200 || characterCount > 10000)) ||
-										(activeTab === 'documents' && uploadedDocuments.length === 0) ||
-										(activeTab === 'images' && uploadedImages.length === 0)
-									}>
-									Generate
-								</Button>
-							</div>
-						</div>
-
-						<div className="input-methods hidden lg:block w-1/4 p-2">
-							<div className="space-y-2">
-								{['text', 'documents', 'images'].map((tab) => (
-									<button
-										key={tab}
-										onClick={() => handleTabChange(tab)}
-										className={`w-full p-4 md:p-6 text-sm md:text-base text-left font-psemibold ${
-											activeTab === tab
-												? 'bg-highlights text-secondary dark:bg-darkS'
-												: 'bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-300'
-										} rounded-md dark:border dark:border-zinc-800 shadow-sm flex items-center transition-colors duration-200`}>
-										<FontAwesomeIcon
-											icon={
-												tab === 'text'
-													? faPenToSquare
-													: tab === 'documents'
-													? faFileAlt
-													: faImage
-											}
-											className="mr-2 "
+								{/* Text Input Area - Improved */}
+								{activeTab === 'text' && (
+									<div className="w-full space-y-2">
+										<textarea
+											className="w-full h-[200px] xs:h-[250px] sm:h-[300px] md:h-[250px] p-4 
+											rounded-xl bg-white/50 dark:bg-zinc-900/50  border border-zinc-200 dark:border-zinc-800
+											shadow-sm dark:text-zinc-200 
+											focus:ring-2 focus:ring-primary/50 dark:focus:ring-secondary/50 
+											focus:border-primary/50 dark:focus:border-secondary/50 
+											transition-all placeholder:text-zinc-400 text-base"
+											placeholder="Paste or type your text here to generate a summary note"
+											value={inputText}
+											onChange={handleTextChange}
 										/>
-										{tab === 'text' ? 'Input text' : `Upload ${tab}`}
-									</button>
-								))}
+										<div className="flex justify-between items-center px-1 text-sm">
+											<span className={`${characterCount > 10000 || characterCount < 200 ? 'text-zinc-500' : 'text-zinc-500 dark:text-zinc-400'}`}>
+												{characterCount}/10000 characters
+											</span>
+											{textError && (
+												<span className="text-red-500 font-medium">{textError}</span>
+											)}
+										</div>
+									</div>
+								)}
+
+								{/* File Upload Areas - Improved */}
+								{(activeTab === 'images' || activeTab === 'documents') && (
+									<div
+										className={`file-upload 
+										h-[200px] xs:h-[250px] sm:h-[300px] md:h-[250px] 
+										border-2 border-dashed border-zinc-300 dark:border-zinc-700 
+										rounded-xl p-4 sm:p-6 text-center
+										bg-white/50 dark:bg-zinc-900/50 
+										${filesToDisplay.length > 0 ? 'overflow-y-auto' : ''}
+										${isDragOver ? 'bg-primary/5 dark:bg-secondary/5 border-primary dark:border-secondary' : ''}`}
+										onDragOver={handleDragOver}
+										onDragEnter={handleDragOver}
+										onDragLeave={handleDragLeave}
+										onDrop={handleDrop}>
+										{isDragOver ? (
+											<div className="h-full flex flex-col items-center justify-center">
+												<FontAwesomeIcon
+													icon={faUpload}
+													className="text-4xl text-primary dark:text-secondary mb-4 animate-bounce"
+												/>
+												<h2 className="text-lg font-medium dark:text-zinc-300">
+													Drop your {activeTab} here
+												</h2>
+											</div>
+										) : filesToDisplay.length === 0 ? (
+											<div className="h-full flex flex-col items-center justify-center">
+												<FontAwesomeIcon
+													icon={faUpload}
+													className="text-3xl text-zinc-400 mb-4"
+												/>
+												<h1 className="text-lg font-medium mb-2 dark:text-zinc-300">
+													Upload or drag {activeTab} here
+												</h1>
+												<p className="text-sm text-zinc-500 mb-2">
+													Supported types: {activeTab === 'images' ? 'jpg, jpeg, png' : 'pdf, doc, docx, ppt, pptx'}
+												</p>
+												<p className="text-xs text-zinc-400 mb-6 max-w-md">
+													<strong>Files</strong> or <strong>Images</strong> should contain 200+ words but not exceed 10,000 characters. Max size: 10MB
+												</p>
+												<button
+													onClick={triggerFileInput}
+													className="px-6 py-2.5 bg-highlights dark:bg-darkS text-white 
+													rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 
+													transition-colors duration-200 flex items-center gap-2">
+													<FontAwesomeIcon icon={faUpload} />
+													<span>Choose {activeTab}</span>
+												</button>
+											</div>
+										) : (
+											<div className="space-y-2">
+												{filesToDisplay.map((file, index) => (
+													<div
+														key={index}
+														className="flex items-center justify-between bg-white dark:bg-darkS 
+														p-3 rounded-lg border border-zinc-100 dark:border-zinc-800 
+														hover:border-primary/50 dark:hover:border-secondary/50 
+														transition-colors duration-200">
+														<span className="text-sm truncate dark:text-zinc-300 flex-1 text-left">
+															{file.name}
+														</span>
+														<button
+															onClick={() => handleFileDelete(index)}
+															className="ml-2 p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 
+															rounded-md transition-colors duration-200">
+															<FontAwesomeIcon icon={faTimes} />
+														</button>
+													</div>
+												))}
+											</div>
+										)}
+									</div>
+								)}
+
+								{/* Error Message */}
+								{fileError && (
+									<div className="mt-2 text-red-500 flex items-center text-sm px-1">
+										<FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
+										{fileError}
+									</div>
+								)}
+
+								{/* Hidden File Input */}
+								<input
+									ref={fileInputRef}
+									type="file"
+									multiple
+									accept={activeTab === 'images' ? '.jpg,.jpeg,.png' : '.pdf,.doc,.docx,.ppt,.pptx'}
+									onChange={handleFileUpload}
+									className="hidden"
+								/>
+
+								{/* Generate Button */}
+								<div className="mt-4 sm:mt-6 generate-button">
+									<Button
+										onClick={handleGenerate}
+										className="w-full py-3 text-base font-medium rounded-xl"
+										disabled={
+											(activeTab === 'text' && (characterCount < 200 || characterCount > 10000)) ||
+											(activeTab === 'documents' && uploadedDocuments.length === 0) ||
+											(activeTab === 'images' && uploadedImages.length === 0)
+										}>
+										Generate
+									</Button>
+								</div>
+							</div>
+
+							{/* Desktop Tab Buttons */}
+							<div className="hidden lg:block w-1/4">
+								<div className="space-y-2">
+									{['text', 'documents', 'images'].map((tab) => (
+										<button
+											key={tab}
+											onClick={() => handleTabChange(tab)}
+											className={`w-full p-6 text-base font-medium 
+											${
+												activeTab === tab
+													? 'bg-highlights text-white dark:bg-darkS'
+													: 'bg-white/80 dark:bg-zinc-900/80 text-zinc-900 dark:text-zinc-300'
+											} 
+											rounded-xl border border-zinc-100 dark:border-zinc-800
+											shadow-sm backdrop-blur-sm
+											flex items-center gap-3 transition-all duration-200
+											hover:scale-[1.02]`}>
+											<FontAwesomeIcon icon={
+												tab === 'text' ? faPenToSquare : 
+												tab === 'documents' ? faFileAlt : faImage
+											} />
+											{tab === 'text' ? 'Input text' : `Upload ${tab}`}
+										</button>
+									))}
+								</div>
 							</div>
 						</div>
 					</div>

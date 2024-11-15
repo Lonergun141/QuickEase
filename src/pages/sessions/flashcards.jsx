@@ -35,7 +35,7 @@ import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 const FlashCard = ({ card, isFlipped, onClick }) => {
 	return (
 		<div
-			className="w-full max-w-2xl h-[28rem] relative cursor-pointer group bigCard"
+			className="w-full max-w-2xl h-64 sm:h-80 md:h-[28rem] relative cursor-pointer group bigCard"
 			onClick={onClick}
 			style={{ perspective: '1500px' }}>
 			<div
@@ -44,43 +44,36 @@ const FlashCard = ({ card, isFlipped, onClick }) => {
 				style={{ transformStyle: 'preserve-3d' }}>
 				{/* Front Side */}
 				<div
-					className="absolute w-full h-full rounded-2xl shadow-lg p-8 
+					className="absolute w-full h-full rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 
 						bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-800 dark:to-zinc-900
 						flex flex-col justify-center items-center"
-					style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
+						style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
 					<div
-						className="absolute top-6 right-6 text-xs font-medium tracking-wider 
+						className="absolute top-3 sm:top-6 right-3 sm:right-6 text-xs font-medium tracking-wider 
 						text-zinc-400 dark:text-zinc-500 uppercase">
-						Definition
+							Definition
 					</div>
 					<p
-						className="text-2xl text-center text-zinc-800 dark:text-zinc-200 font-medium 
-						max-w-lg leading-relaxed">
+						className="text-lg sm:text-xl md:text-2xl text-center text-zinc-800 dark:text-zinc-200 
+						font-medium max-w-lg leading-relaxed">
 						{card.definition}
 					</p>
-					<div
-						className="absolute bottom-6 left-1/2 -translate-x-1/2 
-						text-zinc-400 dark:text-zinc-500 text-sm opacity-0 group-hover:opacity-100 
-						transition-opacity duration-300">
-						Click to flip
-					</div>
 				</div>
 
 				{/* Back Side */}
 				<div
-					className="absolute w-full h-full rounded-2xl shadow-lg p-8 
-						bg-gradient-to-br from-primary/5 to-primary/10 
-						dark:from-secondary/5 dark:to-secondary/10
+					className="absolute w-full h-full rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 
+						bg-white dark:bg-zinc-800 
 						flex flex-col justify-center items-center"
-					style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+						style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
 					<div
-						className="absolute top-6 right-6 text-xs font-medium tracking-wider 
+						className="absolute top-3 sm:top-6 right-3 sm:right-6 text-xs font-medium tracking-wider 
 						text-primary/60 dark:text-secondary/60 uppercase">
-						Term
+							Term
 					</div>
 					<p
-						className="text-2xl text-center text-primary dark:text-secondary font-medium 
-						max-w-lg leading-relaxed">
+						className="text-lg sm:text-xl md:text-2xl text-center text-zinc-900 dark:text-zinc-100 
+						font-medium max-w-lg leading-relaxed break-words">
 						{card.term}
 					</p>
 				</div>
@@ -94,11 +87,14 @@ const NavigationButton = ({ direction, onClick, className }) => {
 	return (
 		<button
 			onClick={onClick}
-			className={`p-4 rounded-full bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm
+			className={`p-3 sm:p-4  rounded-full bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm
 				shadow-lg hover:shadow-xl transition-all duration-300
 				text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-secondary
 				hover:scale-110 active:scale-95 ${className}`}>
-			<FontAwesomeIcon icon={isNext ? faChevronRight : faChevronLeft} className="text-xl" />
+			<FontAwesomeIcon 
+				icon={isNext ? faChevronRight : faChevronLeft} 
+				className="text-base sm:text-xl" 
+			/>
 		</button>
 	);
 };
@@ -116,8 +112,8 @@ const PreviewCard = ({ card, isActive, onClick, index }) => {
 				transform hover:-translate-y-1 hover:shadow-xl`}>
 			{/* Card Number Badge */}
 			<div
-				className={`absolute top-3 left-3 w-8 h-8 rounded-full flex items-center justify-center
-				text-sm font-medium ${
+				className={`absolute top-2 sm:top-3 left-2 sm:left-3 w-6 h-6 sm:w-8 sm:h-8 
+				rounded-full flex items-center justify-center text-xs sm:text-sm font-medium ${
 					isActive
 						? 'bg-primary dark:bg-secondary text-white dark:text-dark'
 						: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
@@ -127,54 +123,29 @@ const PreviewCard = ({ card, isActive, onClick, index }) => {
 
 			{/* Card Content */}
 			<div
-				className={`p-6 pt-12 h-full ${
+				className={`p-4 sm:p-6 pt-10 sm:pt-12 h-full ${
 					isActive ? 'bg-primary/5 dark:bg-secondary/5' : 'bg-white dark:bg-zinc-900'
 				}`}>
 				{/* Definition Preview */}
-				<div className="space-y-3">
+				<div className="space-y-2 sm:space-y-3">
 					<div className="text-xs font-medium tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
 						Definition
 					</div>
-					<p className="text-sm text-zinc-600 dark:text-zinc-300 line-clamp-3">
+					<p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 line-clamp-3">
 						{card.definition}
 					</p>
 				</div>
 
-				{/* Term Preview (Only visible when active) */}
+				{/* Term Preview */}
 				<div
-					className={`mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800
+					className={`mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-zinc-100 dark:border-zinc-800
 					transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
 					<div className="text-xs font-medium tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
 						Term
 					</div>
-					<p className="mt-2 text-sm font-medium text-primary dark:text-secondary line-clamp-2">
+					<p className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-zinc-900 dark:text-secondary line-clamp-2">
 						{card.term}
 					</p>
-				</div>
-
-				{/* Select Indicator */}
-				<div
-					className={`absolute bottom-3 right-3 transition-opacity duration-300
-					${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-					<div
-						className={`p-1.5 rounded-full ${
-							isActive
-								? 'bg-primary dark:bg-secondary text-white dark:text-dark'
-								: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'
-						}`}>
-						<svg
-							className="w-4 h-4"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth={2}
-							stroke="currentColor">
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -703,7 +674,7 @@ export default function Flashcards() {
 
 			<Sidebar onToggle={setSidebarExpanded} />
 			<main
-				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
+				className={`transition-all duration-300 flex-grow p-3 sm:p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
 				<div className="edit">
@@ -723,7 +694,7 @@ export default function Flashcards() {
 				</button>
 
 				{isEditing ? (
-					<div className="space-y-8 edit max-w-5xl mx-auto px-4">
+					<div className="space-y-6 sm:space-y-8 edit max-w-5xl mx-auto px-2 sm:px-4">
 						{/* Add Card Button */}
 						<div className="flex justify-center">
 							<button
@@ -962,11 +933,11 @@ export default function Flashcards() {
 					</div>
 				) : (
 					<>
-						<div className="relative flex flex-col items-center">
+						<div className="relative flex flex-col items-center px-2 sm:px-4">
 							{cards.length > 0 && (
 								<div
 									className="hidden lg:flex absolute inset-y-0 left-0 right-0 
-									items-center justify-between px-8 z-10 pointer-events-none">
+									items-center justify-between px-4 sm:px-8 z-10 pointer-events-none">
 									<NavigationButton
 										direction="prev"
 										onClick={handlePrevCard}
@@ -984,13 +955,13 @@ export default function Flashcards() {
 
 							{/* Card Counter */}
 							{cards.length > 0 && (
-								<div className="mt-6 flex items-center gap-2">
-									<div className="px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800">
-										<span className="text-primary dark:text-secondary font-medium">
+								<div className="mt-4 sm:mt-6 flex items-center gap-2">
+									<div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-zinc-100 dark:bg-zinc-800">
+										<span className="text-sm sm:text-base text-primary dark:text-secondary font-medium">
 											{currentCardIndex + 1}
 										</span>
 										<span className="text-zinc-400 dark:text-zinc-500 mx-1">/</span>
-										<span className="text-zinc-600 dark:text-zinc-400">
+										<span className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
 											{cards.length}
 										</span>
 									</div>
@@ -998,7 +969,7 @@ export default function Flashcards() {
 							)}
 
 							{/* Mobile Navigation */}
-							<div className="mt-8 flex justify-center gap-4 lg:hidden w-full">
+							<div className="mt-6 sm:mt-8 flex justify-between gap-3 sm:gap-4 lg:hidden w-full">
 								<NavigationButton direction="prev" onClick={handlePrevCard} />
 								<NavigationButton direction="next" onClick={handleNextCard} />
 							</div>

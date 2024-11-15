@@ -1,6 +1,6 @@
 import axios from 'axios';
 //Backend endpoints connection
-const API_BASE_URL = `https://d4ngk.pythonanywhere.com/quickease/api/v1`;
+const API_BASE_URL = `https://quickease.xyz/quickease/api/v1`;
 
 const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,

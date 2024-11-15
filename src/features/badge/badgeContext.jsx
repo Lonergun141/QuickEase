@@ -18,53 +18,60 @@ export const BadgeProvider = ({ children }) => {
 
 	const badgeDefinitions = {
 		NOTE_TAKER: {
-			id: '70b81abb-3b90-4d1a-86bf-bb6d301a6469',
+			id: '84482203-c1c0-4f6c-9a4b-8b3fd0476310',
 			image: img.Badge2,
 			title: 'Studiest',
 			description: 'Created your first note!',
 			condition: (stats) => stats.notesCount >= 1,
 		},
 		FLASH_MASTER: {
-			id: 'd2b83c92-b21d-4a7d-8a62-19ad645af597',
+			id: '63048bee-81dd-4f87-8189-c920bdb10bfa',
 			image: img.Badge4,
 			title: 'Flash Master',
 			description: 'Generated at least 160 flashcards',
 			condition: (stats) => stats.flashcardCount >= 160,
 		},
 		QUIZ_WHIZ: {
-			id: '311ceeb1-2b9d-4c2a-9be3-c3ea99b12baa',
+			id: '1a080198-17a4-4e08-b57f-bffc1fd09aff',
 			image: img.Badge3,
 			title: 'Quiz Whiz',
 			description: 'Achieved 100% on quiz evaluation',
 			condition: (stats) => stats.averageScore === 100,
 		},
 		PERFECTIONIST: {
-			id: '9dcc364a-b91c-4419-8de5-c7c5289ec651',
+			id: '2cf220d0-f749-4c8d-8173-acbe881f6885',
 			image: img.Badge1,
 			title: 'Perfectionist',
 			description: 'Achieved a perfect score on a quiz!',
 			condition: (stats) => stats.perfectQuizAchieved === true,
 		},
 		NOTERER: {
-			id: '8f75f97c-ad51-408e-868d-cfe347057e0c',
+			id: '046baa11-590f-41eb-ae79-0c54bc5c7bd9',
 			image: img.Badge5,
 			title: 'Noterer',
 			description: 'Generate 5 notes',
 			condition: (stats) => stats.notesCount >= 5
 		},
 		DOUBLE_PERFECT: {
-			id: '94a316ae-e416-47a4-9cc5-9a403d28649a',
+			id: '4c951ccc-6da7-4ba9-8dd9-957f4db206d0',
 			image: img.Badge6, 
 			title: 'What a Nice',
 			description: 'Achieved two perfect scores on quizzes!',
 			condition: (stats) => stats.perfectQuizCount >= 2,
 		},
 		HMMM: {
-			id: '2846831f-015d-4c45-8721-05a4061abe70',
+			id: '57788c51-93a2-4686-9c65-50905d05cfe1',
 			image: img.Badge7, 
 			title: 'Accidental Genius Award',
 			description: 'Achieved three perfect scores on quizzes!',
 			condition: (stats) => stats.perfectQuizCount >= 3,
+		},
+		PORTAYMS: {
+			id: '57788c51-93a2-4686-9c65-50905d05cfe1',
+			image: img.Badge8, 
+			title: 'I Believe You Now',
+			description: 'Achieved four perfect scores on quizzes!',
+			condition: (stats) => stats.perfectQuizCount >= 4,
 		},
 	};
 

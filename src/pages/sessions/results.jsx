@@ -1,19 +1,30 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import Button from '../../components/button';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+	faTrophy,
+	faRibbon,
+	faChartLine,
+	faRotate,
+	faChevronRight,
+	faFileText,
+	faRefresh,
+} from '@fortawesome/free-solid-svg-icons';
 import { updateTestScore } from '../../features/Quiz/quizServices';
+import { useUserStats } from '../../features/badge/userStatsContext';
 
 const Results = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { score, total, noteId } = location.state || { score: 0, total: 0, noteId: null };
+	const percentage = Math.round((score / total) * 100);
+	const { refreshUserStats } = useUserStats();
 
 	useEffect(() => {
 		const postResults = async () => {
 			try {
-				// Use noteId instead of id
 				await updateTestScore(noteId, score, total);
-				console.log('Results saved successfully!');
+				await refreshUserStats();
 			} catch (error) {
 				console.error('Failed to save results:', error);
 			}
@@ -24,92 +35,216 @@ const Results = () => {
 		}
 	}, [noteId, score, total]);
 
-	const handleRetake = () => {
-		localStorage.removeItem(`quiz-question-order-${noteId}`);
-		navigate(`/Quiz/${noteId}`);
+	const getGradeColor = () => {
+		if (percentage >= 90) return 'emerald';
+		if (percentage >= 70) return 'blue';
+		if (percentage >= 50) return 'amber';
+		return 'red';
 	};
 
+	const getGradeMessage = () => {
+		if (percentage >= 90) return 'Excellent!';
+		if (percentage >= 70) return 'Good Job!';
+		if (percentage >= 50) return 'Keep Practicing!';
+		return 'Need More Practice';
+	};
+
+	const getGradeIcon = () => {
+		if (percentage >= 90) return faTrophy;
+		if (percentage >= 70) return faRibbon;
+		if (percentage >= 50) return faChartLine;
+		return faRotate;
+	};
+
+	const color = getGradeColor();
+
+	
 	const handleClose = () => {
 		navigate(`/Notes/${noteId}`);
 	};
 
-	const handleReview = () => {
-		navigate(`/Review/${noteId}`);
-	};
-
 	return (
-		<div className="flex min-h-screen bg-zinc-50 dark:bg-dark">
-			<div className="relative w-full max-w-4xl mx-auto p-6 md:p-8">
-			
-				{/* Main Content */}
-				<div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-					<div className="w-full max-w-2xl bg-white dark:bg-darken rounded-2xl 
-						border border-zinc-200/80 dark:border-zinc-800 p-8 md:p-10">
-						
-						{/* Score Display */}
-						<div className="flex flex-col items-center text-center">
-							{/* Score Circle */}
-							<div className="relative group">
-								<div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-secondary/20 
-									dark:from-secondary/20 dark:to-primary/20 rounded-full blur-2xl opacity-0 
-									group-hover:opacity-100 transition-opacity duration-500" />
-								<div className="w-40 h-40 md:w-48 md:h-48 rounded-full 
-									bg-primary/10 dark:bg-secondary/10
-									flex items-center justify-center">
-									<div className="text-center">
-										<div className="flex items-baseline justify-center gap-2">
-											<span className="text-6xl md:text-7xl font-pbold text-primary dark:text-secondary">
-												{score}
-											</span>
-											<span className="text-3xl text-zinc-400 dark:text-zinc-500">
-												/{total}
-											</span>
-										</div>
-									</div>
+		<div className="h-full bg-secondary dark:bg-dark">
+			<div className="h-full w-full p-4 sm:p-6 md:p-8 flex flex-col">
+				{/* Score Card */}
+				<div className="flex-1 min-h-0">
+					<div
+						className="bg-white dark:bg-darken rounded-2xl overflow-hidden 
+						border border-zinc-200/80 dark:border-zinc-800 shadow-sm
+						h-full">
+						<div className="h-full flex flex-col">
+							<div className="flex-1 p-3 xs:p-4 sm:p-6 flex flex-col items-center justify-center gap-2 xs:gap-3">
+								{/* Icon Container */}
+								<div
+									className={`relative w-12 xs:w-16 sm:w-20 aspect-square 
+									rounded-full flex items-center justify-center
+									${
+										percentage >= 90
+											? 'bg-emerald-100 dark:bg-emerald-900/20'
+											: percentage >= 70
+											? 'bg-primary/10 dark:bg-secondary/20'
+											: percentage >= 50
+											? 'bg-amber-100 dark:bg-amber-900/20'
+											: 'bg-red-100 dark:bg-red-900/20'
+									}`}>
+									<FontAwesomeIcon
+										icon={getGradeIcon()}
+										className={`text-xl xs:text-2xl sm:text-3xl
+											${
+												percentage >= 90
+													? 'text-emerald-500 dark:text-emerald-400'
+													: percentage >= 70
+													? 'text-primary dark:text-secondary'
+													: percentage >= 50
+													? 'text-amber-500 dark:text-amber-400'
+													: 'text-red-500 dark:text-red-400'
+											}`}
+									/>
+								</div>
+
+								{/* Score Display */}
+								<div
+									className={`text-xl xs:text-2xl sm:text-4xl font-pbold mb-2
+									${
+										percentage >= 90
+											? 'text-emerald-500 dark:text-emerald-400'
+											: percentage >= 70
+											? 'text-primary dark:text-secondary'
+											: percentage >= 50
+											? 'text-amber-500 dark:text-amber-400'
+											: 'text-red-500 dark:text-red-400'
+									}`}>
+									{percentage}%
+								</div>
+
+								<div
+									className="text-sm xs:text-base sm:text-lg font-pmedium 
+									text-newTxt dark:text-white text-center">
+									{score} out of {total} correct
+								</div>
+
+								<div
+									className={`text-lg xs:text-xl sm:text-2xl font-pbold mt-4 xs:mt-6 text-center
+									${
+										percentage >= 90
+											? 'text-emerald-500 dark:text-emerald-400'
+											: percentage >= 70
+											? 'text-primary dark:text-secondary'
+											: percentage >= 50
+											? 'text-amber-500 dark:text-amber-400'
+											: 'text-red-500 dark:text-red-400'
+									}`}>
+									{getGradeMessage()}
 								</div>
 							</div>
 
-							{/* Result Message */}
-							<div className="mt-8">
-								<h2 className="text-2xl md:text-3xl font-pbold text-primary dark:text-secondary">
-									{score / total >= 0.8 
-										? 'Outstanding Work!' 
-										: score / total >= 0.6 
-										? 'Well Done! Keep it up!' 
-										: 'Keep Going! Don\'t give up! You can do this!'}
-								</h2>
-							</div>
-						</div>
-
-						{/* Action Buttons */}
-						<div className="mt-10 space-y-3">
-							<button
-								onClick={handleReview}
-								className="w-full py-3.5 px-4 rounded-xl 
-									bg-primary dark:bg-secondary text-white dark:text-dark
-									font-pmedium hover:opacity-90 transition-all">
-								Review Answers
-							</button>
-							<div className="flex gap-3">
-								<button
-									onClick={handleRetake}
-									className="flex-1 py-3.5 px-4 rounded-xl 
-										bg-zinc-100 dark:bg-zinc-800 
-										text-zinc-700 dark:text-zinc-300 font-pmedium 
-										hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-									Retake Quiz
-								</button>
-								<button
-									onClick={handleClose}
-									className="flex-1 py-3.5 px-4 rounded-xl 
-										bg-zinc-100 dark:bg-zinc-800
-										text-zinc-700 dark:text-zinc-300 font-pmedium 
-										hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
-									Back to Notes
-								</button>
+							{/* Stats Grid */}
+							<div className="grid grid-cols-2 border-t border-zinc-200/80 dark:border-zinc-800">
+								<div className="p-2 xs:p-3 sm:p-4 text-center border-r border-zinc-200/80 dark:border-zinc-800">
+									<div className="text-xs xs:text-sm font-pmedium text-zinc-500 dark:text-zinc-400">
+										Correct
+									</div>
+									<div className="text-base xs:text-lg sm:text-xl font-pbold text-emerald-500 dark:text-emerald-400 mt-0.5">
+										{score}
+									</div>
+								</div>
+								<div className="p-2 xs:p-3 sm:p-4 text-center">
+									<div className="text-xs xs:text-sm font-pmedium text-zinc-500 dark:text-zinc-400">
+										Incorrect
+									</div>
+									<div className="text-base xs:text-lg sm:text-xl font-pbold text-red-500 dark:text-red-400 mt-0.5">
+										{total - score}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
+				</div>
+
+				{/* Action Cards */}
+				<div className="space-y-2 mt-4">
+					{/* Review Answers */}
+					<button
+						onClick={() => navigate(`/Review/${noteId}`)}
+						className="w-full bg-white dark:bg-darken p-3 rounded-2xl 
+							border border-zinc-200/80 dark:border-zinc-800 
+							hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
+							transition-all duration-200 group">
+						<div className="flex items-center">
+							<div
+								className="w-12 xs:w-14 aspect-square bg-primary/10 dark:bg-secondary/20 
+								rounded-full flex items-center justify-center">
+								<FontAwesomeIcon
+									icon={faFileText}
+									className="text-xl xs:text-2xl text-primary dark:text-secondary"
+								/>
+							</div>
+							<div className="flex-1 ml-4 xs:ml-5 text-left">
+								<div className="text-base xs:text-lg font-pmedium text-newTxt dark:text-white">
+									Review Answers
+								</div>
+								<div className="text-xs xs:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 xs:mt-1">
+									Check your answers and learn from mistakes
+								</div>
+							</div>
+							<FontAwesomeIcon
+								icon={faChevronRight}
+								className="text-lg xs:text-xl text-zinc-400 group-hover:text-zinc-600 
+									dark:text-zinc-600 dark:group-hover:text-zinc-400 
+									transition-colors"
+							/>
+						</div>
+					</button>
+
+					{/* Retake Quiz - Similar structure to Review Answers */}
+					<button
+						onClick={() => {
+							localStorage.removeItem(`quiz-question-order-${noteId}`);
+							navigate(`/Quiz/${noteId}`);
+						}}
+						className="w-full bg-white dark:bg-darken p-3 rounded-2xl 
+							border border-zinc-200/80 dark:border-zinc-800 
+							hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
+							transition-all duration-200 group">
+						<div className="flex items-center">
+							<div
+								className="w-12 xs:w-14 aspect-square bg-primary/10 dark:bg-secondary/20 
+								rounded-full flex items-center justify-center">
+								<FontAwesomeIcon
+									icon={faRefresh}
+									className="text-xl xs:text-2xl text-primary dark:text-secondary"
+								/>
+							</div>
+							<div className="flex-1 ml-4 xs:ml-5 text-left">
+								<div className="text-base xs:text-lg font-pmedium text-newTxt dark:text-white">
+									Retake Quiz
+								</div>
+								<div className="text-xs xs:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 xs:mt-1">
+									Practice makes perfect
+								</div>
+							</div>
+							<FontAwesomeIcon
+								icon={faChevronRight}
+								className="text-lg xs:text-xl text-zinc-400 group-hover:text-zinc-600 
+									dark:text-zinc-600 dark:group-hover:text-zinc-400 
+									transition-colors"
+							/>
+						</div>
+					</button>
+				</div>
+
+				{/* Close Button */}
+				<div className="mt-4 pt-2 border-t border-zinc-200/80 dark:border-zinc-800">
+					<button
+						onClick={handleClose}
+							className="w-full py-4 rounded-xl 
+							bg-zinc-100 dark:bg-secondary 
+							text-newTxt dark:text-dark 
+							font-pmedium text-sm xs:text-base
+							hover:bg-zinc-200 dark:hover:bg-secondary/90 
+							transition-all duration-200">
+						Close
+					</button>
 				</div>
 			</div>
 		</div>

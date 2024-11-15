@@ -4,16 +4,16 @@ import { faFileAlt, faImage, faPenToSquare } from '@fortawesome/free-solid-svg-i
 
 export const Instructions = () => {
 	return (
-		<div className="space-y-4 sm:space-y-2 lg:space-y-4 p-2 sm:p-4">
+		<div className="space-y-6 p-4 lg:p-6 bg-white/50 dark:bg-darken backdrop-blur-sm rounded-xl border border-zinc-100 dark:border-zinc-800">
 			<div className="text-center sm:text-left">
-				<h2 className="text-lg sm:text-xl lg:text-2xl font-pbold text-zinc-800 dark:text-zinc-100">
+				<h2 className="text-xl lg:text-2xl font-bold text-zinc-800 dark:text-zinc-100">
 					How to Generate Summary Notes
 				</h2>
 			</div>
 			
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
 				{/* Input Text Section */}
-				<div className="group bg-white dark:bg-zinc-900/50 
+				<div className="group bg-white dark:bg-dark 
 					backdrop-blur-sm rounded-lg sm:rounded-xl
 					border border-zinc-100 dark:border-zinc-800
 					hover:border-primary/20 dark:hover:border-secondary/20
@@ -53,7 +53,7 @@ export const Instructions = () => {
 				</div>
 
 				{/* Upload Documents Section */}
-				<div className="group bg-white dark:bg-zinc-900/50 
+				<div className="group bg-white dark:bg-dark
 					backdrop-blur-sm rounded-lg sm:rounded-xl
 					border border-zinc-100 dark:border-zinc-800
 					hover:border-primary/20 dark:hover:border-secondary/20
@@ -95,7 +95,7 @@ export const Instructions = () => {
 				</div>
 
 				{/* Upload Images Section */}
-				<div className="group bg-white dark:bg-zinc-900/50 
+				<div className="group bg-white dark:bg-dark 
 					backdrop-blur-sm rounded-lg sm:rounded-xl
 					border border-zinc-100 dark:border-zinc-800
 					hover:border-primary/20 dark:hover:border-secondary/20

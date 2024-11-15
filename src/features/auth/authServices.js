@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BACKEND_DOMAIN = `https://d4ngk.pythonanywhere.com`;
+const BACKEND_DOMAIN = `https://quickease.xyz`;
 
 const REGISTER_URL = `${BACKEND_DOMAIN}/api/v1/auth/users/`;
 const LOGIN_URL = `${BACKEND_DOMAIN}/api/v1/auth/jwt/create/`;
