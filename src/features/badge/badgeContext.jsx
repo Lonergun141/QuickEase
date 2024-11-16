@@ -67,7 +67,7 @@ export const BadgeProvider = ({ children }) => {
 			condition: (stats) => stats.perfectQuizCount >= 3,
 		},
 		PORTAYMS: {
-			id: '57788c51-93a2-4686-9c65-50905d05cfe1',
+			id: 'b4fbb53e-fff3-492b-b983-9d538e7dadcd',
 			image: img.Badge8, 
 			title: 'I Believe You Now',
 			description: 'Achieved four perfect scores on quizzes!',
