@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/sidebar';
-import { fetchAllQuiz } from '../../features/Quiz/quizServices';
+import { fetchAllQuiz, deleteQuiz } from '../../features/Quiz/quizServices';
 import { fetchNote } from '../../features/Summarizer/openAiServices';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,8 @@ import Pagination from '../../components/UI/Pagination';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faListCheck, faChevronDown, faClipboardQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faListCheck, faChevronDown, faClipboardQuestion, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
+
 
 export default function QuizHistory() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -17,9 +18,13 @@ export default function QuizHistory() {
 	const [sortOption, setSortOption] = useState('dateDesc');
 	const [loading, setLoading] = useState(true);
 	const [slideIn, setSlideIn] = useState(false);
+	const [showModal, setShowModal] = useState(false);
+	const [selectedQuiz, setSelectedQuiz] = useState(null);
+	const [showDropdown, setShowDropdown] = useState(null);
 	const quizzesPerPage = 3;
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.auth.user);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	useEffect(() => {
 		if (user) {
@@ -90,6 +95,143 @@ export default function QuizHistory() {
 	const endIndex = startIndex + quizzesPerPage;
 	const currentQuizzes = quizzes.slice(startIndex, endIndex);
 	const totalPages = Math.ceil(quizzes.length / quizzesPerPage);
+
+	const handleDelete = async (quiz) => {
+		try {
+			setIsDeleting(true);
+			await deleteQuiz(quiz.note);
+			
+			// Remove quiz data from localStorage
+			const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+			if (storedData[quiz.note]) {
+				storedData[quiz.note] = {
+					...storedData[quiz.note],
+					quizExists: false,
+					quizTaken: false
+				};
+				localStorage.setItem('noteData', JSON.stringify(storedData));
+			}
+			
+			// Remove question order from localStorage
+			localStorage.removeItem(`quiz-question-order-${quiz.note}`);
+			
+			// Update UI
+			const updatedQuizzes = quizzes.filter(q => q.note !== quiz.note);
+			setQuizzes(updatedQuizzes);
+			
+			// Force refresh of quiz state
+			window.dispatchEvent(new Event('quizStateChanged'));
+			
+			setShowModal(false);
+			setSelectedQuiz(null);
+		} catch (error) {
+			console.error('Error deleting quiz:', error);
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
+	const renderQuizCard = (quiz) => {
+		// Calculate percentage score
+		const scorePercentage = (quiz.TestScore / quiz.TestTotalScore) * 100;
+		const isPassing = scorePercentage >= 70;
+
+		return (
+			<div key={quiz.note} className="group bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
+				dark:border-zinc-800 p-6 transition-all duration-200
+				hover:border-primary/20 dark:hover:border-secondary/20 hover:shadow-lg">
+				<div className="space-y-4">
+					<div className="flex justify-between items-start">
+						<div className="flex-1 cursor-pointer" onClick={() => handleQuizClick(quiz.note)}>
+							<h2 className="text-lg font-psemibold text-newTxt dark:text-white">
+								{quiz.notetitle.replace(/["*]/g, '')} Quiz
+							</h2>
+						</div>
+						<div className="flex items-center gap-3">
+							<span className={`px-3 py-1 text-sm font-pmedium rounded-full 
+								${isPassing 
+									? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+									: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'
+								}`}>
+								Score: {quiz.TestScore}/{quiz.TestTotalScore}
+							</span>
+							<div className="relative">
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										setShowDropdown(showDropdown === quiz.note ? null : quiz.note);
+									}}
+									className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full">
+									<FontAwesomeIcon icon={faEllipsisVertical} className="text-zinc-600 dark:text-zinc-400" />
+								</button>
+								{showDropdown === quiz.note && (
+									<div className="absolute right-0 mt-2 w-48 bg-white dark:bg-darken border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg z-10">
+										<button
+											onClick={() => {
+												setSelectedQuiz(quiz);
+												setShowModal(true);
+												setShowDropdown(null);
+											}}
+											className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl flex items-center gap-2">
+											<FontAwesomeIcon icon={faTrash} />
+											Delete Quiz
+										</button>
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
+					<p className="text-sm text-darkS dark:text-smenu">
+						Taken on {new Date(quiz.TestDateCreated).toLocaleDateString()}
+					</p>
+				</div>
+			</div>
+		);
+	};
+
+	const DeleteModal = () => (
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div className="bg-white dark:bg-darken rounded-2xl p-6 max-w-md w-full mx-4">
+				<h3 className="text-xl font-psemibold text-newTxt dark:text-white mb-4">
+					Delete Quiz
+				</h3>
+				<p className="text-darkS dark:text-smenu mb-6">
+					Are you sure you want to delete this quiz? This action cannot be undone.
+				</p>
+				<div className="flex justify-end gap-3">
+					<button
+						onClick={() => setShowModal(false)}
+						disabled={isDeleting}
+						className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 
+							text-darkS dark:text-smenu hover:bg-zinc-50 dark:hover:bg-zinc-800
+							disabled:opacity-50 disabled:cursor-not-allowed">
+						Cancel
+					</button>
+					<button
+						onClick={() => handleDelete(selectedQuiz)}
+						disabled={isDeleting}
+						className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700
+							disabled:opacity-50 disabled:cursor-not-allowed
+							flex items-center gap-2">
+						{isDeleting ? (
+							<>
+								<svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+									<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+									<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								Deleting...
+							</>
+						) : (
+							<>
+								<FontAwesomeIcon icon={faTrash} />
+								Delete
+							</>
+						)}
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 dark:bg-dark w-full">
@@ -167,33 +309,7 @@ export default function QuizHistory() {
 							</div>
 						) : currentQuizzes.length > 0 ? (
 							<div className="space-y-4">
-								{currentQuizzes.map((quiz) => (
-									<div
-										key={quiz.note}
-										onClick={() => handleQuizClick(quiz.note)}
-										className="group bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
-											dark:border-zinc-800 p-6 cursor-pointer transition-all duration-200
-											hover:border-primary/20 dark:hover:border-secondary/20 hover:shadow-lg">
-										<div className="space-y-4">
-											<div className="flex justify-between items-start">
-												<h2 className="text-lg font-psemibold text-newTxt dark:text-white">
-													{quiz.notetitle.replace(/["*]/g, '')} Quiz
-												</h2>
-												<span className="px-3 py-1 text-sm font-pmedium rounded-full 
-													bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-													Score: {quiz.TestScore}/{quiz.TestTotalScore}
-												</span>
-											</div>
-											<p className="text-sm text-darkS dark:text-smenu">
-												Taken on {new Date(quiz.TestDateCreated).toLocaleDateString('en-US', {
-													year: 'numeric',
-													month: 'long',
-													day: 'numeric',
-												})}
-											</p>
-										</div>
-									</div>
-								))}
+								{currentQuizzes.map(quiz => renderQuizCard(quiz))}
 							</div>
 						) : (
 							// Enhanced Empty State
@@ -241,6 +357,7 @@ export default function QuizHistory() {
 					)}
 				</div>
 			</main>
+			{showModal && <DeleteModal />}
 		</div>
 	);
 }

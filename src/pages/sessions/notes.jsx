@@ -223,12 +223,77 @@ export default function Notes() {
 		getNoteData();
 	}, [id, userInfo]);
 
+	// Add new state for backend check
+	const [backendChecked, setBackendChecked] = useState(false);
+
+	// Modify the useEffect that checks existence
 	useEffect(() => {
-		const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
-		if (storedData[id]) {
-			setQuizExists(!!storedData[id].quizExists);
-			setFlashcardsExist(!!storedData[id].flashcardsExist);
+		const checkExistence = async () => {
+			try {
+				// First check localStorage
+				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+				const noteData = storedData[id] || {};
+
+				// Then verify with backend
+				const [quizResponse, flashcardResponse] = await Promise.all([
+					fetchQuiz(id).catch(() => ({ data: [] })),
+					fetchSetFlashcards(id).catch(() => ({ data: [] }))
+				]);
+
+				const quizExistsBackend = quizResponse.length > 0;
+				const flashcardsExistBackend = flashcardResponse.length > 0;
+
+				// Update localStorage with backend data
+				localStorage.setItem('noteData', JSON.stringify({
+					...storedData,
+					[id]: {
+						...noteData,
+						quizExists: quizExistsBackend,
+						flashcardsExist: flashcardsExistBackend
+					}
+				}));
+
+				// Update states
+				setQuizExists(quizExistsBackend);
+				setFlashcardsExist(flashcardsExistBackend);
+			} catch (error) {
+				console.error('Error checking quiz/flashcard existence:', error);
+			} finally {
+				setBackendChecked(true);
+			}
+		};
+
+		if (id) {
+			checkExistence();
 		}
+	}, [id]);
+
+	// Update the quiz state change listener
+	useEffect(() => {
+		const handleQuizStateChange = async () => {
+			try {
+				const quizResponse = await fetchQuiz(id);
+				const quizExistsBackend = quizResponse.length > 0;
+				
+				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+				localStorage.setItem('noteData', JSON.stringify({
+					...storedData,
+					[id]: {
+						...storedData[id],
+						quizExists: quizExistsBackend
+					}
+				}));
+				
+				setQuizExists(quizExistsBackend);
+			} catch (error) {
+				console.error('Error checking quiz existence:', error);
+			}
+		};
+
+		window.addEventListener('quizStateChanged', handleQuizStateChange);
+		return () => {
+			window.removeEventListener('quizStateChanged', handleQuizStateChange);
+		};
 	}, [id]);
 
 	const handleSidebarToggle = (isExpanded) => {
