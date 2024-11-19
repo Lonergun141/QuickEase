@@ -227,38 +227,47 @@ export const generateQuizFromSummary = async (summary) => {
 					},
 					{
 						role: 'user',
-						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should adapt to the length and detail of the summary, with at least **15 questions** as a minimum. If the summary provides enough content, generate additional questions to cover all major points and details, ensuring an even distribution of topics.
+						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should adapt to the length and detail of the summary, with at least **15 questions** as a minimum. If the summary provides enough content, generate additional questions to cover all major points and details, ensuring an even distribution of topics. 
 
-									Each question should have **1 correct answer** and **3 plausible, but incorrect choices**. The incorrect choices should be believable and not too easy to rule out. Randomize the position of the correct answer among the four choices in each question. Format the response as a JSON array of question objects with the following structure:
-					[
-					{
-						"TestQuestion": "Question text here",
-						"choices": [
-						{
-							"item_choice_text": "Choice text here",
-							"isAnswer": boolean
-						},
-						{
-							"item_choice_text": "Choice text here",
-							"isAnswer": boolean
-						},
-						{
-							"item_choice_text": "Choice text here",
-							"isAnswer": boolean
-						},
-						{
-							"item_choice_text": "Choice text here",
-							"isAnswer": boolean
-						}
+						Each question must have **1 correct answer** and **3 incorrect but realistic options**. 
+						The incorrect choices should not be obviously wrong and should resemble plausible alternatives or common misconceptions based on the content. 
+						Randomize the position of the correct answer among the four choices for each question. Format the response as a JSON array of question objects with the following structure:
+
+						[
+							{
+								"TestQuestion": "Question text here",
+								"choices": [
+									{
+										"item_choice_text": "Choice text here",
+										"isAnswer": boolean
+									},
+									{
+										"item_choice_text": "Choice text here",
+										"isAnswer": boolean
+									},
+									{
+										"item_choice_text": "Choice text here",
+										"isAnswer": boolean
+									},
+									{
+										"item_choice_text": "Choice text here",
+										"isAnswer": boolean
+									}
+								]
+							}
 						]
-					}
-					]
 
-					The quiz should be based on the following summary:
-
-					"${summary}"
-
-					Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Keep the correct answer randomized in position for each question, and ensure that incorrect answers are plausible. Do not provide any explanation or extra formatting outside the JSON structure.`,
+						Ensure the following:
+						- At least (20-30% application-based questions) that require applying the concepts from the summary to hypothetical scenarios or problem-solving.
+						- Integrate (misleading distractors) that incorporate common misconceptions, subtle differences, or related but incorrect concepts to challenge the test-taker's understanding.
+						- Use subtle phrasing for incorrect choices to avoid making them easy to rule out. 
+						- Include common pitfalls, related concepts, or nuanced differences that might mislead someone unfamiliar with the material.
+						
+						The quiz should be based on the following summary:
+						
+						"${summary}"
+						
+						Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Do not provide any explanation or extra formatting outside the JSON structure.`,
 					},
 				],
 				max_tokens: 4000,

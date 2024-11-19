@@ -77,15 +77,29 @@ const Review = () => {
 		return <div>Failed to load quiz data.</div>;
 	}
 
-	const { userTest, questions, choices, answersByNote } = quizData;
+	const { userTest, questions, choicesByQuestion, answersByNote } = quizData;
 	const hasNotTakenQuiz = userTest?.TestScore === 0 && userTest?.TestTotalScore === 0;
 
-	const choicesByQuestion = questions.reduce((acc, question, index) => {
-		const startIndex = index * 4;
-		acc[question.id] = choices.slice(startIndex, startIndex + 4);
-		return acc;
-	}, {});
-
+	// Map user answers to questions
+	const userAnswersByQuestion = {};
+	answersByNote.forEach((answerObj) => {
+		const choiceId = answerObj.answer;
+		// Find the question that this choice belongs to
+		let questionId;
+		for (const qId in choicesByQuestion) {
+			const choices = choicesByQuestion[qId];
+			if (choices.some((choice) => choice.id === choiceId)) {
+				questionId = qId;
+				break;
+			}
+		}
+		if (questionId) {
+			const userChoice = choicesByQuestion[questionId].find((choice) => choice.id === choiceId);
+			if (userChoice) {
+				userAnswersByQuestion[questionId] = userChoice;
+			}
+		}
+	});
 	return (
 		<div className="relative flex min-h-screen bg-zinc-50 dark:bg-dark">
 			{/* Enhanced Sidebar */}
@@ -122,10 +136,7 @@ const Review = () => {
 							</h3>
 							<div className="grid grid-cols-4 gap-2">
 								{questions.map((question, index) => {
-									const userAnswerFromNote = answersByNote[index];
-									const userChoice = userAnswerFromNote
-										? choices.find((choice) => choice.id === userAnswerFromNote.answer)
-										: null;
+									const userChoice = userAnswersByQuestion[question.id];
 									const isCorrect = userChoice?.isAnswer;
 
 									return (
@@ -137,18 +148,18 @@ const Review = () => {
 													.scrollIntoView({ behavior: 'smooth' })
 											}
 											className={`relative group h-12 flex items-center justify-center rounded-xl font-pmedium transition-all
-												${
-													isCorrect === true
-														? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
-														: isCorrect === false
-														? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
-														: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
-												} hover:scale-95`}>
+              ${
+						isCorrect === true
+							? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+							: isCorrect === false
+							? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+							: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+					} hover:scale-95`}>
 											{index + 1}
 											{isCorrect !== undefined && (
 												<div
 													className={`absolute -top-1 -right-1 w-3 h-3 rounded-full
-													${isCorrect ? 'bg-emerald-500' : 'bg-red-500'}`}
+                ${isCorrect ? 'bg-emerald-500' : 'bg-red-500'}`}
 												/>
 											)}
 										</button>
@@ -254,12 +265,10 @@ const Review = () => {
 					) : (
 						questions.map((question, questionIndex) => {
 							const questionChoices = choicesByQuestion[question.id] || [];
-							const correctChoice = questionChoices.find((choice) => choice.isAnswer);
-							const userAnswerFromNote = answersByNote[questionIndex];
-							const userChoice = userAnswerFromNote
-								? choices.find((choice) => choice.id === userAnswerFromNote.answer)
-								: null;
+							const userChoice = userAnswersByQuestion[question.id];
 							const isCorrect = userChoice?.isAnswer;
+
+							const correctChoice = questionChoices.find((choice) => choice.isAnswer);
 
 							return (
 								<div

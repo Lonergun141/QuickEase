@@ -161,41 +161,42 @@ export const updateTestScore = async (noteId, score, total) => {
 		throw error;
 	}
 };
-//review page data egt request
+
+// quizServices.js
+
 export const fetchQuizReviewData = async (noteId) => {
 	try {
-		// Step 1: Fetch test details
-		const userTestResponse = await axiosInstance.get(`/usertest-detail/${noteId}/`);
-
-		// Step 2: Fetch all questions for the note
-		const questionsResponse = await axiosInstance.get(`/question-by-note/${noteId}/`);
-
-		// Step 3: Fetch all choices for all questions related to the note
-		const choicesResponse = await axiosInstance.get(`/choices-by-note/${noteId}/`);
-
-		// Step 4: Fetch all answers related to the note
-		const answersByNoteResponse = await axiosInstance.get(`/answer-by-note/${noteId}/`);
-
-		// Step 5: Fetch specific answers per question for double-checking
-		const answersByQuestionPromises = questionsResponse.data.map(async (question) => {
-			const response = await axiosInstance.get(`/answer-by-question/${question.id}/`);
-			return { questionId: question.id, answers: response.data };
-		});
-		const answersByQuestion = await Promise.all(answersByQuestionPromises);
-
-		return {
-			userTest: userTestResponse.data,
-			questions: questionsResponse.data,
-			choices: choicesResponse.data,
-			answersByNote: answersByNoteResponse.data,
-			answersByQuestion,
-		};
+	  // Fetch test details
+	  const userTestResponse = await axiosInstance.get(`/usertest-detail/${noteId}/`);
+  
+	  // Fetch all questions for the note
+	  const questionsResponse = await axiosInstance.get(`/question-by-note/${noteId}/`);
+	  const questions = questionsResponse.data;
+  
+	  // Fetch choices per question and build choicesByQuestion mapping
+	  const choicesByQuestion = {};
+	  const choicesPromises = questions.map(async (question) => {
+		const choicesResponse = await axiosInstance.get(`/usertest/choices/${question.id}/`);
+		choicesByQuestion[question.id] = choicesResponse.data;
+	  });
+	  await Promise.all(choicesPromises);
+  
+	  // Fetch all answers related to the note
+	  const answersByNoteResponse = await axiosInstance.get(`/answer-by-note/${noteId}/`);
+  
+	  return {
+		userTest: userTestResponse.data,
+		questions: questions,
+		choicesByQuestion: choicesByQuestion,
+		answersByNote: answersByNoteResponse.data,
+	  };
 	} catch (error) {
-		console.error('Error fetching quiz review data:', error);
-		throw error;
+	  console.error('Error fetching quiz review data:', error);
+	  throw error;
 	}
-};
+  };
 
+  
 // Delete entire quiz 
 export const deleteQuiz = async (noteId) => {
 	try {
