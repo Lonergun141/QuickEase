@@ -37,7 +37,6 @@ const Quiz = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalContent, setModalContent] = useState('');
 	const [modalAction, setModalAction] = useState(null);
-	const [questionOrder, setQuestionOrder] = useState([]);
 
 	const { refreshUserStats } = useUserStats();
 
@@ -136,26 +135,10 @@ const Quiz = () => {
 	useEffect(() => {
 		const getQuizData = async () => {
 			try {
-				const savedAnswers = JSON.parse(localStorage.getItem(`quiz-answers-${id}`)) || [];
-				const savedFlags = JSON.parse(localStorage.getItem(`quiz-flags-${id}`)) || [];
-				const savedQuestionOrder =
-					JSON.parse(localStorage.getItem(`quiz-question-order-${id}`)) || [];
-
 				const quizData = await fetchQuiz(id);
 				if (Array.isArray(quizData) && quizData.length > 0) {
-					let shuffledQuestions;
-
-					if (savedAnswers.length > 0 && savedQuestionOrder.length > 0) {
-						// Resuming an ongoing quiz
-						shuffledQuestions = savedQuestionOrder.map((questionId) =>
-							quizData.find((question) => question.id === questionId)
-						);
-					} else {
-						// Starting a new quiz attempt
-						shuffledQuestions = shuffleArray(quizData);
-						const questionOrder = shuffledQuestions.map((q) => q.id);
-						localStorage.setItem(`quiz-question-order-${id}`, JSON.stringify(questionOrder));
-					}
+					// Shuffle questions for new quiz
+					const shuffledQuestions = shuffleArray(quizData);
 
 					const questionsWithChoices = await Promise.all(
 						shuffledQuestions.map(async (question) => {
@@ -166,16 +149,8 @@ const Quiz = () => {
 					);
 
 					setQuestions(questionsWithChoices);
-					setAnswers(
-						savedAnswers.length > 0
-							? savedAnswers
-							: Array(questionsWithChoices.length).fill(null)
-					);
-					setFlags(
-						savedFlags.length > 0
-							? savedFlags
-							: Array(questionsWithChoices.length).fill(false)
-					);
+					setAnswers(Array(questionsWithChoices.length).fill(null));
+					setFlags(Array(questionsWithChoices.length).fill(false));
 				} else {
 					setError('No quiz found for this note.');
 				}
@@ -191,19 +166,17 @@ const Quiz = () => {
 	}, [id]);
 
 	const handleAnswer = (index, answerIndex) => {
-		setAnswers((prevAnswers) => {
+		setAnswers(prevAnswers => {
 			const newAnswers = [...prevAnswers];
 			newAnswers[index] = answerIndex;
-			localStorage.setItem(`quiz-answers-${id}`, JSON.stringify(newAnswers));
 			return newAnswers;
 		});
 	};
 
 	const handleFlag = (index) => {
-		setFlags((prevFlags) => {
+		setFlags(prevFlags => {
 			const newFlags = [...prevFlags];
 			newFlags[index] = !newFlags[index];
-			localStorage.setItem(`quiz-flags-${id}`, JSON.stringify(newFlags));
 			return newFlags;
 		});
 	};
@@ -222,14 +195,14 @@ const Quiz = () => {
 			if (flaggedCount > 0) {
 				content += `You have ${flaggedCount} flagged question${flaggedCount > 1 ? 's' : ''}. `;
 			}
-			content += 'Are you sure you want to submit?';
+			content += 'Please complete all questions and review flagged items before submitting.';
 
 			setModalContent(content);
-			setModalAction('submit');
 			setIsModalOpen(true);
-		} else {
-			submitQuiz();
+			return;
 		}
+
+		submitQuiz();
 	};
 
 	const submitQuiz = async () => {
@@ -315,6 +288,7 @@ const Quiz = () => {
 		);
 	}
 
+	
 	return (
 		<div className="relative flex min-h-screen bg-zinc-50 dark:bg-dark">
 			{/* Enhanced Joyride Tour */}
@@ -480,7 +454,7 @@ const Quiz = () => {
 							/>
 						</div>
 						<h3 className="text-xl font-pbold text-newTxt dark:text-white">
-							{modalAction === 'submit' ? 'Confirm Submission' : 'Cancel Quiz'}
+							{modalAction ? (modalAction === 'submit' ? 'Confirm Submission' : 'Cancel Quiz') : 'Action Required'}
 						</h3>
 					</div>
 
@@ -491,14 +465,16 @@ const Quiz = () => {
 							onClick={() => setIsModalOpen(false)}
 							className="px-4 py-2 rounded-lg font-pmedium text-zinc-700 dark:text-zinc-300
 								hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
-							Go Back
+							{modalAction ? 'Go Back' : 'OK'}
 						</button>
-						<button
-							onClick={executeModalAction}
-							className="px-4 py-2 rounded-lg font-pmedium text-white dark:text-dark
-								bg-primary dark:bg-secondary hover:opacity-90 transition-all">
-							{modalAction === 'submit' ? 'Submit Anyway' : 'Confirm Cancel'}
-						</button>
+						{modalAction && (
+							<button
+								onClick={executeModalAction}
+								className="px-4 py-2 rounded-lg font-pmedium text-white dark:text-dark
+									bg-primary dark:bg-secondary hover:opacity-90 transition-all">
+								{modalAction === 'submit' ? 'Submit Anyway' : 'Confirm Cancel'}
+							</button>
+						)}
 					</div>
 				</div>
 			</Modal>

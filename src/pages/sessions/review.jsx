@@ -18,14 +18,7 @@ const Review = () => {
 		const fetchReviewData = async () => {
 			try {
 				const data = await fetchQuizReviewData(id);
-				const questionOrder =
-					JSON.parse(localStorage.getItem(`quiz-question-order-${id}`)) || [];
-
-				if (questionOrder.length > 0) {
-					data.questions.sort((a, b) => {
-						return questionOrder.indexOf(a.id) - questionOrder.indexOf(b.id);
-					});
-				}
+				//console.log('Quiz Review Data:', data);
 
 				setQuizData(data);
 
@@ -298,11 +291,15 @@ const Review = () => {
 													? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20'
 													: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
 											}`}>
-											<p className="font-pmedium mb-2 text-dark dark:text-white">Your Answer:</p>
+											<p className="font-pmedium mb-2 text-dark dark:text-white">
+												Your Answer:
+											</p>
 											{userChoice ? (
 												<div
 													className={`flex items-center ${
-														isCorrect ? 'text-green-600' : 'text-red-500 dark:text-white'
+														isCorrect
+															? 'text-green-600'
+															: 'text-red-500 dark:text-white'
 													}`}>
 													<FontAwesomeIcon
 														icon={isCorrect ? faCheckCircle : faTimesCircle}
