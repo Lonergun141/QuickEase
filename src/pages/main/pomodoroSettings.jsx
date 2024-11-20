@@ -289,7 +289,7 @@ export default function Pomodoro() {
 									Time Intervals
 								</h2>
 								<p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-									Customize your work and break durations (in minutes)
+									Customize your work and break durations <strong>(in minutes;1 = 1 minute)</strong>
 								</p>
 							</div>
 							

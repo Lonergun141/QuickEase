@@ -42,8 +42,13 @@ const register = async (userData) => {
 		const response = await axiosInstance.post(REGISTER_URL, userData);
 		return response.data;
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.email) {
-			throw new Error('This email is already registered.');
+		if (error.response && error.response.data) {
+			if (error.response.data.email) {
+				throw new Error('This email is already registered.');
+			}
+			if (error.response.data.password) {
+				throw new Error(error.response.data.password[0]);
+			}
 		}
 		throw error;
 	}

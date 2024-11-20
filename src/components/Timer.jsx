@@ -253,7 +253,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 				<p
 					onClick={go}
 					className={`text-center mt-4 text-sm sm:text-xs md:text-md  text-gray-500 hover:underline`}>
-					Customize Pomodoro 
+					Customize Timer 
 				</p>
 			)}
 		</div>

@@ -311,11 +311,15 @@ export default function SignUp() {
 				setIsModalOpen(true);
 			})
 			.catch((error) => {
-				// Show error toast
+				// Show error toast with specific message
 				toast.error(
 					<div className="space-y-1">
 						<p className="font-medium">Registration failed</p>
-						<p className="text-sm">{error.message}</p>
+						<p className="text-sm">
+							{error.message === "The password is too similar to the Email Address."
+								? "Please choose a password that is not similar to your email address"
+								: error.message}
+						</p>
 					</div>,
 					{
 						duration: 4000,
@@ -323,10 +327,19 @@ export default function SignUp() {
 					}
 				);
 
-				setFormErrors((prev) => ({
-					...prev,
-					global: error.message,
-				}));
+				// Update form errors
+				if (error.message === "The password is too similar to the Email Address.") {
+					setFormErrors((prev) => ({
+						...prev,
+						password: "Password cannot be similar to email address",
+						global: error.message,
+					}));
+				} else {
+					setFormErrors((prev) => ({
+						...prev,
+						global: error.message,
+					}));
+				}
 			});
 	};
 	useEffect(() => {
