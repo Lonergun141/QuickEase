@@ -49,7 +49,7 @@ const Quiz = () => {
 	const [run, setRun] = useState(false);
 	const [stepIndex, setStepIndex] = useState(0);
 
-	const TOUR_KEY = 'hasSeenTour_quiz'; 
+	const TOUR_KEY = 'hasSeenTour_quiz';
 
 	const steps = [
 		{
@@ -166,7 +166,7 @@ const Quiz = () => {
 	}, [id]);
 
 	const handleAnswer = (index, answerIndex) => {
-		setAnswers(prevAnswers => {
+		setAnswers((prevAnswers) => {
 			const newAnswers = [...prevAnswers];
 			newAnswers[index] = answerIndex;
 			return newAnswers;
@@ -174,7 +174,7 @@ const Quiz = () => {
 	};
 
 	const handleFlag = (index) => {
-		setFlags(prevFlags => {
+		setFlags((prevFlags) => {
 			const newFlags = [...prevFlags];
 			newFlags[index] = !newFlags[index];
 			return newFlags;
@@ -288,7 +288,6 @@ const Quiz = () => {
 		);
 	}
 
-	
 	return (
 		<div className="relative flex min-h-screen bg-zinc-50 dark:bg-dark">
 			{/* Enhanced Joyride Tour */}
@@ -426,7 +425,7 @@ const Quiz = () => {
 				)}
 
 				{/* Questions */}
-				<div className="max-w-4xl mx-auto p-6 pt-20 md:pt-6 space-y-6">
+				<div className="max-w-4xl mx-auto p-6 pt-20 md:pt-6 space-y-6 pb-32 md:pb-6">
 					{questions.map((quizItem, index) => (
 						<div key={quizItem.id} className="quiz" id={`question-${index}`}>
 							<QuizQuestionCard
@@ -441,36 +440,61 @@ const Quiz = () => {
 						</div>
 					))}
 				</div>
+
+				{/* Mobile Submit Button */}
+				<div className="bottom-0 left-0 right-0 p-4  md:hidden">
+					<button
+						onClick={handleSubmit}
+						disabled={isSubmitting}
+						className="w-full py-3 px-4 rounded-xl bg-primary dark:bg-secondary text-white dark:text-dark 
+							font-pmedium hover:opacity-90 transition-all disabled:opacity-50 
+							disabled:cursor-not-allowed">
+						{isSubmitting ? (
+							<div className="flex items-center justify-center gap-2">
+								<CircularProgress size={20} style={{ color: 'currentColor' }} />
+								<span>Submitting...</span>
+							</div>
+						) : (
+							'Submit Quiz'
+						)}
+					</button>
+				</div>
 			</div>
 
 			{/* Enhanced Modal */}
 			<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-				<div className="p-6 space-y-6">
-					<div className="flex items-center gap-4">
-						<div className="p-3 rounded-full bg-amber-50 dark:bg-amber-500/10">
+				<div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-[90vw] sm:max-w-full">
+					<div className="flex items-center gap-3 sm:gap-4">
+						<div className="p-2 sm:p-3 rounded-full bg-amber-50 dark:bg-amber-500/10">
 							<FontAwesomeIcon
 								icon={faExclamationTriangle}
-								className="text-xl text-amber-500"
+								className="text-lg sm:text-xl text-amber-500"
 							/>
 						</div>
-						<h3 className="text-xl font-pbold text-newTxt dark:text-white">
-							{modalAction ? (modalAction === 'submit' ? 'Confirm Submission' : 'Cancel Quiz') : 'Action Required'}
+						<h3 className="text-base sm:text-xl font-pbold text-newTxt dark:text-white">
+							{modalAction
+								? modalAction === 'submit'
+									? 'Confirm Submission'
+									: 'Cancel Quiz'
+								: 'Action Required'}
 						</h3>
 					</div>
 
-					<p className="text-base text-zinc-600 dark:text-zinc-400">{modalContent}</p>
+					<p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
+						{modalContent}
+					</p>
 
-					<div className="flex items-center justify-end gap-3">
+					<div className="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-2 sm:gap-3 w-full">
 						<button
 							onClick={() => setIsModalOpen(false)}
-							className="px-4 py-2 rounded-lg font-pmedium text-zinc-700 dark:text-zinc-300
+							className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg font-pmedium text-zinc-700 dark:text-zinc-300
 								hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
 							{modalAction ? 'Go Back' : 'OK'}
 						</button>
 						{modalAction && (
 							<button
 								onClick={executeModalAction}
-								className="px-4 py-2 rounded-lg font-pmedium text-white dark:text-dark
+								className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg font-pmedium text-white dark:text-dark
 									bg-primary dark:bg-secondary hover:opacity-90 transition-all">
 								{modalAction === 'submit' ? 'Submit Anyway' : 'Confirm Cancel'}
 							</button>
@@ -483,7 +507,7 @@ const Quiz = () => {
 			<button
 				onClick={handleResetTour}
 				className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 
-					rounded-full bg-highlights dark:bg-darkS text-white
+					rounded-full bg-highlights dark:bg-darkS text-white  xs:hidden
 					
 					hover:opacity-90 transition-all">
 				<FontAwesomeIcon icon={faRoute} className="text-sm" />

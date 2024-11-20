@@ -227,11 +227,7 @@ export default function SignIn() {
 				<footer className="text-center mt-8">
 					<div className="flex justify-center space-x-4 text-sm text-darkS dark:text-smenu">
 						<button onClick={toggleModal} className="hover:text-primary transition-colors">
-							Terms of use
-						</button>
-						<span>•</span>
-						<button onClick={toggleModal} className="hover:text-primary transition-colors">
-							Privacy policy
+							Terms of use and Privacy Policy
 						</button>
 					</div>
 				</footer>

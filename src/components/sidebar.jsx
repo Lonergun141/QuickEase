@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetPomodoroState } from '../features/Pomodoro/pomodoroSlice';
 import { useDarkMode } from '../features/Darkmode/darkmodeProvider';
 
-const Sidebar = ({ onToggle }) => {
+const Sidebar = ({ onToggle, onNavigate }) => {
 	const [isCollapsed, setIsCollapsed] = useState(() => {
 		const saved = localStorage.getItem('sidebarCollapsed');
 		return saved ? JSON.parse(saved) : false;
@@ -71,13 +71,21 @@ const Sidebar = ({ onToggle }) => {
 	const handleLogout = () => {
 		dispatch(logout());
 		dispatch(resetPomodoroState());
-		navigate('/');
+		if (onNavigate) {
+			onNavigate('/');
+		} else {
+			navigate('/');
+		}
 	};
 
 	const handleNavigation = (path) => {
-		navigate(path);
 		if (isMobile) {
 			setIsOpen(false);
+		}
+		if (onNavigate) {
+			onNavigate(path);
+		} else {
+			navigate(path);
 		}
 	};
 
@@ -94,7 +102,7 @@ const Sidebar = ({ onToggle }) => {
 	const renderLogo = () => (
 		<div
 			className="flex items-center justify-center py-6 cursor-pointer"
-			onClick={() => navigate('/Home')}>
+			onClick={() => handleNavigation('/Home')}>
 			<span className="text-2xl font-inc tracking-wider">
 				<span className="text-black dark:text-gray-100">QUICK</span>
 				<span className="text-primary dark:text-naeg">EASE</span>

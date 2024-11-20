@@ -144,7 +144,7 @@ export default function FlashCardHistory() {
 								<div className="space-y-4">
 									<div className="space-y-3">
 										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
-											<div className="p-2 rounded-full bg-primary/10 dark:bg-secondary/10">
+											<div className="p-2 rounded-full ">
 												<FontAwesomeIcon 
 													icon={faClone} 
 													className="text-base text-primary dark:text-secondary" 

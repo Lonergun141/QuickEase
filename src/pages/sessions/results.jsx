@@ -65,31 +65,31 @@ const Results = () => {
 
 	return (
 		<div className="h-full bg-secondary dark:bg-dark">
-			<div className="h-full w-full p-4 sm:p-6 md:p-8 flex flex-col">
+			<div className="h-full w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8 flex flex-col">
 				{/* Score Card */}
-				<div className="flex-1 min-h-0">
+				<div className="flex-1 min-h-0 max-h-[70vh]">
 					<div
 						className="bg-white dark:bg-darken rounded-2xl overflow-hidden 
 						border border-zinc-200/80 dark:border-zinc-800 shadow-sm
 						h-full">
 						<div className="h-full flex flex-col">
-							<div className="flex-1 p-3 xs:p-4 sm:p-6 flex flex-col items-center justify-center gap-2 xs:gap-3">
+							<div className="flex-1 p-4 xs:p-6 sm:p-8 flex flex-col items-center justify-center gap-3 xs:gap-4 sm:gap-6">
 								{/* Icon Container */}
 								<div
-									className={`relative w-12 xs:w-16 sm:w-20 aspect-square 
+									className={`relative w-16 xs:w-20 sm:w-24 aspect-square 
 									rounded-full flex items-center justify-center
 									${
 										percentage >= 90
-											? 'bg-emerald-100 dark:bg-emerald-900/20'
-											: percentage >= 70
-											? 'bg-primary/10 dark:bg-secondary/20'
-											: percentage >= 50
-											? 'bg-amber-100 dark:bg-amber-900/20'
-											: 'bg-red-100 dark:bg-red-900/20'
+												? 'bg-emerald-100 dark:bg-emerald-900/20'
+												: percentage >= 70
+												? 'bg-primary/10 dark:bg-secondary/20'
+												: percentage >= 50
+												? 'bg-amber-100 dark:bg-amber-900/20'
+												: 'bg-red-100 dark:bg-red-900/20'
 									}`}>
 									<FontAwesomeIcon
 										icon={getGradeIcon()}
-										className={`text-xl xs:text-2xl sm:text-3xl
+										className={`text-2xl xs:text-3xl sm:text-4xl
 											${
 												percentage >= 90
 													? 'text-emerald-500 dark:text-emerald-400'
@@ -104,7 +104,7 @@ const Results = () => {
 
 								{/* Score Display */}
 								<div
-									className={`text-xl xs:text-2xl sm:text-4xl font-pbold mb-2
+									className={`text-3xl xs:text-4xl sm:text-5xl font-pbold mb-2
 									${
 										percentage >= 90
 											? 'text-emerald-500 dark:text-emerald-400'
@@ -118,13 +118,13 @@ const Results = () => {
 								</div>
 
 								<div
-									className="text-sm xs:text-base sm:text-lg font-pmedium 
+									className="text-base xs:text-lg sm:text-xl font-pmedium 
 									text-newTxt dark:text-white text-center">
 									{score} out of {total} correct
 								</div>
 
 								<div
-									className={`text-lg xs:text-xl sm:text-2xl font-pbold mt-4 xs:mt-6 text-center
+									className={`text-xl xs:text-2xl sm:text-3xl font-pbold mt-2 xs:mt-4 text-center
 									${
 										percentage >= 90
 											? 'text-emerald-500 dark:text-emerald-400'
@@ -140,19 +140,19 @@ const Results = () => {
 
 							{/* Stats Grid */}
 							<div className="grid grid-cols-2 border-t border-zinc-200/80 dark:border-zinc-800">
-								<div className="p-2 xs:p-3 sm:p-4 text-center border-r border-zinc-200/80 dark:border-zinc-800">
-									<div className="text-xs xs:text-sm font-pmedium text-zinc-500 dark:text-zinc-400">
+								<div className="p-4 xs:p-5 sm:p-6 text-center border-r border-zinc-200/80 dark:border-zinc-800">
+									<div className="text-sm xs:text-base font-pmedium text-zinc-500 dark:text-zinc-400">
 										Correct
 									</div>
-									<div className="text-base xs:text-lg sm:text-xl font-pbold text-emerald-500 dark:text-emerald-400 mt-0.5">
+									<div className="text-lg xs:text-xl sm:text-2xl font-pbold text-emerald-500 dark:text-emerald-400 mt-1">
 										{score}
 									</div>
 								</div>
-								<div className="p-2 xs:p-3 sm:p-4 text-center">
-									<div className="text-xs xs:text-sm font-pmedium text-zinc-500 dark:text-zinc-400">
+								<div className="p-4 xs:p-5 sm:p-6 text-center">
+									<div className="text-sm xs:text-base font-pmedium text-zinc-500 dark:text-zinc-400">
 										Incorrect
 									</div>
-									<div className="text-base xs:text-lg sm:text-xl font-pbold text-red-500 dark:text-red-400 mt-0.5">
+									<div className="text-lg xs:text-xl sm:text-2xl font-pbold text-red-500 dark:text-red-400 mt-1">
 										{total - score}
 									</div>
 								</div>
@@ -162,11 +162,11 @@ const Results = () => {
 				</div>
 
 				{/* Action Cards */}
-				<div className="space-y-2 mt-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
 					{/* Review Answers */}
 					<button
 						onClick={() => navigate(`/Review/${noteId}`)}
-						className="w-full bg-white dark:bg-darken p-3 rounded-2xl 
+						className="w-full bg-white dark:bg-darken p-4 sm:p-5 rounded-2xl 
 							border border-zinc-200/80 dark:border-zinc-800 
 							hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
 							transition-all duration-200 group">
@@ -176,33 +176,33 @@ const Results = () => {
 								rounded-full flex items-center justify-center">
 								<FontAwesomeIcon
 									icon={faFileText}
-									className="text-xl xs:text-2xl text-primary dark:text-secondary"
+										className="text-xl xs:text-2xl text-primary dark:text-secondary"
 								/>
 							</div>
-							<div className="flex-1 ml-4 xs:ml-5 text-left">
-								<div className="text-base xs:text-lg font-pmedium text-newTxt dark:text-white">
+							<div className="flex-1 ml-3 xs:ml-4 text-left">
+								<div className="text-sm xs:text-base font-pmedium text-newTxt dark:text-white">
 									Review Answers
 								</div>
-								<div className="text-xs xs:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 xs:mt-1">
-									Check your answers and learn from mistakes
+								<div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+									Check your answers
 								</div>
 							</div>
 							<FontAwesomeIcon
 								icon={faChevronRight}
-								className="text-lg xs:text-xl text-zinc-400 group-hover:text-zinc-600 
+								className="text-base xs:text-lg text-zinc-400 group-hover:text-zinc-600 
 									dark:text-zinc-600 dark:group-hover:text-zinc-400 
 									transition-colors"
 							/>
 						</div>
 					</button>
 
-					{/* Retake Quiz - Similar structure to Review Answers */}
+					{/* Retake Quiz */}
 					<button
 						onClick={() => {
 							localStorage.removeItem(`quiz-question-order-${noteId}`);
 							navigate(`/Quiz/${noteId}`);
 						}}
-						className="w-full bg-white dark:bg-darken p-3 rounded-2xl 
+						className="w-full bg-white dark:bg-darken p-4 sm:p-5 rounded-2xl 
 							border border-zinc-200/80 dark:border-zinc-800 
 							hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
 							transition-all duration-200 group">
@@ -215,17 +215,17 @@ const Results = () => {
 									className="text-xl xs:text-2xl text-primary dark:text-secondary"
 								/>
 							</div>
-							<div className="flex-1 ml-4 xs:ml-5 text-left">
-								<div className="text-base xs:text-lg font-pmedium text-newTxt dark:text-white">
+							<div className="flex-1 ml-3 xs:ml-4 text-left">
+								<div className="text-sm xs:text-base font-pmedium text-newTxt dark:text-white">
 									Retake Quiz
 								</div>
-								<div className="text-xs xs:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 xs:mt-1">
+								<div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
 									Practice makes perfect
 								</div>
 							</div>
 							<FontAwesomeIcon
 								icon={faChevronRight}
-								className="text-lg xs:text-xl text-zinc-400 group-hover:text-zinc-600 
+								className="text-base xs:text-lg text-zinc-400 group-hover:text-zinc-600 
 									dark:text-zinc-600 dark:group-hover:text-zinc-400 
 									transition-colors"
 							/>
@@ -234,15 +234,15 @@ const Results = () => {
 				</div>
 
 				{/* Close Button */}
-				<div className="mt-4 pt-2 border-t border-zinc-200/80 dark:border-zinc-800">
+				<div className="mt-6 pt-3 border-t border-zinc-200/80 dark:border-zinc-800">
 					<button
 						onClick={handleClose}
-							className="w-full py-4 rounded-xl 
-							bg-zinc-100 dark:bg-secondary 
-							text-newTxt dark:text-dark 
-							font-pmedium text-sm xs:text-base
-							hover:bg-zinc-200 dark:hover:bg-secondary/90 
-							transition-all duration-200">
+								className="w-full py-4 sm:py-5 rounded-xl 
+								bg-zinc-100 dark:bg-secondary 
+								text-newTxt dark:text-dark 
+								font-pmedium text-base xs:text-lg
+								hover:bg-zinc-200 dark:hover:bg-secondary/90 
+								transition-all duration-200">
 						Close
 					</button>
 				</div>

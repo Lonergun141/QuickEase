@@ -47,11 +47,11 @@ const FlashCard = ({ card, isFlipped, onClick }) => {
 					className="absolute w-full h-full rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 
 						bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-800 dark:to-zinc-900
 						flex flex-col justify-center items-center"
-						style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
+					style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
 					<div
 						className="absolute top-3 sm:top-6 right-3 sm:right-6 text-xs font-medium tracking-wider 
 						text-zinc-400 dark:text-zinc-500 uppercase">
-							Definition
+						Definition
 					</div>
 					<p
 						className="text-lg sm:text-xl md:text-2xl text-center text-zinc-800 dark:text-zinc-200 
@@ -65,11 +65,11 @@ const FlashCard = ({ card, isFlipped, onClick }) => {
 					className="absolute w-full h-full rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 
 						bg-white dark:bg-zinc-800 
 						flex flex-col justify-center items-center"
-						style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+					style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
 					<div
 						className="absolute top-3 sm:top-6 right-3 sm:right-6 text-xs font-medium tracking-wider 
 						text-primary/60 dark:text-secondary/60 uppercase">
-							Term
+						Term
 					</div>
 					<p
 						className="text-lg sm:text-xl md:text-2xl text-center text-zinc-900 dark:text-zinc-100 
@@ -91,9 +91,9 @@ const NavigationButton = ({ direction, onClick, className }) => {
 				shadow-lg hover:shadow-xl transition-all duration-300
 				text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-secondary
 				hover:scale-110 active:scale-95 ${className}`}>
-			<FontAwesomeIcon 
-				icon={isNext ? faChevronRight : faChevronLeft} 
-				className="text-base sm:text-xl" 
+			<FontAwesomeIcon
+				icon={isNext ? faChevronRight : faChevronLeft}
+				className="text-base sm:text-xl"
 			/>
 		</button>
 	);
@@ -174,6 +174,63 @@ export default function Flashcards() {
 	const [run, setRun] = useState(false);
 	const [stepIndex, setStepIndex] = useState(0);
 
+	const [showExitModal, setShowExitModal] = useState(false);
+	const [pendingNavigation, setPendingNavigation] = useState(null);
+
+	const handleNavigate = (path) => {
+		if (isEditing) {
+			setPendingNavigation(path);
+			setShowExitModal(true);
+		} else {
+			navigate(path);
+		}
+	};
+
+	const handleExitModalConfirm = () => {
+		setShowExitModal(false);
+		setIsEditing(false);
+		if (pendingNavigation) {
+			navigate(pendingNavigation);
+		}
+	};
+
+	const handleExitModalCancel = () => {
+		setShowExitModal(false);
+		setPendingNavigation(null);
+	};
+
+	useEffect(() => {
+		const handleBeforeUnload = (e) => {
+			if (isEditing) {
+				e.preventDefault();
+				e.returnValue = '';
+				return '';
+			}
+		};
+
+		const handlePopState = (e) => {
+			if (isEditing) {
+				e.preventDefault();
+				window.history.pushState(null, '', window.location.pathname);
+
+				setPendingNavigation(null);
+				setShowExitModal(true);
+			}
+		};
+
+		if (isEditing) {
+			window.history.pushState(null, '', window.location.pathname);
+		}
+
+		window.addEventListener('beforeunload', handleBeforeUnload);
+		window.addEventListener('popstate', handlePopState);
+
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload);
+			window.removeEventListener('popstate', handlePopState);
+		};
+	}, [isEditing]);
+
 	const TOUR_KEY_VIEW = 'hasSeenTour_flash_view';
 	const TOUR_KEY_EDIT = 'hasSeenTour_flash_edit';
 
@@ -183,7 +240,7 @@ export default function Flashcards() {
 			content: (
 				<div className="flex items-center gap-2 text-base ">
 					<p>
-						You can <strong>click</strong> and <strong>press space</strong> to flip this
+						You can <strong>click</strong> or <strong>press space</strong> to flip this
 						flashcard
 					</p>
 				</div>
@@ -672,7 +729,7 @@ export default function Flashcards() {
 				}}
 			/>
 
-			<Sidebar onToggle={setSidebarExpanded} />
+			<Sidebar onToggle={setSidebarExpanded} onNavigate={handleNavigate} />
 			<main
 				className={`transition-all duration-300 flex-grow p-3 sm:p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
@@ -684,7 +741,6 @@ export default function Flashcards() {
 						handleStopEdit={handleStopEdit}
 					/>
 				</div>
-
 				<button
 					onClick={handleResetTour}
 					className="fixed bottom-6 flex items-center z-50 space-x-2 bg-highlights dark:bg-darkS text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
@@ -692,7 +748,6 @@ export default function Flashcards() {
 					<FontAwesomeIcon icon={faRoute} />
 					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
 				</button>
-
 				{isEditing ? (
 					<div className="space-y-6 sm:space-y-8 edit max-w-5xl mx-auto px-2 sm:px-4">
 						{/* Add Card Button */}
@@ -927,8 +982,6 @@ export default function Flashcards() {
 									</button>
 								</div>
 							</div>
-
-						
 						</Modal>
 					</div>
 				) : (
@@ -978,7 +1031,6 @@ export default function Flashcards() {
 						{renderPreviewSection()}
 					</>
 				)}
-
 				{/* Delete All Modal */}
 				<Modal
 					isOpen={isDeleteAllModalOpen}
@@ -1053,8 +1105,41 @@ export default function Flashcards() {
 					</div>
 				</Modal>
 
-				{/* FAB Component */}
+				<Modal
+					isOpen={showExitModal}
+					onClose={handleExitModalCancel}
+					title="Leaving Editor"
+					className="max-w-lg mx-auto bg-white dark:bg-darken rounded-xl shadow-lg p-6">
+					<div className="space-y-6">
+						<div className="text-zinc-700 dark:text-zinc-300">
+							<p className="text-lg font-medium mb-3">Would you like to continue editing?</p>
+							<p className="text-base text-zinc-600 dark:text-zinc-400">
+								You're currently editing your flashcards. Click 'Continue Editing' to stay
+								and keep making changes, or 'Exit Editor' to leave this page.
+							</p>
+						</div>
 
+						<div className="flex justify-end space-x-4">
+							<button
+								className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 
+							bg-gray-100 dark:bg-gray-800 rounded-lg 
+							hover:bg-gray-200 dark:hover:bg-gray-700 
+							transition-colors duration-200"
+								onClick={handleExitModalConfirm}>
+								Exit Editor
+							</button>
+							<button
+								onClick={handleExitModalCancel}
+								className="px-4 py-2 text-sm font-medium text-white 
+                    bg-primary rounded-lg 
+                    hover:bg-primary/90 
+                    transition-colors duration-200">
+								Continue Editing
+							</button>
+						</div>
+					</div>
+				</Modal>
+				{/* FAB Component */}
 				{isEditing && (
 					<div className="fixed bottom-6 right-4 sm:right-8 z-50">
 						<div className="relative flex items-center justify-end">
@@ -1125,7 +1210,7 @@ export default function Flashcards() {
 										{isLoading ? (
 											<div
 												className="animate-spin rounded-full h-4 w-4 
-												border-2 border-red-200 border-t-red-500"
+                                border-2 border-red-200 border-t-red-500"
 											/>
 										) : (
 											<>

@@ -147,12 +147,12 @@ export default function Home() {
 		const text = e.target.value;
 		setInputText(text);
 		setCharacterCount(text.length);
-		const wordCount = text.split(/\s+/).filter(Boolean).length;
-		setWordCount(wordCount);
+		const words = text.split(/\s+/).filter(Boolean).length;
+		setWordCount(words);
 
 		if (text.length === 0) {
 			setTextError('Text input cannot be empty.');
-		} else if (wordCount < 200) {
+		} else if (words < 200) {
 			setTextError('Text must be at least 200 words long.');
 		} else if (text.length > 10000) {
 			setTextError('Text cannot exceed 10000 characters.');
@@ -506,7 +506,7 @@ export default function Home() {
 										onClick={handleGenerate}
 										className="w-full py-3 text-base font-medium rounded-xl"
 										disabled={
-											(activeTab === 'text' && (characterCount < 200 || characterCount > 10000)) ||
+											(activeTab === 'text' && (wordCount < 200 || characterCount > 10000)) ||
 											(activeTab === 'documents' && uploadedDocuments.length === 0) ||
 											(activeTab === 'images' && uploadedImages.length === 0)
 										}>

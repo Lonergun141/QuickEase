@@ -5,7 +5,10 @@ import { faBook, faBrain, faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 export default function QuizLoadingScreen() {
 	return (
 		<div className="fixed inset-0 flex flex-col items-center justify-center bg-white dark:bg-dark z-50 p-4">
-			<h1 className="loading-title animate-gradientText text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 p-9">
+			<h1 className="loading-title animate-gradientText 
+                    text-2xl xs:text-3xl sm:text-4xl md:text-5xl 
+                    font-extrabold text-center
+                    mb-6 sm:mb-8 md:mb-10">
 				Preparing Your Quiz
 			</h1>
 

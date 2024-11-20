@@ -298,7 +298,7 @@ const Review = () => {
 											${
 												isCorrect
 													? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20'
-													: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+													: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'
 											}`}>
 											<p className="font-pmedium mb-2 text-dark dark:text-white">
 												Your Answer:
@@ -308,7 +308,7 @@ const Review = () => {
 													className={`flex items-center ${
 														isCorrect
 															? 'text-green-600'
-															: 'text-red-500 dark:text-white'
+															: 'text-red-500'
 													}`}>
 													<FontAwesomeIcon
 														icon={isCorrect ? faCheckCircle : faTimesCircle}

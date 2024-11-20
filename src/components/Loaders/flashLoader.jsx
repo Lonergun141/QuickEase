@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 const dadJokes = [
   { question: "What is the oldest fish?", answer: "Century Tuna!" },
   { question: "I only know 25 letters of the alphabet", answer: "I don't know y." },
-  { question: "What did Baby Corn say to Mama Corn?", answer: "Where's Pop Corn?" },
   { question: "Ha?", answer: "Hotdog!" },
   { question: "What's your course", answer: "of course" }
 ];
@@ -18,9 +17,12 @@ export default function FlashcardLoadingScreen() {
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-secondary dark:bg-dark z-50 p-4">
-        <h1 className="loading-title animate-gradientText text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 p-9">
-                Generating Your Flashcards
-            </h1>
+        <h1 className="loading-title animate-gradientText 
+                    text-2xl xs:text-3xl sm:text-4xl md:text-5xl 
+                    font-extrabold text-center
+                    mb-6 sm:mb-8 md:mb-10">
+                    Generating Your Flashcards
+                </h1>
 
       <div className="relative flex items-center justify-center mb-10 animate-flashCardFlipGroup">
         <div className="flashcard-container">

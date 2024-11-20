@@ -122,6 +122,12 @@ const renderContent = (content) => {
 	return parts;
 };
 
+// Add this helper function
+const normalizeContent = (content) => {
+	// Remove any extra whitespace and normalize line endings
+	return content?.replace(/\s+/g, ' ').trim() ?? '';
+};
+
 export default function Notes() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
 	const [note, setNote] = useState(null);
@@ -352,26 +358,114 @@ export default function Notes() {
 		}
 	};
 
+	// Add these state variables near your other states
+	const [initialTitle, setInitialTitle] = useState('');
+	const [initialSummary, setInitialSummary] = useState('');
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+	const [pendingNavigation, setPendingNavigation] = useState(null);
+
+	// Update handleEdit to store initial values
 	const handleEdit = () => {
-		setIsEditing(true);
+		if (note) {
+			const normalizedTitle = normalizeContent(note.notetitle);
+			const normalizedSummary = normalizeContent(note.notesummary);
+			
+			setInitialTitle(normalizedTitle);
+			setInitialSummary(normalizedSummary);
+			setEditedTitle(note.notetitle || '');
+			setEditedSummary(note.notesummary || '');
+			setIsEditing(true);
+			setHasUnsavedChanges(false);
+		}
 	};
 
+	// Update the useEffect that tracks changes
+	useEffect(() => {
+		if (isEditing) {
+			const normalizedEditedTitle = normalizeContent(editedTitle);
+			const normalizedEditedSummary = normalizeContent(editedSummary);
+			
+			const hasChanges = 
+				normalizedEditedTitle !== initialTitle || 
+				normalizedEditedSummary !== initialSummary;
+
+			console.log('Change detection:', {
+				hasChanges,
+				normalizedEditedTitle,
+				initialTitle,
+				normalizedEditedSummary,
+				initialSummary
+			});
+			
+			setHasUnsavedChanges(hasChanges);
+		} else {
+			setHasUnsavedChanges(false);
+		}
+	}, [editedTitle, editedSummary, isEditing, initialTitle, initialSummary]);
+
+	// Update handleCancel
+	const handleCancel = () => {
+		if (note) {
+			setEditedTitle(note.notetitle || '');
+			setEditedSummary(note.notesummary || '');
+			setIsEditing(false);
+			setHasUnsavedChanges(false);
+			setInitialTitle('');
+			setInitialSummary('');
+		}
+	};
+
+	// Update handleSave
 	const handleSave = async () => {
-		if (userInfo) {
+		if (userInfo && note) {
 			try {
 				const formData = new FormData();
-				formData.append('notetitle', editedTitle);
-				formData.append('notesummary', editedSummary);
+				formData.append('notetitle', normalizeContent(editedTitle));
+				formData.append('notesummary', normalizeContent(editedSummary));
 				formData.append('notecontents', note.notecontents);
 				formData.append('user', userInfo.id);
 
 				const updatedNote = await updateNote(id, formData);
 				setNote(updatedNote);
 				setIsEditing(false);
+				setHasUnsavedChanges(false);
+				setInitialTitle('');
+				setInitialSummary('');
 			} catch (error) {
 				console.error('Error updating note:', error);
 			}
 		}
+	};
+
+	// Update the navigation handler
+	const handleNavigate = (path) => {
+		if (isEditing && hasUnsavedChanges) {
+			setPendingNavigation(path);
+			setShowUnsavedModal(true);
+		} else {
+			navigate(path);
+		}
+	};
+
+	// Update modal handlers
+	const handleUnsavedModalConfirm = () => {
+		setShowUnsavedModal(false);
+		setIsEditing(false);
+		setHasUnsavedChanges(false);
+		setInitialTitle('');
+		setInitialSummary('');
+		if (pendingNavigation) {
+			navigate(pendingNavigation);
+		} else {
+			// If no pending navigation (triggered by browser back), go back
+			window.history.back();
+		}
+	};
+
+	const handleUnsavedModalCancel = () => {
+		setShowUnsavedModal(false);
+		setPendingNavigation(null);
 	};
 
 	//ditso
@@ -391,12 +485,6 @@ export default function Notes() {
 			setModalAction('quiz');
 			setIsModalOpen(true);
 		}
-	};
-
-	const handleCancel = () => {
-		setEditedTitle(note.notetitle);
-		setEditedSummary(note.notesummary);
-		setIsEditing(false);
 	};
 
 	const handleFlashcards = async () => {
@@ -435,6 +523,63 @@ export default function Notes() {
 			await handleQuiz();
 		}
 	};
+
+	// Update the useEffect for route change handling
+	useEffect(() => {
+		// Handle page reload
+		const handleBeforeUnload = (e) => {
+			if (isEditing) {
+				e.preventDefault();
+				e.returnValue = ''; 
+				return '';
+			}
+		};
+
+		// Handle browser back/forward
+		const handlePopState = (e) => {
+			if (isEditing) {
+				// Prevent the default navigation
+				e.preventDefault();
+				window.history.pushState(null, '', window.location.pathname);
+				
+				// Show our modal
+				setPendingNavigation(null);
+				setShowUnsavedModal(true);
+			}
+		};
+
+		// Push an entry to the history stack when editing starts
+		if (isEditing) {
+			window.history.pushState(null, '', window.location.pathname);
+		}
+
+		// Handle route changes for links
+		const handleRouteChange = (e) => {
+			if (isEditing) {
+				e.preventDefault();
+				setPendingNavigation(e.target.href);
+				setShowUnsavedModal(true);
+			}
+		};
+
+		// Add event listeners when component mounts
+		window.addEventListener('beforeunload', handleBeforeUnload);
+		window.addEventListener('popstate', handlePopState);
+		
+		const links = document.getElementsByTagName('a');
+		Array.from(links).forEach(link => {
+			link.addEventListener('click', handleRouteChange);
+		});
+
+		// Remove event listeners when component unmounts
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload);
+			window.removeEventListener('popstate', handlePopState);
+			Array.from(links).forEach(link => {
+				link.removeEventListener('click', handleRouteChange);
+			});
+		};
+	}, [isEditing]);
 
 	if (isLoading) {
 		return <NotesLoadingScreen />;
@@ -488,7 +633,10 @@ export default function Notes() {
 				}}
 			/>
 
-			<Sidebar onToggle={handleSidebarToggle} />
+			<Sidebar 
+				onToggle={handleSidebarToggle} 
+				onNavigate={handleNavigate}
+			/>
 			<main
 				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
@@ -503,7 +651,7 @@ export default function Notes() {
 
 				<section className="flex items-center mb-6 justify-between">
 					<button
-						onClick={() => navigate('/myNotes')}
+						onClick={() => handleNavigate('/myNotes')}
 						className="text-gray-500 dark:text-secondary hover:text-highlights transition-colors duration-200">
 						<FontAwesomeIcon icon={faArrowLeft} className="text-2xl" />
 					</button>
@@ -576,7 +724,7 @@ export default function Notes() {
 							<button
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
                   ${
-							flashcardsExist ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'
+							flashcardsExist ? 'bg-primary dark:bg-primary' : 'bg-naeg'
 						}`}
 								onClick={handleFlashcardsClick}>
 								<FontAwesomeIcon
@@ -592,7 +740,7 @@ export default function Notes() {
 						<div className="flex flex-col items-center quiz">
 							<button
 								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
-                  ${quizExists ? 'bg-primary dark:bg-primary' : 'bg-gray-300 dark:bg-gray-700'}`}
+                  ${quizExists ? 'bg-primary dark:bg-primary' : 'bg-naeg'}`}
 								onClick={handleQuizClick}>
 								<FontAwesomeIcon
 									icon={quizExists ? faLightbulb : faPlus}
@@ -717,6 +865,48 @@ export default function Notes() {
 								className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
 								Close
 							</button>
+						</div>
+					</div>
+				</Modal>
+
+				<Modal
+					isOpen={showUnsavedModal}
+					onClose={handleUnsavedModalCancel}
+					title="Leaving Editor"
+					className="max-w-lg mx-auto bg-white dark:bg-darken rounded-xl shadow-lg p-6"
+				>
+					<div className="space-y-6">
+						<div className="text-zinc-700 dark:text-zinc-300">
+							<p className="text-lg font-medium mb-3">
+								Would you like to continue editing?
+							</p>
+							<p className="text-base text-zinc-600 dark:text-zinc-400">
+								You're currently in edit mode. Click 'Continue Editing' to stay and keep making changes, 
+								or 'Exit Editor' to leave this page.
+							</p>
+						</div>
+
+						<div className="flex justify-end space-x-4">
+						<button
+								onClick={handleUnsavedModalConfirm}
+								className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 
+								bg-gray-100 dark:bg-gray-800 rounded-lg 
+								hover:bg-gray-200 dark:hover:bg-gray-700 
+								transition-colors duration-200"
+							>
+								Exit Editor
+							</button>
+							<button
+								onClick={handleUnsavedModalCancel}
+								className="px-4 py-2 text-sm font-medium text-white 
+									bg-primary rounded-lg 
+									hover:bg-primary/90 
+									transition-colors duration-200"
+							
+							>
+								Continue Editing
+							</button>
+							
 						</div>
 					</div>
 				</Modal>
