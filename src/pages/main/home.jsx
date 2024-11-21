@@ -10,6 +10,9 @@ import {
 	faUpload,
 	faExclamationTriangle,
 	faRoute,
+	faExclamationCircle,
+	faInfoCircle,
+	faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import NotesLoadingScreen from '../../components/Loaders/loader';
@@ -26,6 +29,7 @@ import { useUserStats } from '../../features/badge/userStatsContext';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 import { img } from '../../constants';
+import CustomModal from '../../components/CustomModal/CustomModal';
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState('text');
@@ -39,7 +43,7 @@ export default function Home() {
 	const [textError, setTextError] = useState('');
 	const [characterCount, setCharacterCount] = useState(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [modalMessage, setModalMessage] = useState('');
+	const [modalContent, setModalContent] = useState({ title: '', message: '', type: '' });
 	const [wordCount, setWordCount] = useState(0);
 	const [isDragOver, setIsDragOver] = useState(false);
 	const { refreshUserStats } = useUserStats();
@@ -81,7 +85,7 @@ export default function Home() {
 			placement: 'right',
 			disableBeacon: true,
 		},
-	
+
 		{
 			target: '.generate-button',
 			content: (
@@ -154,8 +158,8 @@ export default function Home() {
 			setTextError('Text input cannot be empty.');
 		} else if (words < 200) {
 			setTextError('Text must be at least 200 words long.');
-		} else if (text.length > 10000) {
-			setTextError('Text cannot exceed 10000 characters.');
+		} else if (text.length > 20000) {
+			setTextError('Text cannot exceed 20000 characters.');
 		} else {
 			setTextError('');
 		}
@@ -231,17 +235,52 @@ export default function Home() {
 
 	const navigate = useNavigate();
 
+	const [modalState, setModalState] = useState({
+		isOpen: false,
+		title: '',
+		message: '',
+		type: 'error',
+	});
+
+	const showErrorModal = (title, message, type = 'error') => {
+		setLoading(false);
+		setModalState({
+			isOpen: true,
+			title,
+			message,
+			type,
+		});
+	};
+
+	const handleCloseModal = () => {
+		setModalState((prev) => ({
+			...prev,
+			isOpen: false,
+		}));
+	};
+
 	const handleGenerate = async () => {
 		setLoading(true);
 
-		if (activeTab === 'text') {
-			if (characterCount < 200 || characterCount > 10000) {
-				navigate('/TranscribeError');
-				setLoading(false);
-				return;
-			}
+		try {
+			if (activeTab === 'text') {
+				if (wordCount < 200) {
+					showErrorModal(
+						'Insufficient Content',
+						'Your text must contain at least 200 words for proper summarization.',
+						'warning'
+					);
+					return;
+				}
+				if (characterCount > 20000) {
+					showErrorModal(
+						'Content Too Long',
+						'Your text exceeds the 20,000 character limit. Please reduce the content length.',
+						'warning'
+					);
+					return;
+				}
 
-			try {
 				const data = {
 					notecontents: inputText,
 					user: userInfo.id,
@@ -251,22 +290,22 @@ export default function Home() {
 				refreshUserStats();
 				if (response && response.id) {
 					navigate(`/Notes/${response.id}`);
-				} else {
-					throw new Error('Invalid response from generateSummary');
 				}
-			} catch (error) {
-				console.error('Error generating summary:', error);
-				navigate('/TranscribeError');
-			} finally {
-				setLoading(false);
-			}
-		} else if (activeTab === 'images' || activeTab === 'documents') {
-			const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
+			} else if (activeTab === 'images' || activeTab === 'documents') {
+				const filesToProcess = activeTab === 'images' ? uploadedImages : uploadedDocuments;
 
-			if (filesToProcess.length === 0) {
-				navigate('/TranscribeError');
-				setLoading(false);
-			} else {
+				if (filesToProcess.length === 0) {
+					showErrorModal(
+						'No Files Selected',
+						`Please upload at least one ${
+							activeTab === 'images' ? 'image' : 'document'
+						} to proceed.`,
+						'warning'
+					);
+					setLoading(false);
+					return;
+				}
+
 				try {
 					const response = await generateSummaryFromImages(
 						filesToProcess,
@@ -276,16 +315,158 @@ export default function Home() {
 					if (response && response.id) {
 						refreshUserStats();
 						navigate(`/Notes/${response.id}`);
-					} else {
-						throw new Error('Invalid response from generateSummaryFromImages');
 					}
 				} catch (error) {
-					console.error('Error generating summary from files:', error);
-					navigate('/TranscribeError');
-				} finally {
+					console.error('Processing error:', error);
+
+					const errorCode = error.code || 'UNKNOWN_ERROR';
+
+					switch (errorCode) {
+						case 'NO_TEXT_DETECTED':
+							showErrorModal(
+								'No Text Detected',
+								'No readable text was found in your uploaded file(s). Please ensure your files contain clear, visible text.',
+								'warning'
+							);
+							break;
+						case 'INSUFFICIENT_WORDS':
+							showErrorModal(
+								'Insufficient Content',
+								'The detected text contains fewer than 200 words. Please upload files with more text content.',
+								'warning'
+							);
+							break;
+						case 'CONTENT_TOO_LONG':
+							showErrorModal(
+								'Content Too Long',
+								'The detected text exceeds 20,000 characters. Please upload files with less text content.',
+								'warning'
+							);
+							break;
+					
+						case 'TIMEOUT':
+							showErrorModal(
+								'Processing Timeout',
+								'The document processing took too long. Please try with a smaller document or ensure your internet connection is stable.',
+								'error'
+							);
+							break;
+						case 'FILE_TOO_LARGE':
+							showErrorModal(
+								'File Too Large',
+								'The document is too large to process. Please try with a smaller file (under 10MB) or split it into multiple parts.',
+								'warning'
+							);
+							break;
+						default:
+							showErrorModal(
+								'Processing Error',
+								'An error occurred while processing your files. Please try again with different files.',
+								'error'
+							);
+					}
 					setLoading(false);
+					return;
+				}
+			} else if (activeTab === 'documents') {
+				const filesToProcess = uploadedDocuments;
+
+				if (filesToProcess.length === 0) {
+					showErrorModal(
+						'No Files Selected',
+						'Please upload at least one document to proceed.',
+						'warning'
+					);
+					return;
+				}
+
+				try {
+					const response = await generateSummaryFromImages(
+						filesToProcess,
+						navigate,
+						userInfo.id
+					);
+
+					if (!response) {
+						showErrorModal(
+							'Processing Error',
+							'The uploaded content could not be processed. Please ensure you have strong internet connection and try again.',
+							'error'
+						);
+						return;
+					}
+
+					refreshUserStats();
+					navigate(`/Notes/${response.id}`);
+				} catch (error) {
+					// Handle specific ConvertAPI errors
+					switch (error.code) {
+						case 'TIMEOUT':
+							showErrorModal(
+								'Processing Timeout',
+								'The document processing took too long. Please try with a smaller document or ensure your internet connection is stable.',
+								'error'
+							);
+							break;
+						case 'FILE_TOO_LARGE':
+							showErrorModal(
+								'File Too Large',
+								'The document is too large to process. Please try with a smaller file (under 10MB) or split it into multiple parts.',
+								'warning'
+							);
+							break;
+						default:
+							if (error.response?.status === 400) {
+								showErrorModal(
+									'Something Went Wrong',
+									"The document could not be processed. Please ensure you have a strong internet connection and try again.",
+									'error'
+								);
+							} else if (error.response?.status === 500) {
+								showErrorModal(
+									'Service Error',
+									'Our document processing service is currently experiencing issues. Please try again later.',
+									'error'
+								);
+							} else {
+								showErrorModal(
+									'Processing Error',
+									'An unexpected error occurred while processing your document. Please try again or use a different file.',
+									'error'
+								);
+							}
+					}
 				}
 			}
+		} catch (error) {
+			console.error('Error generating summary:', error);
+
+			let errorTitle = 'Error';
+			let errorMessage = 'An unexpected error occurred. Please try again later.';
+
+			if (error.response) {
+				switch (error.response.status) {
+					case 400:
+						errorTitle = 'Invalid Request';
+						errorMessage =
+							'The content could not be processed. Please check your connection and try again.';
+						break;
+					case 413:
+						errorTitle = 'Content Too Large';
+						errorMessage =
+							'The uploaded content exceeds our processing limits. Please try with smaller files.';
+						break;
+					case 500:
+						errorTitle = 'Service Unavailable';
+						errorMessage =
+							'Our services are temporarily unavailable. Please try again later.';
+						break;
+				}
+			}
+
+			showErrorModal(errorTitle, errorMessage, 'error');
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -399,8 +580,13 @@ export default function Home() {
 											onChange={handleTextChange}
 										/>
 										<div className="flex justify-between items-center px-1 text-sm">
-											<span className={`${characterCount > 10000 || characterCount < 200 ? 'text-zinc-500' : 'text-zinc-500 dark:text-zinc-400'}`}>
-												{characterCount}/10000 characters
+											<span
+												className={`${
+													characterCount > 20000 || characterCount < 200
+														? 'text-zinc-500'
+														: 'text-zinc-500 dark:text-zinc-400'
+												}`}>
+												{characterCount}/20000 characters
 											</span>
 											{textError && (
 												<span className="text-red-500 font-medium">{textError}</span>
@@ -443,10 +629,15 @@ export default function Home() {
 													Upload or drag {activeTab} here
 												</h1>
 												<p className="text-sm text-zinc-500 mb-2">
-													Supported types: {activeTab === 'images' ? 'jpg, jpeg, png' : 'pdf, doc, docx, ppt, pptx'}
+													Supported types:{' '}
+													{activeTab === 'images'
+														? 'jpg, jpeg, png'
+														: 'pdf, doc, docx, ppt, pptx'}
 												</p>
 												<p className="text-xs text-zinc-400 mb-6 max-w-md">
-													<strong>Files</strong> or <strong>Images</strong> should contain 200+ words but not exceed 10,000 characters. Max size: 10MB
+													<strong>Files</strong> or <strong>Images</strong> should
+													contain 200+ words but not exceed 20,000 characters. Max
+													size: 10MB
 												</p>
 												<button
 													onClick={triggerFileInput}
@@ -495,7 +686,11 @@ export default function Home() {
 									ref={fileInputRef}
 									type="file"
 									multiple
-									accept={activeTab === 'images' ? '.jpg,.jpeg,.png' : '.pdf,.doc,.docx,.ppt,.pptx'}
+									accept={
+										activeTab === 'images'
+											? '.jpg,.jpeg,.png'
+											: '.pdf,.doc,.docx,.ppt,.pptx'
+									}
 									onChange={handleFileUpload}
 									className="hidden"
 								/>
@@ -506,7 +701,8 @@ export default function Home() {
 										onClick={handleGenerate}
 										className="w-full py-3 text-base font-medium rounded-xl"
 										disabled={
-											(activeTab === 'text' && (wordCount < 200 || characterCount > 10000)) ||
+											(activeTab === 'text' &&
+												(wordCount < 200 || characterCount > 20000)) ||
 											(activeTab === 'documents' && uploadedDocuments.length === 0) ||
 											(activeTab === 'images' && uploadedImages.length === 0)
 										}>
@@ -532,10 +728,15 @@ export default function Home() {
 											shadow-sm backdrop-blur-sm
 											flex items-center gap-3 transition-all duration-200
 											hover:scale-[1.02]`}>
-											<FontAwesomeIcon icon={
-												tab === 'text' ? faPenToSquare : 
-												tab === 'documents' ? faFileAlt : faImage
-											} />
+											<FontAwesomeIcon
+												icon={
+													tab === 'text'
+														? faPenToSquare
+														: tab === 'documents'
+														? faFileAlt
+														: faImage
+												}
+											/>
 											{tab === 'text' ? 'Input text' : `Upload ${tab}`}
 										</button>
 									))}
@@ -547,11 +748,13 @@ export default function Home() {
 
 				<Instructions />
 				{loading && <NotesLoadingScreen />}
-				{isModalOpen && (
-					<Modal onClose={() => setIsModalOpen(false)}>
-						<p>{modalMessage}</p>
-					</Modal>
-				)}
+				<CustomModal
+					isOpen={modalState.isOpen}
+					onClose={handleCloseModal}
+					title={modalState.title}
+					message={modalState.message}
+					type={modalState.type}
+				/>
 			</main>
 		</div>
 	);

@@ -12,6 +12,9 @@ import {
 	faPlus,
 	faArrowLeft,
 	faRoute,
+	faArrowRight,
+	faWandMagicSparkles,
+	faBookOpen,
 } from '@fortawesome/free-solid-svg-icons';
 import {
 	fetchNote,
@@ -35,6 +38,7 @@ import FlashcardLoadingScreen from '../../components/Loaders/flashLoader';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
+import CustomModal from '../../components/CustomModal/CustomModal';
 
 const renderMath = (math, displayMode = false) => {
 	try {
@@ -243,21 +247,24 @@ export default function Notes() {
 				// Then verify with backend
 				const [quizResponse, flashcardResponse] = await Promise.all([
 					fetchQuiz(id).catch(() => ({ data: [] })),
-					fetchSetFlashcards(id).catch(() => ({ data: [] }))
+					fetchSetFlashcards(id).catch(() => ({ data: [] })),
 				]);
 
 				const quizExistsBackend = quizResponse.length > 0;
 				const flashcardsExistBackend = flashcardResponse.length > 0;
 
 				// Update localStorage with backend data
-				localStorage.setItem('noteData', JSON.stringify({
-					...storedData,
-					[id]: {
-						...noteData,
-						quizExists: quizExistsBackend,
-						flashcardsExist: flashcardsExistBackend
-					}
-				}));
+				localStorage.setItem(
+					'noteData',
+					JSON.stringify({
+						...storedData,
+						[id]: {
+							...noteData,
+							quizExists: quizExistsBackend,
+							flashcardsExist: flashcardsExistBackend,
+						},
+					})
+				);
 
 				// Update states
 				setQuizExists(quizExistsBackend);
@@ -280,16 +287,19 @@ export default function Notes() {
 			try {
 				const quizResponse = await fetchQuiz(id);
 				const quizExistsBackend = quizResponse.length > 0;
-				
+
 				const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
-				localStorage.setItem('noteData', JSON.stringify({
-					...storedData,
-					[id]: {
-						...storedData[id],
-						quizExists: quizExistsBackend
-					}
-				}));
-				
+				localStorage.setItem(
+					'noteData',
+					JSON.stringify({
+						...storedData,
+						[id]: {
+							...storedData[id],
+							quizExists: quizExistsBackend,
+						},
+					})
+				);
+
 				setQuizExists(quizExistsBackend);
 			} catch (error) {
 				console.error('Error checking quiz existence:', error);
@@ -306,6 +316,15 @@ export default function Notes() {
 		setSidebarExpanded(isExpanded);
 	};
 
+	// Add new state for CustomModal
+	const [customModalConfig, setCustomModalConfig] = useState({
+		isOpen: false,
+		title: '',
+		message: '',
+		type: 'error'
+	});
+
+	// Update handleQuiz function
 	const handleQuiz = async () => {
 		setIsLoadingQ(true);
 		if (quizExists) {
@@ -313,7 +332,6 @@ export default function Notes() {
 		} else {
 			setIsGeneratingQuiz(true);
 			try {
-				setIsGeneratingQuiz(true);
 				const generatedQuiz = await generateQuizFromSummary(note.notesummary);
 				await createQuiz(id, generatedQuiz);
 
@@ -339,7 +357,7 @@ export default function Notes() {
 				if (error.response) {
 					const status = error.response.status;
 					if (status === 401 || status === 403) {
-						userFriendlyMessage = 'Unauthorized access. Please check your API key.';
+						userFriendlyMessage = 'Unauthorized access. Please log in again to restart.';
 					} else if (status === 429) {
 						userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
 					} else if (status >= 500) {
@@ -348,9 +366,14 @@ export default function Notes() {
 				} else if (error.message) {
 					userFriendlyMessage = error.message;
 				}
-
-				setErrorMessage(userFriendlyMessage);
-				setIsErrorModalOpen(true);
+				setIsGeneratingQuiz(false);
+				setIsLoading(false);
+				setCustomModalConfig({
+					isOpen: true,
+					title: 'Error Generating Quiz',
+					message: userFriendlyMessage,
+					type: 'error'
+				});
 			} finally {
 				setIsGeneratingQuiz(false);
 				setIsLoading(false);
@@ -370,7 +393,7 @@ export default function Notes() {
 		if (note) {
 			const normalizedTitle = normalizeContent(note.notetitle);
 			const normalizedSummary = normalizeContent(note.notesummary);
-			
+
 			setInitialTitle(normalizedTitle);
 			setInitialSummary(normalizedSummary);
 			setEditedTitle(note.notetitle || '');
@@ -385,19 +408,18 @@ export default function Notes() {
 		if (isEditing) {
 			const normalizedEditedTitle = normalizeContent(editedTitle);
 			const normalizedEditedSummary = normalizeContent(editedSummary);
-			
-			const hasChanges = 
-				normalizedEditedTitle !== initialTitle || 
-				normalizedEditedSummary !== initialSummary;
+
+			const hasChanges =
+				normalizedEditedTitle !== initialTitle || normalizedEditedSummary !== initialSummary;
 
 			console.log('Change detection:', {
 				hasChanges,
 				normalizedEditedTitle,
 				initialTitle,
 				normalizedEditedSummary,
-				initialSummary
+				initialSummary,
 			});
-			
+
 			setHasUnsavedChanges(hasChanges);
 		} else {
 			setHasUnsavedChanges(false);
@@ -458,7 +480,6 @@ export default function Notes() {
 		if (pendingNavigation) {
 			navigate(pendingNavigation);
 		} else {
-			// If no pending navigation (triggered by browser back), go back
 			window.history.back();
 		}
 	};
@@ -487,6 +508,7 @@ export default function Notes() {
 		}
 	};
 
+	// Update handleFlashcards function
 	const handleFlashcards = async () => {
 		setIsLoadingF(true);
 		try {
@@ -508,7 +530,28 @@ export default function Notes() {
 			refreshUserStats();
 			navigate(`/Flashcards/${id}`);
 		} catch (error) {
-			console.error('Error with flashcards:', error);
+			console.error('Error generating flashcards:', error);
+			let userFriendlyMessage = 'Failed to generate the flashcards. Please try again later.';
+
+			if (error.response) {
+				const status = error.response.status;
+				if (status === 401 || status === 403) {
+					userFriendlyMessage = 'Unauthorized access. Please log in again to restart.';
+				} else if (status === 429) {
+					userFriendlyMessage = 'Rate limit exceeded. Please wait and try again.';
+				} else if (status >= 500) {
+					userFriendlyMessage = 'Server error. Please try again later.';
+				}
+			} else if (error.message) {
+				userFriendlyMessage = error.message;
+			}
+			setIsLoadingF(false);
+			setCustomModalConfig({
+				isOpen: true,
+				title: 'Error Generating Flashcards',
+				message: userFriendlyMessage,
+				type: 'error'
+			});
 		} finally {
 			setIsLoadingF(false);
 		}
@@ -530,7 +573,7 @@ export default function Notes() {
 		const handleBeforeUnload = (e) => {
 			if (isEditing) {
 				e.preventDefault();
-				e.returnValue = ''; 
+				e.returnValue = '';
 				return '';
 			}
 		};
@@ -541,7 +584,7 @@ export default function Notes() {
 				// Prevent the default navigation
 				e.preventDefault();
 				window.history.pushState(null, '', window.location.pathname);
-				
+
 				// Show our modal
 				setPendingNavigation(null);
 				setShowUnsavedModal(true);
@@ -565,9 +608,9 @@ export default function Notes() {
 		// Add event listeners when component mounts
 		window.addEventListener('beforeunload', handleBeforeUnload);
 		window.addEventListener('popstate', handlePopState);
-		
+
 		const links = document.getElementsByTagName('a');
-		Array.from(links).forEach(link => {
+		Array.from(links).forEach((link) => {
 			link.addEventListener('click', handleRouteChange);
 		});
 
@@ -575,7 +618,7 @@ export default function Notes() {
 		return () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload);
 			window.removeEventListener('popstate', handlePopState);
-			Array.from(links).forEach(link => {
+			Array.from(links).forEach((link) => {
 				link.removeEventListener('click', handleRouteChange);
 			});
 		};
@@ -633,10 +676,7 @@ export default function Notes() {
 				}}
 			/>
 
-			<Sidebar 
-				onToggle={handleSidebarToggle} 
-				onNavigate={handleNavigate}
-			/>
+			<Sidebar onToggle={handleSidebarToggle} onNavigate={handleNavigate} />
 			<main
 				className={`transition-all duration-300 flex-grow p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
@@ -716,41 +756,144 @@ export default function Notes() {
 				</section>
 
 				<section className="mt-8">
-					<h2 className="text-xl font-aceh mb-4 text-newTxt dark:text-secondary">
+					<h2 className="text-xl font-aceh mb-6 text-newTxt dark:text-secondary flex items-center gap-3">
+						<FontAwesomeIcon
+							icon={faBookOpen}
+							className="text-highlights dark:text-primary"
+						/>
 						More Study Options
 					</h2>
-					<div className="flex items-center md:flex-row md:justify-start md:space-x-6">
-						<div className="flex flex-col items-center mr-8 gflash">
-							<button
-								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
-                  ${
-							flashcardsExist ? 'bg-primary dark:bg-primary' : 'bg-naeg'
-						}`}
-								onClick={handleFlashcardsClick}>
+
+					<div className="flex flex-wrap gap-4">
+						{/* Flashcards Option */}
+						<button
+							onClick={handleFlashcardsClick}
+							className={`
+								group relative overflow-hidden gflash
+								flex items-center gap-4 p-4
+								rounded-xl 
+								${
+									flashcardsExist
+										? 'bg-white dark:bg-zinc-900 border-2 border-highlights dark:border-primary'
+										: 'bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800'
+								}
+								hover:bg-white hover:border-2 hover:border-highlights dark:hover:border-primary
+								transition-all duration-300 ease-out
+								shadow-sm hover:shadow-md
+								w-full sm:w-auto
+							`}>
+							{/* Icon */}
+							<div
+								className={`
+								w-12 h-12 rounded-lg
+								flex items-center justify-center
+								${
+									flashcardsExist
+										? 'bg-highlights dark:bg-primary'
+										: 'bg-gray-200 dark:bg-zinc-800 group-hover:bg-highlights dark:group-hover:bg-primary'
+								}
+								transition-colors duration-300
+							`}>
 								<FontAwesomeIcon
 									icon={flashcardsExist ? faClone : faPlus}
-									className="text-4xl text-white"
+									className={`text-xl ${
+										flashcardsExist
+											? 'text-white'
+											: 'text-gray-600 dark:text-white group-hover:text-white'
+									}`}
 								/>
-							</button>
-							<span className="text-center text-sm text-highlights dark:text-secondary">
-								{flashcardsExist ? 'Open Flashcards' : 'Generate Flashcards'}
-							</span>
-						</div>
+							</div>
 
-						<div className="flex flex-col items-center quiz">
-							<button
-								className={`flex items-center justify-center w-20 h-20 rounded-full mb-2 
-                  ${quizExists ? 'bg-primary dark:bg-primary' : 'bg-naeg'}`}
-								onClick={handleQuizClick}>
+							{/* Text Content */}
+							<div className="flex flex-col items-start">
+								<span className="text-sm text-gray-500 dark:text-zinc-400 font-medium">
+									{flashcardsExist ? 'Review Cards' : 'Create New'}
+								</span>
+								<span className="text-base font-semibold text-gray-800 dark:text-white">
+									{flashcardsExist ? 'Open Flashcards' : 'Generate Flashcards'}
+								</span>
+							</div>
+
+							{/* Arrow Indicator */}
+							<FontAwesomeIcon
+								icon={faArrowRight}
+								className={`
+									ml-auto text-lg
+									${
+										flashcardsExist
+											? 'text-highlights dark:text-primary'
+											: 'text-gray-400 dark:text-zinc-700 group-hover:text-highlights dark:group-hover:text-primary'
+									}
+									group-hover:translate-x-1
+									transition-all duration-300
+								`}
+							/>
+						</button>
+
+						{/* Quiz Option */}
+						<button
+							onClick={handleQuizClick}
+							className={`
+								group relative overflow-hidden
+								flex items-center gap-4 p-4 quiz
+								rounded-xl 
+								${
+									quizExists
+										? 'bg-white dark:bg-zinc-900 border-2 border-highlights dark:border-primary'
+										: 'bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800'
+								}
+								hover:bg-white hover:border-2 hover:border-highlights dark:hover:border-primary
+								transition-all duration-300 ease-out
+								shadow-sm hover:shadow-md
+								w-full sm:w-auto
+							`}>
+							{/* Icon */}
+							<div
+								className={`
+								w-12 h-12 rounded-lg
+								flex items-center justify-center
+								${
+									quizExists
+										? 'bg-highlights dark:bg-primary'
+										: 'bg-gray-200 dark:bg-zinc-800 group-hover:bg-highlights dark:group-hover:bg-primary'
+								}
+								transition-colors duration-300
+							`}>
 								<FontAwesomeIcon
 									icon={quizExists ? faLightbulb : faPlus}
-									className="text-4xl text-white"
+									className={`text-xl ${
+										quizExists
+											? 'text-white'
+											: 'text-gray-600 dark:text-white group-hover:text-white'
+									}`}
 								/>
-							</button>
-							<span className="text-center text-sm text-gray-600 dark:text-secondary">
-								{quizExists ? 'Open Quiz' : 'Generate Quiz'}
-							</span>
-						</div>
+							</div>
+
+							{/* Text Content */}
+							<div className="flex flex-col items-start">
+								<span className="text-sm text-gray-500 dark:text-zinc-400 font-medium">
+									{quizExists ? 'Test Knowledge' : 'Create New'}
+								</span>
+								<span className="text-base font-semibold text-gray-800 dark:text-white">
+									{quizExists ? 'Open Quiz' : 'Generate Quiz'}
+								</span>
+							</div>
+
+							{/* Arrow Indicator */}
+							<FontAwesomeIcon
+								icon={faArrowRight}
+								className={`
+									ml-auto text-lg
+									${
+										quizExists
+											? 'text-highlights dark:text-primary'
+											: 'text-gray-400 dark:text-zinc-700 group-hover:text-highlights dark:group-hover:text-primary'
+									}
+									group-hover:translate-x-1
+									transition-all duration-300
+								`}
+							/>
+						</button>
 					</div>
 				</section>
 
@@ -813,7 +956,7 @@ export default function Notes() {
 							<strong className="text-primary dark:text-primary-light font-semibold">
 								{modalAction === 'flashcards' ? 'flashcards' : 'a quiz'}
 							</strong>{' '}
-								from this summary?
+							from this summary?
 							<span className="block mt-2">
 								{modalAction === 'flashcards'
 									? 'Flashcards will be generated based on the key points identified in the summary.'
@@ -852,48 +995,36 @@ export default function Notes() {
 					</div>
 				</Modal>
 
-				{/* Error Modal */}
-				<Modal
-					isOpen={isErrorModalOpen}
-					onClose={() => setIsErrorModalOpen(false)}
-					title="Error">
-					<div className="space-y-4">
-						<p className="text-gray-600 dark:text-gray-300">{errorMessage}</p>
-						<div className="flex justify-end">
-							<button
-								onClick={() => setIsErrorModalOpen(false)}
-								className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-								Close
-							</button>
-						</div>
-					</div>
-				</Modal>
+				{/* Replace the error Modal with CustomModal */}
+				<CustomModal
+					isOpen={customModalConfig.isOpen}
+					onClose={() => setCustomModalConfig(prev => ({ ...prev, isOpen: false }))}
+					title={customModalConfig.title}
+					message={customModalConfig.message}
+					type={customModalConfig.type}
+				/>
 
 				<Modal
 					isOpen={showUnsavedModal}
 					onClose={handleUnsavedModalCancel}
 					title="Leaving Editor"
-					className="max-w-lg mx-auto bg-white dark:bg-darken rounded-xl shadow-lg p-6"
-				>
+					className="max-w-lg mx-auto bg-white dark:bg-darken rounded-xl shadow-lg p-6">
 					<div className="space-y-6">
 						<div className="text-zinc-700 dark:text-zinc-300">
-							<p className="text-lg font-medium mb-3">
-								Would you like to continue editing?
-							</p>
+							<p className="text-lg font-medium mb-3">Would you like to continue editing?</p>
 							<p className="text-base text-zinc-600 dark:text-zinc-400">
-								You're currently in edit mode. Click 'Continue Editing' to stay and keep making changes, 
-								or 'Exit Editor' to leave this page.
+								You're currently in edit mode. Click 'Continue Editing' to stay and keep
+								making changes, or 'Exit Editor' to leave this page.
 							</p>
 						</div>
 
 						<div className="flex justify-end space-x-4">
-						<button
+							<button
 								onClick={handleUnsavedModalConfirm}
 								className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 
 								bg-gray-100 dark:bg-gray-800 rounded-lg 
 								hover:bg-gray-200 dark:hover:bg-gray-700 
-								transition-colors duration-200"
-							>
+								transition-colors duration-200">
 								Exit Editor
 							</button>
 							<button
@@ -901,12 +1032,9 @@ export default function Notes() {
 								className="px-4 py-2 text-sm font-medium text-white 
 									bg-primary rounded-lg 
 									hover:bg-primary/90 
-									transition-colors duration-200"
-							
-							>
+									transition-colors duration-200">
 								Continue Editing
 							</button>
-							
 						</div>
 					</div>
 				</Modal>

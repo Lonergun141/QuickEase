@@ -68,6 +68,14 @@ export default {
 						opacity: 0.8,
 					},
 				},
+				modalShow: {
+					'0%': { transform: 'scale(0.95)', opacity: 0 },
+					'100%': { transform: 'scale(1)', opacity: 1 },
+				  },
+				  iconBounce: {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' },
+				  }
 			},
 			animation: {
 				float: 'float 3s ease-in-out infinite',
@@ -93,6 +101,8 @@ export default {
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 			},
+			modalShow: 'modalShow 0.3s ease-out',
+			iconBounce: 'iconBounce 2s ease-in-out infinite',
 		},
 	},
 	plugins: [],

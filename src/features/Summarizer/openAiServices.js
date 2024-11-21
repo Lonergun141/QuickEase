@@ -135,81 +135,114 @@ export const generateSummaryFromImages = async (files, navigate, userId) => {
 					}
 				);
 
+				// Check if text annotations exist and have content
 				const textAnnotations = response.data.responses[0].textAnnotations;
-				const text = textAnnotations ? textAnnotations[0].description : '';
+				if (!textAnnotations || textAnnotations.length === 0) {
+					throw {
+						code: 'NO_TEXT_DETECTED',
+						message: 'No readable text was found in the image.'
+					};
+				}
 
+				const text = textAnnotations[0].description;
 				return text.trim();
 			} catch (error) {
-				console.error('Error processing image with Google Vision API:', error);
-				throw error;
+				// Make sure to propagate the error with the correct structure
+				if (error.code) {
+					throw error;
+				}
+				throw {
+					code: 'PROCESSING_ERROR',
+					message: 'Error processing image with Google Vision API'
+				};
 			}
 		};
 
 		// Process each file
 		const textPromises = files.map(async (file, index) => {
-			if (file.type.startsWith('image/')) {
-				const text = await getTextFromImage(file);
-				console.log(`Google Vision result for image ${index + 1}:`, text);
-				return text;
-			} else {
-				// Convert the document file to PNG images
-				const pngImages = await convertFileToPng(file);
-				// Process each PNG image with Google Vision API
-				const texts = await Promise.all(
-					pngImages.map(async (pngImage, pngIndex) => {
-						// pngImage is a base64 string
-						const text = await getTextFromImage(pngImage);
-						console.log(
-							`Google Vision result for converted image ${index + 1}.${pngIndex + 1}:`,
-							text
-						);
-						return text;
-					})
-				);
-				console.log(`Texts from document ${file.name}:`, texts);
-				return texts.join('<break>');
+			try {
+				if (file.type.startsWith('image/')) {
+					const text = await getTextFromImage(file);
+					console.log(`Google Vision result for image ${index + 1}:`, text);
+					return text;
+				} else {
+					// Convert the document file to PNG images
+					const pngImages = await convertFileToPng(file);
+					// Process each PNG image with Google Vision API
+					const texts = await Promise.all(
+						pngImages.map(async (pngImage, pngIndex) => {
+							// pngImage is a base64 string
+							const text = await getTextFromImage(pngImage);
+							console.log(
+								`Google Vision result for converted image ${index + 1}.${pngIndex + 1}:`,
+								text
+							);
+							return text;
+						})
+					);
+					console.log(`Texts from document ${file.name}:`, texts);
+					return texts.join('<break>');
+				}
+			} catch (error) {
+				if (error.message === 'NO_TEXT_DETECTED') {
+					throw new Error('NO_TEXT_DETECTED');
+				}
+				throw error;
 			}
 		});
 
-		const textContents = await Promise.all(textPromises);
+		try {
+			const textContents = await Promise.all(textPromises);
+			console.log('Text contents before joining:', textContents);
 
-		console.log('Text contents before joining:', textContents);
+			// Add a '<break>' between each file's text
+			const combinedText = textContents.join('<break>');
+			console.log('Combined text from all images with <break>:', combinedText);
 
-		// Add a '<break>' between each file's text
-		const combinedText = textContents.join('<break>');
+			// Check if there's any meaningful text
+			if (!combinedText || combinedText.trim().length === 0) {
+				throw {
+					code: 'NO_TEXT_DETECTED',
+					message: 'No readable text was found in the uploaded files.'
+				};
+			}
 
-		console.log('Combined text from all images with <break>:', combinedText);
+			// Check word count
+			const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
+			if (wordCount < 200) {
+				throw {
+					code: 'INSUFFICIENT_WORDS',
+					message: 'The detected text contains fewer than 200 words.'
+				};
+			}
 
-		// Proceed with the rest of your code
-		const wordCount = combinedText.split(/\s+/).filter(Boolean).length;
-		if (wordCount < 200) {
-			console.log('Extracted text is less than 200 words.');
+			if (combinedText.length > 20000) {
+				throw {
+					code: 'CONTENT_TOO_LONG',
+					message: 'The detected text exceeds 20,000 characters.'
+				};
+			}
 
-			return null;
+			const formData = {
+				notecontents: combinedText,
+				user: userId,
+			};
+
+			const response = await generateSummary(formData);
+			return response;
+		} catch (error) {
+			throw error;
 		}
-
-		if (combinedText.length === 0) {
-			console.log('No text extracted from images');
-
-			return null;
-		}
-
-		if (combinedText.length > 10000) {
-			console.log('The content of your file contains more than 10,000 characters.');
-
-			return null;
-		}
-
-		const formData = {
-			notecontents: combinedText,
-			user: userId,
-		};
-
-		const response = await generateSummary(formData);
-		return response;
 	} catch (error) {
 		console.error('Error in generateSummaryFromImages:', error);
-		throw new Error(`Failed to generate summary: ${error.message}`);
+		if (error.code) {
+		  throw error;
+		} else {
+		  throw {
+			code: 'PROCESSING_ERROR',
+			message: error.message || 'An error occurred while processing your files. Please try again later.'
+		  };
+		}
 	}
 };
 

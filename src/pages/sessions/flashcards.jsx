@@ -605,6 +605,15 @@ export default function Flashcards() {
 		loadFlashcards();
 	};
 
+	const handleBackClick = () => {
+		if (isEditing) {
+		  setPendingNavigation(`/notes/${noteId}`);
+		  setShowExitModal(true);
+		} else {
+		  navigate(`/notes/${noteId}`);
+		}
+	  };
+
 	if (!cards.length) {
 		return <FlashcardLoadingScreen />;
 	}
