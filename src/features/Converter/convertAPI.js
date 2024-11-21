@@ -29,14 +29,11 @@ export const convertFileToPng = async (file) => {
     // Use FormData to handle file upload
     const formData = new FormData();
     formData.append('File', file);
-    formData.append('PageRange', '1-40');
-    formData.append('Timeout', '300'); // 5 minutes in seconds
 
     const response = await axios.post(convertApiUrl, formData, {
       headers: {
         'Authorization': `Bearer ${CONVERT_API_SECRET}`,
       },
-      timeout: 300000, // 5 minutes in milliseconds
     });
 
     // Extract the files from the response
