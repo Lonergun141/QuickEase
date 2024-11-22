@@ -216,10 +216,10 @@ export const generateSummaryFromImages = async (files, navigate, userId) => {
 				};
 			}
 
-			if (combinedText.length > 20000) {
+			if (combinedText.length > 10000) {
 				throw {
 					code: 'CONTENT_TOO_LONG',
-					message: 'The detected text exceeds 20,000 characters.'
+					message: 'The detected text exceeds 10,000 characters.'
 				};
 			}
 

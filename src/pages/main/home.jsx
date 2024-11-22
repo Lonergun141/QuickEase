@@ -158,8 +158,8 @@ export default function Home() {
 			setTextError('Text input cannot be empty.');
 		} else if (words < 200) {
 			setTextError('Text must be at least 200 words long.');
-		} else if (text.length > 20000) {
-			setTextError('Text cannot exceed 20000 characters.');
+		} else if (text.length > 10000) {
+			setTextError('Text cannot exceed 10000 characters.');
 		} else {
 			setTextError('');
 		}
@@ -272,10 +272,10 @@ export default function Home() {
 					);
 					return;
 				}
-				if (characterCount > 20000) {
+				if (characterCount > 10000) {
 					showErrorModal(
 						'Content Too Long',
-						'Your text exceeds the 20,000 character limit. Please reduce the content length.',
+						'Your text exceeds the 10,000 character limit. Please reduce the content length.',
 						'warning'
 					);
 					return;
@@ -339,7 +339,7 @@ export default function Home() {
 						case 'CONTENT_TOO_LONG':
 							showErrorModal(
 								'Content Too Long',
-								'The detected text exceeds 20,000 characters. Please upload files with less text content.',
+								'The detected text exceeds 10,000 characters. Please upload files with less text content.',
 								'warning'
 							);
 							break;
@@ -582,11 +582,11 @@ export default function Home() {
 										<div className="flex justify-between items-center px-1 text-sm">
 											<span
 												className={`${
-													characterCount > 20000 || characterCount < 200
+													characterCount > 10000 || characterCount < 200
 														? 'text-zinc-500'
 														: 'text-zinc-500 dark:text-zinc-400'
 												}`}>
-												{characterCount}/20000 characters
+												{characterCount}/10000 characters
 											</span>
 											{textError && (
 												<span className="text-red-500 font-medium">{textError}</span>
@@ -636,7 +636,7 @@ export default function Home() {
 												</p>
 												<p className="text-xs text-zinc-400 mb-6 max-w-md">
 													<strong>Files</strong> or <strong>Images</strong> should
-													contain 200+ words but not exceed 20,000 characters. Max
+													contain 200+ words but not exceed 10,000 characters. Max
 													size: 10MB
 												</p>
 												<button
@@ -702,7 +702,7 @@ export default function Home() {
 										className="w-full py-3 text-base font-medium rounded-xl"
 										disabled={
 											(activeTab === 'text' &&
-												(wordCount < 200 || characterCount > 20000)) ||
+												(wordCount < 200 || characterCount > 10000)) ||
 											(activeTab === 'documents' && uploadedDocuments.length === 0) ||
 											(activeTab === 'images' && uploadedImages.length === 0)
 										}>
