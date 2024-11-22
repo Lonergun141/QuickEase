@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { convertFileToPng } from '../Converter/convertAPI';
-import Tesseract, { createWorker, createScheduler } from 'tesseract.js';
+
 
 const API_BASE_URL = `https://quickease.xyz/quickease/api/v1`;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
