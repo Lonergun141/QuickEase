@@ -110,6 +110,10 @@ ul li, ol li {
   @apply mb-2 text-newTxt dark:text-gray-300; /* Spacing and text color for list items */
 }
 
+p {
+  @apply mb-2
+}
+
 
 /*Hero section animations*/
 .bg-pattern {

@@ -8,8 +8,14 @@ import Pagination from '../../components/UI/Pagination';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faListCheck, faChevronDown, faClipboardQuestion, faEllipsisVertical, faTrash } from '@fortawesome/free-solid-svg-icons';
-
+import {
+	faListCheck,
+	faChevronDown,
+	faClipboardQuestion,
+	faEllipsisVertical,
+	faTrash,
+	faSearch,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function QuizHistory() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -25,6 +31,7 @@ export default function QuizHistory() {
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.auth.user);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
 
 	useEffect(() => {
 		if (user) {
@@ -91,37 +98,41 @@ export default function QuizHistory() {
 		setCurrentPage(newPage);
 	};
 
+	const filteredQuizzes = quizzes.filter(quiz =>
+		quiz.notetitle.toLowerCase().replace(/["*]/g, '').includes(searchTerm.toLowerCase())
+	);
+
 	const startIndex = (currentPage - 1) * quizzesPerPage;
 	const endIndex = startIndex + quizzesPerPage;
-	const currentQuizzes = quizzes.slice(startIndex, endIndex);
-	const totalPages = Math.ceil(quizzes.length / quizzesPerPage);
+	const currentQuizzes = filteredQuizzes.slice(startIndex, endIndex);
+	const totalPages = Math.ceil(filteredQuizzes.length / quizzesPerPage);
 
 	const handleDelete = async (quiz) => {
 		try {
 			setIsDeleting(true);
 			await deleteQuiz(quiz.note);
-			
+
 			// Remove quiz data from localStorage
 			const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
 			if (storedData[quiz.note]) {
 				storedData[quiz.note] = {
 					...storedData[quiz.note],
 					quizExists: false,
-					quizTaken: false
+					quizTaken: false,
 				};
 				localStorage.setItem('noteData', JSON.stringify(storedData));
 			}
-			
+
 			// Remove question order from localStorage
 			localStorage.removeItem(`quiz-question-order-${quiz.note}`);
-			
+
 			// Update UI
-			const updatedQuizzes = quizzes.filter(q => q.note !== quiz.note);
+			const updatedQuizzes = quizzes.filter((q) => q.note !== quiz.note);
 			setQuizzes(updatedQuizzes);
-			
+
 			// Force refresh of quiz state
 			window.dispatchEvent(new Event('quizStateChanged'));
-			
+
 			setShowModal(false);
 			setSelectedQuiz(null);
 		} catch (error) {
@@ -137,7 +148,9 @@ export default function QuizHistory() {
 		const isPassing = scorePercentage >= 70;
 
 		return (
-			<div key={quiz.note} className="group bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
+			<div
+				key={quiz.note}
+				className="group bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
 				dark:border-zinc-800 p-6 transition-all duration-200
 				hover:border-primary/20 dark:hover:border-secondary/20 hover:shadow-lg">
 				<div className="space-y-4">
@@ -148,10 +161,12 @@ export default function QuizHistory() {
 							</h2>
 						</div>
 						<div className="flex items-center gap-3">
-							<span className={`px-3 py-1 text-sm font-pmedium rounded-full 
-								${isPassing 
-									? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-									: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'
+							<span
+								className={`px-3 py-1 text-sm font-pmedium rounded-full 
+								${
+									isPassing
+										? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+										: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'
 								}`}>
 								Score: {quiz.TestScore}/{quiz.TestTotalScore}
 							</span>
@@ -162,7 +177,10 @@ export default function QuizHistory() {
 										setShowDropdown(showDropdown === quiz.note ? null : quiz.note);
 									}}
 									className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full">
-									<FontAwesomeIcon icon={faEllipsisVertical} className="text-zinc-600 dark:text-zinc-400" />
+									<FontAwesomeIcon
+										icon={faEllipsisVertical}
+										className="text-zinc-600 dark:text-zinc-400"
+									/>
 								</button>
 								{showDropdown === quiz.note && (
 									<div className="absolute right-0 mt-2 w-48 bg-white dark:bg-darken border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg z-10">
@@ -192,9 +210,7 @@ export default function QuizHistory() {
 	const DeleteModal = () => (
 		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 			<div className="bg-white dark:bg-darken rounded-2xl p-6 max-w-md w-full mx-4">
-				<h3 className="text-xl font-psemibold text-newTxt dark:text-white mb-4">
-					Delete Quiz
-				</h3>
+				<h3 className="text-xl font-psemibold text-newTxt dark:text-white mb-4">Delete Quiz</h3>
 				<p className="text-darkS dark:text-smenu mb-6">
 					Are you sure you want to delete this quiz? This action cannot be undone.
 				</p>
@@ -215,9 +231,22 @@ export default function QuizHistory() {
 							flex items-center gap-2">
 						{isDeleting ? (
 							<>
-								<svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-									<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-									<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								<svg
+									className="animate-spin h-4 w-4 text-white"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24">
+									<circle
+										className="opacity-25"
+										cx="12"
+										cy="12"
+										r="10"
+										stroke="currentColor"
+										strokeWidth="4"></circle>
+									<path
+										className="opacity-75"
+										fill="currentColor"
+										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 								</svg>
 								Deleting...
 							</>
@@ -248,11 +277,11 @@ export default function QuizHistory() {
 								{/* Title and Description */}
 								<div className="space-y-4">
 									<div className="space-y-3">
-										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+										<div className="inline-flex items-center gap-3  pl-3 pr-5 py-1.5">
 											<div className="p-2 rounded-full">
-												<FontAwesomeIcon 
-													icon={faListCheck} 
-													className="text-base text-primary dark:text-secondary" 
+												<FontAwesomeIcon
+													icon={faListCheck}
+													className="text-base text-primary dark:text-secondary"
 												/>
 											</div>
 											<span className="text-sm font-pmedium text-zinc-600 dark:text-zinc-300">
@@ -265,6 +294,26 @@ export default function QuizHistory() {
 										<p className="text-base text-darkS dark:text-smenu font-pregular max-w-2xl">
 											Track your progress and review past quiz performances
 										</p>
+									</div>
+									{/* Add Search Bar */}
+									<div className="relative max-w-md">
+										<div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+											<FontAwesomeIcon 
+												icon={faSearch} 
+												className="text-zinc-400 dark:text-zinc-500" 
+											/>
+										</div>
+										<input
+											type="text"
+											placeholder="Search quizzes..."
+											value={searchTerm}
+											onChange={(e) => setSearchTerm(e.target.value)}
+											className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-900 
+												border border-zinc-200 dark:border-zinc-800 rounded-xl
+												text-newTxt dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500
+												focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-secondary/20
+												transition-all font-pmedium text-sm"
+										/>
 									</div>
 								</div>
 
@@ -296,7 +345,9 @@ export default function QuizHistory() {
 							// Enhanced Loading Skeletons
 							<div className="space-y-4">
 								{[...Array(3)].map((_, i) => (
-									<div key={i} className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6">
+									<div
+										key={i}
+										className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6">
 										<div className="space-y-4">
 											<Skeleton height={24} width="60%" />
 											<div className="space-y-2">
@@ -309,37 +360,40 @@ export default function QuizHistory() {
 							</div>
 						) : currentQuizzes.length > 0 ? (
 							<div className="space-y-4">
-								{currentQuizzes.map(quiz => renderQuizCard(quiz))}
+								{currentQuizzes.map((quiz) => renderQuizCard(quiz))}
 							</div>
 						) : (
 							// Enhanced Empty State
 							<div className="flex flex-col items-center justify-center py-16 px-4">
 								<div className="mb-8 relative">
 									<div className="w-24 h-24 rounded-full bg-primary/10 dark:bg-secondary/10 flex items-center justify-center">
-										<FontAwesomeIcon 
-											icon={faClipboardQuestion} 
-											className="text-4xl text-primary dark:text-secondary" 
+										<FontAwesomeIcon
+											icon={faClipboardQuestion}
+											className="text-4xl text-primary dark:text-secondary"
 										/>
 									</div>
 									<div className="absolute -right-2 -bottom-2 w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-										<FontAwesomeIcon 
-											icon={faListCheck} 
-											className="text-lg text-emerald-600 dark:text-emerald-400" 
+										<FontAwesomeIcon
+											icon={faListCheck}
+											className="text-lg text-emerald-600 dark:text-emerald-400"
 										/>
 									</div>
 								</div>
 								<h2 className="text-xl font-psemibold text-newTxt dark:text-white mb-2">
-									No Quiz History Yet
+									{searchTerm ? 'No Matching Quizzes Found' : 'No Quiz History Yet'}
 								</h2>
 								<p className="text-darkS dark:text-smenu mb-6 text-center max-w-md">
-									Take quizzes to test your knowledge and track your progress
+									{searchTerm 
+										? `No quizzes found matching "${searchTerm}". Try a different search term.`
+										: 'Take quizzes to test your knowledge and track your progress'
+									}
 								</p>
 								<button
-									onClick={() => navigate('/home')}
+									onClick={() => searchTerm ? setSearchTerm('') : navigate('/home')}
 									className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
 										text-white dark:text-dark font-pmedium transition-all hover:opacity-90">
 									<FontAwesomeIcon icon={faClipboardQuestion} className="text-sm" />
-									Take Your First Quiz
+									{searchTerm ? 'Clear Search' : 'Take Your First Quiz'}
 								</button>
 							</div>
 						)}

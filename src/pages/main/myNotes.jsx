@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faStickyNote, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faStickyNote, faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from '../../components/sidebar';
 import { fetchAllNotes, deleteNote } from '../../features/Summarizer/openAiServices';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ export default function MyNotes() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [sortOption, setSortOption] = useState('dateDesc');
 	const [slideIn, setSlideIn] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
 	const notesPerPage = 6;
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.auth.user);
@@ -98,10 +99,14 @@ export default function MyNotes() {
 		setCurrentPage(newPage);
 	};
 
+	const filteredNotes = notes.filter(note =>
+		note.notetitle.toLowerCase().includes(searchTerm.toLowerCase())
+	);
+
 	const startIndex = (currentPage - 1) * notesPerPage;
 	const endIndex = startIndex + notesPerPage;
-	const currentNotes = notes.slice(startIndex, endIndex);
-	const totalPages = Math.ceil(notes.length / notesPerPage);
+	const currentNotes = filteredNotes.slice(startIndex, endIndex);
+	const totalPages = Math.ceil(filteredNotes.length / notesPerPage);
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 dark:bg-dark w-full">
@@ -118,7 +123,7 @@ export default function MyNotes() {
 								{/* Title and Description */}
 								<div className="space-y-4">
 									<div className="space-y-3">
-										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+										<div className="inline-flex items-center gap-3  pl-3 pr-5 py-1.5">
 											<div className="p-2 rounded-full ">
 												<FontAwesomeIcon 
 													icon={faStickyNote} 
@@ -135,6 +140,26 @@ export default function MyNotes() {
 										<p className="text-base text-darkS dark:text-smenu font-pregular max-w-2xl">
 											Access and manage your summarized notes
 										</p>
+									</div>
+									{/* Search Bar */}
+									<div className="relative max-w-md">
+										<div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+											<FontAwesomeIcon 
+												icon={faSearch} 
+												className="text-zinc-400 dark:text-zinc-500" 
+											/>
+										</div>
+										<input
+											type="text"
+											placeholder="Search notes..."
+											value={searchTerm}
+											onChange={(e) => setSearchTerm(e.target.value)}
+											className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-900 
+												border border-zinc-200 dark:border-zinc-800 rounded-xl
+												text-newTxt dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500
+												focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-secondary/20
+												transition-all font-pmedium text-sm"
+										/>
 									</div>
 								</div>
 
@@ -211,20 +236,23 @@ export default function MyNotes() {
 								))}
 							</div>
 						) : (
-							// Enhanced Empty State
+							// Enhanced Empty State with conditional messaging
 							<div className="flex flex-col items-center justify-center py-16 px-4">
 								<img src={SVG} alt="No notes" className="w-64 h-64 mb-6 opacity-80" />
 								<h2 className="text-xl font-psemibold text-newTxt dark:text-white mb-2">
-									No Notes Yet
+									{searchTerm ? 'No Matching Notes Found' : 'No Notes Yet'}
 								</h2>
 								<p className="text-darkS dark:text-smenu mb-6 text-center max-w-md">
-									Start creating notes by summarizing your study materials
+									{searchTerm 
+										? `No notes found matching "${searchTerm}". Try a different search term.`
+										: 'Start creating notes by summarizing your study materials'
+									}
 								</p>
 								<button
 									onClick={() => navigate('/home')}
 									className="inline-flex items-center px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
 										text-white dark:text-dark font-pmedium transition-all hover:opacity-90">
-									Create Your First Note
+									{searchTerm ? 'Clear Search' : 'Create Your First Note'}
 								</button>
 							</div>
 						)}

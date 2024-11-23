@@ -7,6 +7,8 @@ import alarm from '../assets/Audio/hey.mp3';
 import { useSelector } from 'react-redux';
 import { useDarkMode } from '../features/Darkmode/darkmodeProvider';
 import { useNavigate } from 'react-router-dom';
+import Push from 'push.js';
+import { img } from '../constants';
 
 const quotes = [
 	"Stay focused, you've got this!",
@@ -32,6 +34,43 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	const audioBufferRef = useRef(null);
 
 	const navigate = useNavigate();
+
+	// notification permission request
+	// useEffect(() => {
+	//   Push.Permission.request(() => {}, () => {});
+	// }, []);
+
+	// notification function
+	const showLocalNotification = useCallback(() => {
+		if (Push.Permission.has()) {
+			if (currentTime === 1) {
+				let title = '';
+				let message = '';
+				
+				if (session === 'study') {
+					title = "Study Session Complete!";
+					message = "Time for a well-deserved break.";
+				} else if (session === 'shortBreak') {
+					title = "Break Time Over!";
+					message = "Ready to get back to studying?";
+				} else if (session === 'longBreak') {
+					title = "Long Break Complete!";
+					message = "Time to start a new study session!";
+				}
+
+				Push.create(title, {
+					body: message,
+					icon: img.logo,
+					timeout: 5000,
+					vibrate: [200, 100, 200],
+					onClick: function () {
+						window.focus();
+						this.close();
+					}
+				});
+			}
+		}
+	}, [session, currentTime]);
 
 	const changeQuote = useCallback(() => {
 		const now = Date.now();
@@ -101,19 +140,38 @@ const Timer = ({ isCollapsed, isMobile }) => {
 		};
 	}, [changeQuote]);
 
+	// Modify your existing time effect to include notification
 	useEffect(() => {
 		if (currentTime === 1) {
 			playSound();
+			showLocalNotification();
 		}
-	}, [currentTime]);
+	}, [currentTime, playSound, showLocalNotification]);
 
 	const handleStartPause = () => {
 		if (isRunning) {
 			pauseTimer();
 			playSound();
 		} else {
-			startTimer();
-			playSound();
+			// Request notification permission when starting timer
+			if (!Push.Permission.has()) {
+				Push.Permission.request(
+					() => {
+						console.log('Notification permission granted');
+						startTimer(); // Start timer after permission is granted
+						playSound();
+					},
+					() => {
+						console.log('Notification permission denied');
+						startTimer(); // Start timer even if permission is denied
+						playSound();
+					}
+				);
+			} else {
+				// If permission already granted, just start the timer
+				startTimer();
+				playSound();
+			}
 		}
 	};
 

@@ -8,20 +8,26 @@ export const QuickieGreetings = () => {
 	const { isDarkMode } = useDarkMode();
 
 	const [slideIn, setSlideIn] = useState(false);
+	const [firstName, setFirstName] = useState(() => localStorage.getItem('userFirstName') || '');
 
 	useEffect(() => {
 		setTimeout(() => {
 			setSlideIn(true);
 		}, 100);
-	}, []);
+
+		if (userInfo?.firstname) {
+			localStorage.setItem('userFirstName', userInfo.firstname);
+			setFirstName(userInfo.firstname);
+		}
+	}, [userInfo?.firstname]);
 
 	return (
 		<div
 			className={`${slideIn ? 'slide-in' : 'slide-out'} 
 			relative overflow-hidden bg-white/90 dark:bg-darken/90 
 			backdrop-blur-sm rounded-xl border border-zinc-100 dark:border-zinc-800
-			shadow-sm transform transition-all duration-700 ease-in-out
-			min-h-[130px] xs:min-h-[150px] sm:min-h-[170px] md:min-h-[180px] lg:min-h-[190px]`}>
+				shadow-sm transform transition-all duration-700 ease-in-out
+				min-h-[130px] xs:min-h-[150px] sm:min-h-[170px] md:min-h-[180px] lg:min-h-[190px]`}>
 			{/* Main Content */}
 			<div className="relative h-full">
 				<div className="flex flex-row items-center h-full">
@@ -38,16 +44,16 @@ export const QuickieGreetings = () => {
 								className="text-primary dark:text-secondary bg-gradient-to-r 
 								from-primary to-secondary dark:from-secondary dark:to-primary 
 								bg-clip-text">
-								{userInfo?.firstname || 'Learner'}
+								{firstName || 'Learner'}
 							</span>
 						</h2>
 
 						{/* Description - Adjusted text sizes */}
 						<p
-							className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl
-							text-zinc-600 dark:text-zinc-300 
-							font-pregular 
-							max-w-[300px] xs:max-w-[340px] sm:max-w-[400px] md:max-w-[440px] lg:max-w-[500px]">
+								className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl
+								text-zinc-600 dark:text-zinc-300 
+								font-pregular 
+								max-w-[300px] xs:max-w-[340px] sm:max-w-[400px] md:max-w-[440px] lg:max-w-[500px]">
 							I'm{' '}
 							<span className="font-psemibold text-primary dark:text-secondary">
 								{isDarkMode ? 'NightWing' : 'Quickie'}

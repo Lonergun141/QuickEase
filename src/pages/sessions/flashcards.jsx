@@ -743,6 +743,21 @@ export default function Flashcards() {
 				className={`transition-all duration-300 flex-grow p-3 sm:p-4 lg:p-8 mt-16 lg:mt-0 ${
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
+				<div className="mb-6">
+					<button
+						onClick={handleBackClick}
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium 
+							text-zinc-700 dark:text-zinc-300 hover:text-primary dark:hover:text-secondary 
+							bg-white dark:bg-zinc-800 rounded-lg shadow-sm hover:shadow 
+							transition-all duration-300 group"
+					>
+						<FontAwesomeIcon 
+							icon={faChevronLeft} 
+							className="text-sm group-hover:-translate-x-0.5 transition-transform" 
+						/>
+						Back to Notes
+					</button>
+				</div>
 				<div className="edit">
 					<FlashcardsHeader
 						isEditing={isEditing}

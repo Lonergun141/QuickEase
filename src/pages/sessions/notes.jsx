@@ -23,7 +23,7 @@ import {
 } from '../../features/Summarizer/openAiServices';
 import { createQuiz, fetchQuiz } from '../../features/Quiz/quizServices';
 import { useSelector } from 'react-redux';
-import { createFlashcards, fetchSetFlashcards } from '../../features/Flashcard/flashCard';
+import { createFlashcards, fetchSetFlashcards, fetchFlashcardsForNote, deleteFlashcard } from '../../features/Flashcard/flashCard';
 import NotesLoadingScreen from '../../components/Loaders/loader';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -39,6 +39,8 @@ import QuizLoadingScreen from '../../components/Loaders/quizLoader';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 import CustomModal from '../../components/CustomModal/CustomModal';
+import SaveConfirmationModal from '../../components/SaveConfirmationModal/SaveConfirmationModal';
+import { deleteQuiz } from '../../features/Quiz/quizServices';
 
 const renderMath = (math, displayMode = false) => {
 	try {
@@ -438,25 +440,114 @@ export default function Notes() {
 		}
 	};
 
-	// Update handleSave
+	// Add this new state near your other state declarations
+	const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
+	const [pendingSaveData, setPendingSaveData] = useState(null);
+
+	// Update the handleSave function
 	const handleSave = async () => {
 		if (userInfo && note) {
-			try {
-				const formData = new FormData();
-				formData.append('notetitle', normalizeContent(editedTitle));
-				formData.append('notesummary', normalizeContent(editedSummary));
-				formData.append('notecontents', note.notecontents);
-				formData.append('user', userInfo.id);
+			const formData = new FormData();
+			formData.append('notetitle', normalizeContent(editedTitle));
+			formData.append('notesummary', normalizeContent(editedSummary));
+			formData.append('notecontents', note.notecontents);
+			formData.append('user', userInfo.id);
 
-				const updatedNote = await updateNote(id, formData);
-				setNote(updatedNote);
-				setIsEditing(false);
-				setHasUnsavedChanges(false);
-				setInitialTitle('');
-				setInitialSummary('');
-			} catch (error) {
-				console.error('Error updating note:', error);
+			// Check if quiz or flashcards exist
+			if (quizExists || flashcardsExist) {
+				setPendingSaveData(formData);
+				setShowSaveConfirmModal(true);
+			} else {
+				// If no quiz or flashcards exist, save directly
+				await saveChanges(formData);
 			}
+		}
+	};
+
+	// Add this new function to handle the actual saving
+	const saveChanges = async (formData) => {
+		try {
+			const updatedNote = await updateNote(id, formData);
+			setNote(updatedNote);
+			setIsEditing(false);
+			setHasUnsavedChanges(false);
+			setInitialTitle('');
+			setInitialSummary('');
+			setCustomModalConfig({
+				isOpen: true,
+				title: 'Success',
+				message: 'Your changes have been saved successfully.',
+				type: 'success'
+			});
+		} catch (error) {
+			console.error('Error updating note:', error);
+			setCustomModalConfig({
+				isOpen: true,
+				title: 'Error',
+				message: 'Failed to save changes. Please try again.',
+				type: 'error'
+			});
+		}
+	};
+
+	// Add new state for save/delete loading
+	const [isSavingChanges, setIsSavingChanges] = useState(false);
+
+	// Update handleSaveWithDelete function
+	const handleSaveWithDelete = async () => {
+		setIsSavingChanges(true);
+		try {
+			// Delete quiz if it exists
+			if (quizExists) {
+				await deleteQuiz(id);
+				setQuizExists(false);
+			}
+			
+			// Delete flashcards if they exist
+			if (flashcardsExist) {
+				const flashcards = await fetchFlashcardsForNote(id);
+				await Promise.all(flashcards.map(card => deleteFlashcard(card.id)));
+				setFlashcardsExist(false);
+			}
+			
+			// Save the changes
+			await saveChanges(pendingSaveData);
+			setShowSaveConfirmModal(false);
+
+			// Update localStorage
+			const storedData = JSON.parse(localStorage.getItem('noteData')) || {};
+			localStorage.setItem(
+				'noteData',
+				JSON.stringify({
+					...storedData,
+					[id]: {
+						...storedData[id],
+						quizExists: false,
+						flashcardsExist: false,
+					},
+				})
+			);
+		} catch (error) {
+			console.error('Error during save with delete:', error);
+			setCustomModalConfig({
+				isOpen: true,
+				title: 'Error',
+				message: 'Failed to delete existing content. Please try again.',
+				type: 'error'
+			});
+		} finally {
+			setIsSavingChanges(false);
+		}
+	};
+
+	// Update handleSaveOnly function
+	const handleSaveOnly = async () => {
+		setIsSavingChanges(true);
+		try {
+			await saveChanges(pendingSaveData);
+			setShowSaveConfirmModal(false);
+		} finally {
+			setIsSavingChanges(false);
 		}
 	};
 
@@ -689,70 +780,63 @@ export default function Notes() {
 					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
 				</button>
 
-				<section className="flex items-center mb-6 justify-between">
-					<button
-						onClick={() => handleNavigate('/myNotes')}
-						className="text-gray-500 dark:text-secondary hover:text-highlights transition-colors duration-200">
-						<FontAwesomeIcon icon={faArrowLeft} className="text-2xl" />
-					</button>
-					<div className="hidden xs:flex items-center justify-center">
-						<FontAwesomeIcon
-							icon={faFire}
-							color="#EE924F"
-							className="text-coral-red text-xl mr-3"
-						/>
-						<h3 className="text-xl md:text-3xl lg:text-xl font-pbold text-highlights dark:text-secondary">
-							Summary
-						</h3>
+				<section className="sticky top-0 z-5 bg-white/80 dark:bg-dark/80 backdrop-blur-md border-b border-zinc-100 dark:border-zinc-800 mb-6 py-4">
+					<div className="max-w-screen-xl mx-auto px-4 flex items-center justify-between">
+						{/* Left Section - Back Button & Title */}
+						<div className="flex items-center gap-4">
+							<button
+								onClick={() => handleNavigate('/myNotes')}
+								className="group flex items-center gap-2 px-3 py-2 rounded-lg 
+									text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 
+									transition-all duration-200"
+							>
+								<FontAwesomeIcon 
+									icon={faArrowLeft} 
+									className="text-lg group-hover:-translate-x-1 transition-transform duration-200" 
+								/>
+								<span className="hidden sm:block text-sm font-medium">Back to Notes</span>
+							</button>
+
+							
+						</div>
+
+						{/* Right Section - Edit Controls */}
+						<div className="flex items-center gap-2">
+							{!isEditing ? (
+								<button
+									onClick={handleEdit}
+									className="edit flex items-center gap-2 px-4 py-2 rounded-lg
+										text-highlights dark:text-secondary border border-highlights/20 dark:border-secondary/20
+										hover:bg-highlights/10 dark:hover:bg-secondary/10 transition-all duration-200"
+								>
+									<FontAwesomeIcon icon={faPen} className="text-lg" />
+									<span className="hidden sm:block font-medium">Edit Summary</span>
+								</button>
+							) : (
+								<div className="flex items-center gap-2">
+									<button
+										onClick={handleSave}
+										className="flex items-center gap-2 px-4 py-2 rounded-lg
+											text-white dark:text-dark bg-highlights dark:bg-secondary hover:opacity-90
+											transition-all duration-200 shadow-sm hover:shadow"
+									>
+										<FontAwesomeIcon icon={faSave} className="text-lg" />
+										<span className="hidden sm:block font-medium">Save Changes</span>
+									</button>
+
+									<button
+										onClick={handleCancel}
+										className="flex items-center gap-2 px-4 py-2 rounded-lg
+											text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800
+											transition-all duration-200"
+									>
+										<FontAwesomeIcon icon={faTimes} className="text-lg" />
+										<span className="hidden sm:block font-medium">Cancel</span>
+									</button>
+								</div>
+							)}
+						</div>
 					</div>
-
-					{!isEditing ? (
-						<div className="flex items-center xs:mr-2 sm:mr-5 md:mr-6 mr-4 edit">
-							<button
-								onClick={handleEdit}
-								title="Edit"
-								aria-label="Edit"
-								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-								<FontAwesomeIcon
-									icon={faPen}
-									className="text-xl text-highlights dark:text-secondary"
-								/>
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">
-									Edit
-								</span>
-							</button>
-						</div>
-					) : (
-						<div className="flex items-center">
-							<button
-								onClick={handleSave}
-								title="Save"
-								aria-label="Save"
-								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700 mr-2">
-								<FontAwesomeIcon
-									icon={faSave}
-									className="text-xl text-highlights dark:text-secondary"
-								/>
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">
-									Save
-								</span>
-							</button>
-
-							<button
-								onClick={handleCancel}
-								title="Cancel"
-								aria-label="Cancel"
-								className="flex items-center p-2 rounded transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-								<FontAwesomeIcon
-									icon={faTimes}
-									className="text-xl text-highlights dark:text-secondary"
-								/>
-								<span className="ml-2 text-sm text-highlights dark:text-secondary">
-									Cancel
-								</span>
-							</button>
-						</div>
-					)}
 				</section>
 
 				<section className="mt-8">
@@ -1038,6 +1122,17 @@ export default function Notes() {
 						</div>
 					</div>
 				</Modal>
+
+				{/* Save Confirmation Modal */}
+				<SaveConfirmationModal 
+					isOpen={showSaveConfirmModal}
+					onClose={() => setShowSaveConfirmModal(false)}
+					onSaveWithDelete={handleSaveWithDelete}
+					onSaveOnly={handleSaveOnly}
+					quizExists={quizExists}
+					flashcardsExist={flashcardsExist}
+					isSaving={isSavingChanges}
+				/>
 			</main>
 		</div>
 	);

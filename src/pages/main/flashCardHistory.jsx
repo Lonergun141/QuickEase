@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faClone, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faClone, faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from '../../components/sidebar';
 import { fetchUserFlashcards } from '../../features/Flashcard/flashCard';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ export default function FlashCardHistory() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [sortOption, setSortOption] = useState('dateDesc');
 	const [slideIn, setSlideIn] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
 	const flashcardsPerPage = 4;
 	const navigate = useNavigate();
 	const userInfo = useSelector((state) => state.auth.userInfo);
@@ -123,10 +124,14 @@ export default function FlashCardHistory() {
 		setCurrentPage(newPage);
 	};
 
+	const filteredFlashcards = flashcards.filter(flashcard =>
+		flashcard.title.toLowerCase().replace(/["*]/g, '').includes(searchTerm.toLowerCase())
+	);
+
 	const startIndex = (currentPage - 1) * flashcardsPerPage;
 	const endIndex = startIndex + flashcardsPerPage;
-	const currentFlashcards = flashcards.slice(startIndex, endIndex);
-	const totalPages = Math.ceil(flashcards.length / flashcardsPerPage);
+	const currentFlashcards = filteredFlashcards.slice(startIndex, endIndex);
+	const totalPages = Math.ceil(filteredFlashcards.length / flashcardsPerPage);
 
 	return (
 		<div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 dark:bg-dark w-full">
@@ -143,7 +148,7 @@ export default function FlashCardHistory() {
 								{/* Title and Description */}
 								<div className="space-y-4">
 									<div className="space-y-3">
-										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+										<div className="inline-flex items-center gap-3  pl-3 pr-5 py-1.5">
 											<div className="p-2 rounded-full ">
 												<FontAwesomeIcon 
 													icon={faClone} 
@@ -161,8 +166,26 @@ export default function FlashCardHistory() {
 											Review and practice with your flashcard collections
 										</p>
 									</div>
+									<div className="relative max-w-md">
+										<div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+											<FontAwesomeIcon 
+												icon={faSearch} 
+												className="text-zinc-400 dark:text-zinc-500" 
+											/>
+										</div>
+										<input
+											type="text"
+											placeholder="Search flashcard sets..."
+											value={searchTerm}
+											onChange={(e) => setSearchTerm(e.target.value)}
+											className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-900 
+												border border-zinc-200 dark:border-zinc-800 rounded-xl
+												text-newTxt dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500
+												focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-secondary/20
+												transition-all font-pmedium text-sm"
+										/>
+									</div>
 								</div>
-
 								{/* Enhanced Sort Dropdown */}
 								<div className="relative">
 									<select
@@ -232,23 +255,26 @@ export default function FlashCardHistory() {
 							<div className="flex flex-col items-center justify-center py-16 px-4">
 								<img src={SVG} alt="No flashcards" className="w-64 h-64 mb-6 opacity-80" />
 								<h2 className="text-xl font-psemibold text-newTxt dark:text-white mb-2">
-									No Flashcard Sets Yet
+									{searchTerm ? 'No Matching Flashcard Sets Found' : 'No Flashcard Sets Yet'}
 								</h2>
 								<p className="text-darkS dark:text-smenu mb-6 text-center max-w-md">
-									Create flashcards from your notes to start practicing
+									{searchTerm 
+										? `No flashcard sets found matching "${searchTerm}". Try a different search term.`
+										: 'Create flashcards from your notes to start practicing'
+									}
 								</p>
 								<button
-									onClick={() => navigate('/home')}
+									onClick={() => searchTerm ? setSearchTerm('') : navigate('/home')}
 									className="inline-flex items-center px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
 										text-white font-pmedium transition-all hover:opacity-90">
-									Create Your First Set
+									{searchTerm ? 'Clear Search' : 'Create Your First Set'}
 								</button>
 							</div>
 						)}
 					</div>
 
 					{/* Enhanced Pagination */}
-					{flashcards.length > flashcardsPerPage && (
+					{filteredFlashcards.length > flashcardsPerPage && (
 						<div className="flex justify-center mt-8">
 							<Pagination
 								currentPage={currentPage}

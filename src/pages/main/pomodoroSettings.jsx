@@ -161,7 +161,7 @@ export default function Pomodoro() {
 								<div className="space-y-6">
 									{/* Header */}
 									<div className="space-y-3">
-										<div className="inline-flex items-center gap-3 bg-zinc-100/80 dark:bg-zinc-800/80 rounded-full pl-3 pr-5 py-1.5">
+										<div className="inline-flex items-center gap-3  pl-3 pr-5 py-1.5">
 											<div className="p-2 rounded-full">
 												<FontAwesomeIcon 
 													icon={faClock} 
@@ -357,10 +357,14 @@ export default function Pomodoro() {
 									}
 								].map((item, index) => (
 									<div key={index} 
-										className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors duration-200">
+										className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 
+											dark:border-zinc-800 p-5 shadow-sm hover:border-zinc-300 
+											dark:hover:border-zinc-700 transition-colors duration-200">
 										<div className="flex gap-4">
-											<div className={`${item.color} ${item.bgColor} rounded-lg p-3`}>
-												<FontAwesomeIcon icon={item.icon} className="text-lg" />
+											
+											<div className={`flex-shrink-0 w-10 h-10 flex items-center justify-center 
+												${item.color} ${item.bgColor} rounded-lg`}>
+												<FontAwesomeIcon icon={item.icon} className="text-base" />
 											</div>
 											<div>
 												<h3 className="font-psemibold text-zinc-900 dark:text-zinc-100">

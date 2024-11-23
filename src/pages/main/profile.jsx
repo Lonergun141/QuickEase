@@ -22,13 +22,10 @@ export default function Profile() {
 	const userInfo = useSelector((state) => state.auth.userInfo);
 	const [showModal, setShowModal] = useState(false);
 
-	// Use the badges and achievements from the BadgeContext
 	const { achievements, badgeDefinitions } = useBadges();
 
-	// Use user stats from UserStatsContext
 	const { flashcardCount, notesCount, averageScore } = useUserStats();
 
-	// Fetch user info on component mount
 	useEffect(() => {
 		dispatch(fetchUserInfo());
 	}, [dispatch]);
@@ -37,31 +34,28 @@ export default function Profile() {
 		setSidebarExpanded(isExpanded);
 	};
 
-	// Map earned achievements to badges
 	const earnedBadges = achievements.map((achievement) => {
 		return Object.values(badgeDefinitions).find((badge) => badge.id === achievement.badge);
 	});
 
-	// List of earned badge IDs
+
 	const earnedBadgeIds = achievements.map((achievement) => achievement.badge);
 
 	const AchievementsModal = ({ isOpen, onClose }) => {
 		const achievementsCount = earnedBadgeIds.length;
 		const totalBadges = Object.keys(badgeDefinitions).length;
 
-		// Memoized Badge Card Component
 		const BadgeCard = memo(({ badge, isEarned }) => (
 			<div className="bg-white dark:bg-zinc-800/50 rounded-2xl p-4">
 				<div className="flex flex-col items-center">
-					{/* Badge Image */}
+			
 					<img 
 						src={badge.image} 
 						alt={badge.title}
 						className={`w-16 h-16 mb-3 ${isEarned ? 'opacity-100' : 'opacity-50'}`}
 						style={{ transform: `scale(${isEarned ? 1 : 0.9})` }}
 					/>
-					
-					{/* Badge Title */}
+			
 					<h3 className={`text-base font-pbold text-center mb-2 ${
 						isEarned 
 							? 'text-primary dark:text-secondary' 
@@ -70,12 +64,12 @@ export default function Profile() {
 						{badge.title}
 					</h3>
 					
-					{/* Badge Description */}
+					
 					<p className="text-sm text-center text-zinc-600 dark:text-zinc-400 mb-3">
 						{badge.description}
 					</p>
 					
-					{/* Badge Status */}
+			
 					<div className={`px-4 py-1.5 rounded-full text-xs font-pmedium ${
 						isEarned 
 							? 'bg-primary/10 dark:bg-secondary/20 text-primary dark:text-secondary' 
@@ -157,11 +151,11 @@ export default function Profile() {
 					sidebarExpanded ? 'lg:ml-72' : 'lg:ml-28'
 				}`}>
 				<div className="max-w-7xl space-y-6 sm:space-y-8">
-					{/* Main Container - Add padding top for content spacing */}
+					
 					<div className="relative flex flex-col min-h-screen">
-						{/* Profile Header Section */}
+						
 						<div className="relative">
-							{/* Background Banner */}
+						
 							<div className="hidden sm:block h-48 md:h-56 rounded-2xl relative overflow-hidden bg-white/5 dark:bg-darken backdrop-blur-xl">
 								{/* Animated Background Elements */}
 								<div className="absolute inset-0">

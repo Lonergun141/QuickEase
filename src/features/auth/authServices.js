@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BACKEND_DOMAIN = `https://quickease.xyz`;
+const BACKEND_DOMAIN = `https://quickease.xyz`;	
+
 
 const REGISTER_URL = `${BACKEND_DOMAIN}/api/v1/auth/users/`;
 const LOGIN_URL = `${BACKEND_DOMAIN}/api/v1/auth/jwt/create/`;
@@ -90,6 +91,7 @@ const refresh = async () => {
 
 const logout = async () => {
 	localStorage.removeItem('user');
+	localStorage.removeItem('userFirstName'); 
 };
 
 const activate = async (userData) => {

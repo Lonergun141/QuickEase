@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../components/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle, faBars, faTimes, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { fetchQuizReviewData } from '../../features/Quiz/quizServices';
 import LoadingScreen from '../../components/Loaders/loader';
 import QuizLoadingScreen from '../../components/Loaders/quizLoader';
@@ -13,6 +13,7 @@ const Review = () => {
 	const [quizData, setQuizData] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
+	const [expandedQuestions, setExpandedQuestions] = useState({});
 
 	useEffect(() => {
 		const fetchReviewData = async () => {
@@ -68,6 +69,13 @@ const Review = () => {
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
+
+	const toggleQuestion = (questionId) => {
+		setExpandedQuestions(prev => ({
+			...prev,
+			[questionId]: !prev[questionId]
+		}));
+	};
 
 	if (isLoading) {
 		return <QuizLoadingScreen />;
@@ -267,24 +275,22 @@ const Review = () => {
 							const questionChoices = choicesByQuestion[question.id] || [];
 							const userChoice = userAnswersByQuestion[question.id];
 							const isCorrect = userChoice?.isAnswer;
-
-							const correctChoice = questionChoices.find((choice) => choice.isAnswer);
+							const isExpanded = expandedQuestions[question.id] || false;
 
 							return (
 								<div
 									key={question.id}
 									id={`question-${questionIndex}`}
-									className="bg-white dark:bg-darken rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8">
+									className="bg-white dark:bg-darken rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8"
+								>
 									<div className="space-y-6">
-										{/* Question Header */}
 										<div className="flex items-start gap-4">
-											<div
-												className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center
-												${
-													isCorrect
-														? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
-														: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
-												}`}>
+											<div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center
+												${isCorrect
+													? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+													: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+												}`}
+											>
 												{questionIndex + 1}
 											</div>
 											<p className="text-xl font-pbold text-newTxt dark:text-white">
@@ -292,63 +298,100 @@ const Review = () => {
 											</p>
 										</div>
 
-										{/* User Answer */}
-										<div
-											className={`p-4 rounded-xl border
-											${
-												isCorrect
-													? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20'
-													: 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'
-											}`}>
-											<p className="font-pmedium mb-2 text-dark dark:text-white">
-												Your Answer:
-											</p>
+										<div className={`p-4 rounded-xl border
+											${isCorrect
+												? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20'
+												: 'bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/20'
+											}`}
+										>
+											<p className="font-pmedium mb-2 text-dark dark:text-white">Your Answer:</p>
 											{userChoice ? (
-												<div
-													className={`flex items-center ${
-														isCorrect
-															? 'text-green-600'
-															: 'text-red-500'
-													}`}>
+												<div className={`flex items-center ${
+													isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+												}`}>
 													<FontAwesomeIcon
 														icon={isCorrect ? faCheckCircle : faTimesCircle}
 														className="mr-2 text-xl"
 													/>
-													<span className="text-lg">
-														{userChoice.item_choice_text}
-													</span>
+													<span className="text-lg">{userChoice.item_choice_text}</span>
 												</div>
 											) : (
-												<span className="text-gray-500 text-lg">
+												<span className="text-zinc-500 dark:text-zinc-400 text-lg">
 													No answer selected
 												</span>
 											)}
 										</div>
 
-										{!isCorrect && (
-											<div className="bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 p-4 rounded-lg">
-												<p className="font-pmedium mb-2">Correct Answer:</p>
-												<p className="text-primary text-lg">
-													{correctChoice?.item_choice_text ?? 'Unknown'}
-												</p>
-											</div>
-										)}
+										<div className="border rounded-xl dark:border-zinc-700 overflow-hidden">
+											<button
+												onClick={() => toggleQuestion(question.id)}
+												className="w-full px-4 py-3 flex items-center justify-between 
+													bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 
+													dark:hover:bg-zinc-800 transition-colors duration-200"
+											>
+												<span className="font-pmedium text-zinc-700 dark:text-zinc-300">
+													View Answer Details
+												</span>
+												<FontAwesomeIcon
+													icon={isExpanded ? faChevronUp : faChevronDown}
+													className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-200
+														${isExpanded ? 'transform rotate-180' : ''}`}
+												/>
+											</button>
 
-										<div className="mt-4">
-											<p className="font-pmedium mb-2 text-dark dark:text-secondary">
-												All Choices:
-											</p>
-											{questionChoices.map((choice) => (
-												<div
-													key={choice.id}
-													className={`flex items-center ${
-														choice.isAnswer
-															? 'text-primary font-semibold'
-															: 'text-gray-800 dark:text-naeg'
-													}`}>
-													<span className="text-lg">{choice.item_choice_text}</span>
+											<div className={`overflow-hidden transition-all duration-300 ease-in-out
+												${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+											>
+												<div className="p-4 space-y-4 bg-white dark:bg-zinc-900">
+													{!isCorrect && (
+														<div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-500/10 
+															border border-blue-100 dark:border-blue-500/20"
+														>
+															<p className="font-pmedium mb-1 text-blue-700 dark:text-blue-400">
+																Correct Answer:
+															</p>
+															<p className="text-blue-600 dark:text-blue-500">
+																{questionChoices.find(choice => choice.isAnswer)?.item_choice_text}
+															</p>
+														</div>
+													)}
+
+													<div className="space-y-2">
+														<p className="font-pmedium text-zinc-700 dark:text-zinc-300">
+															All Choices:
+														</p>
+														<div className="space-y-2">
+															{questionChoices.map((choice) => (
+																<div
+																	key={choice.id}
+																	className={`p-3 rounded-lg border ${
+																		choice.id === userChoice?.id
+																			? 'border-primary/20 dark:border-secondary/20 bg-primary/5 dark:bg-secondary/5'
+																			: 'border-zinc-100 dark:border-zinc-800'
+																	}`}
+																>
+																	<div className="flex items-center justify-between">
+																		<span className={`text-base ${
+																			choice.isAnswer
+																				? 'text-primary dark:text-secondary font-medium'
+																				: 'text-zinc-600 dark:text-zinc-400'
+																		}`}>
+																		{choice.item_choice_text}
+																		</span>
+																		{choice.id === userChoice?.id && (
+																			<span className="text-xs px-2 py-1 rounded-full 
+																				bg-primary/10 dark:bg-secondary/10 
+																				text-primary dark:text-secondary">
+																				Your Choice
+																			</span>
+																		)}
+																	</div>
+																</div>
+															))}
+														</div>
+													</div>
 												</div>
-											))}
+											</div>
 										</div>
 									</div>
 								</div>
