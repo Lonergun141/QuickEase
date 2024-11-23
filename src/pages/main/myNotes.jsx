@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faStickyNote, faChevronDown, faSearch } from '@fortawesome/free-solid-svg-icons';
+import {
+	faEllipsisH,
+	faStickyNote,
+	faChevronDown,
+	faSearch,
+} from '@fortawesome/free-solid-svg-icons';
 import Sidebar from '../../components/sidebar';
 import { fetchAllNotes, deleteNote } from '../../features/Summarizer/openAiServices';
 import { useNavigate } from 'react-router-dom';
@@ -99,7 +104,7 @@ export default function MyNotes() {
 		setCurrentPage(newPage);
 	};
 
-	const filteredNotes = notes.filter(note =>
+	const filteredNotes = notes.filter((note) =>
 		note.notetitle.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
@@ -125,9 +130,9 @@ export default function MyNotes() {
 									<div className="space-y-3">
 										<div className="inline-flex items-center gap-3  pl-3 pr-5 py-1.5">
 											<div className="p-2 rounded-full ">
-												<FontAwesomeIcon 
-													icon={faStickyNote} 
-													className="text-base text-primary dark:text-secondary" 
+												<FontAwesomeIcon
+													icon={faStickyNote}
+													className="text-base text-primary dark:text-secondary"
 												/>
 											</div>
 											<span className="text-sm font-pmedium text-zinc-600 dark:text-zinc-300">
@@ -144,9 +149,9 @@ export default function MyNotes() {
 									{/* Search Bar */}
 									<div className="relative max-w-md">
 										<div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-											<FontAwesomeIcon 
-												icon={faSearch} 
-												className="text-zinc-400 dark:text-zinc-500" 
+											<FontAwesomeIcon
+												icon={faSearch}
+												className="text-zinc-400 dark:text-zinc-500"
 											/>
 										</div>
 										<input
@@ -191,7 +196,9 @@ export default function MyNotes() {
 							// Enhanced Loading Skeletons
 							<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
 								{[...Array(6)].map((_, i) => (
-									<div key={i} className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6">
+									<div
+										key={i}
+										className="bg-white dark:bg-darken rounded-xl border border-zinc-200/80 dark:border-zinc-800 p-6">
 										<Skeleton height={24} width="70%" className="mb-4" />
 										<Skeleton height={16} width="40%" />
 									</div>
@@ -218,9 +225,9 @@ export default function MyNotes() {
 													}}
 													className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 
 														transition-colors opacity-0 group-hover:opacity-100">
-													<FontAwesomeIcon 
-														icon={faEllipsisH} 
-														className="text-zinc-400 dark:text-zinc-500" 
+													<FontAwesomeIcon
+														icon={faEllipsisH}
+														className="text-zinc-400 dark:text-zinc-500"
 													/>
 												</button>
 											</div>
@@ -228,7 +235,7 @@ export default function MyNotes() {
 												{new Date(note.notedatecreated).toLocaleDateString('en-US', {
 													month: 'short',
 													day: 'numeric',
-													year: 'numeric'
+													year: 'numeric',
 												})}
 											</p>
 										</div>
@@ -243,16 +250,15 @@ export default function MyNotes() {
 									{searchTerm ? 'No Matching Notes Found' : 'No Notes Yet'}
 								</h2>
 								<p className="text-darkS dark:text-smenu mb-6 text-center max-w-md">
-									{searchTerm 
+									{searchTerm
 										? `No notes found matching "${searchTerm}". Try a different search term.`
-										: 'Start creating notes by summarizing your study materials'
-									}
+										: 'Start creating notes by summarizing your study materials'}
 								</p>
 								<button
 									onClick={() => navigate('/home')}
 									className="inline-flex items-center px-6 py-3 rounded-xl bg-primary dark:bg-secondary 
 										text-white dark:text-dark font-pmedium transition-all hover:opacity-90">
-									{searchTerm ? 'Clear Search' : 'Create Your First Note'}
+									Create Your First Note
 								</button>
 							</div>
 						)}
