@@ -35,19 +35,19 @@ const SaveConfirmationModal = ({
 					className="relative w-full max-w-lg bg-white dark:bg-zinc-900 
           rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800">
 					{/* Header */}
-					<div className="px-6 pt-6 pb-4">
+					<div className="px-6 pt-6 pb-4 border-b border-zinc-200 dark:border-zinc-800">
 						<div className="flex items-center gap-4">
 							<div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-xl">
 								<FontAwesomeIcon
 									icon={faWandMagicSparkles}
-									className="text-lg text-primary"
+									className="text-xl text-primary"
 								/>
 							</div>
 							<div>
-								<h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+								<h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
 									Update Study Materials
 								</h3>
-								<p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+								<p className="mt-1.5 text-base text-zinc-500 dark:text-zinc-400">
 									Choose how to handle your existing materials
 								</p>
 							</div>
@@ -55,146 +55,80 @@ const SaveConfirmationModal = ({
 					</div>
 
 					{/* Content */}
-					<div className="px-6 space-y-5">
-						{/* Current Materials Card */}
-						<div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
-							<div className="flex items-start gap-3">
-								<FontAwesomeIcon
-									icon={faBookOpen}
-									className="mt-1 text-zinc-400 dark:text-zinc-500"
-								/>
-								<div>
-									<h4 className="font-medium text-zinc-900 dark:text-zinc-100">
-										Current Materials
-									</h4>
-									<div className="mt-2 space-y-2">
-										{quizExists && (
-											<div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-												<FontAwesomeIcon
-													icon={faLightbulb}
-													className="text-primary"
-												/>
-												<span>Existing Quiz</span>
-											</div>
-										)}
-										{flashcardsExist && (
-											<div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-												<FontAwesomeIcon icon={faClone} className="text-primary" />
-												<span>Existing Flashcard Set</span>
-											</div>
-										)}
-										{!quizExists && !flashcardsExist && (
-											<p className="text-sm text-zinc-500 dark:text-zinc-400">
-												No active study materials
-											</p>
-										)}
-									</div>
-								</div>
-							</div>
-						</div>
-
-						{/* Important Note - Redesigned as an info box */}
-						<div
-							className="px-4 py-3 bg-amber-50/50 dark:bg-amber-900/10 
-              border border-amber-200/50 dark:border-amber-700/30 rounded-lg">
-							<div className="flex">
-								<div>
-									<p className="text-sm text-amber-800 dark:text-amber-200">
-                                    You've modified the summary content. Your existing study materials may no longer 
-                                    align with the updated content.
-									</p>
-								</div>
-							</div>
+					<div className="p-6 space-y-6">
+						{/* Important Note */}
+						<div className="flex gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 
+							border border-amber-200 dark:border-amber-700/30 rounded-xl">
+							<FontAwesomeIcon 
+								icon={faFire} 
+								className="mt-1 text-amber-600 dark:text-amber-500" 
+							/>
+							<p className="text-sm leading-relaxed text-amber-800 dark:text-amber-200">
+								You've modified the summary content. Your existing study materials may no longer 
+								align with the updated content.
+							</p>
 						</div>
 
 						{/* Action Buttons Section */}
-						<div className="py-4 space-y-3">
-							<h4 className="font-medium text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+						<div className="space-y-4">
+							<h4 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
 								Choose an Action
 							</h4>
-
+							
 							{/* Delete Option */}
 							<button
 								onClick={onSaveWithDelete}
 								disabled={isSaving}
-								className="w-full flex items-center justify-between p-4
-                  bg-indigo-50 hover:bg-indigo-100 
-                  dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20
-                  border-2 border-indigo-200 dark:border-indigo-500/20
-                  rounded-xl transition-all duration-200 group">
-								<div className="flex items-center gap-3">
-									<div
-										className="w-10 h-10 flex items-center justify-center 
-                    bg-indigo-100 dark:bg-indigo-500/30 rounded-lg">
-										{isSaving ? (
-											<div
-												className="w-5 h-5 border-2 border-indigo-200 border-t-indigo-600 
-                        rounded-full animate-spin"
-											/>
-										) : (
-											<FontAwesomeIcon
-												icon={faTimes}
-												className="text-lg text-indigo-600 dark:text-indigo-400"
-											/>
-										)}
+								className="w-full p-5 text-left
+									bg-indigo-50 hover:bg-indigo-100 
+									dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20
+									border-2 border-indigo-200 dark:border-indigo-500/20
+									rounded-xl transition-all duration-200 group relative"
+							>
+								<div className="space-y-1.5">
+									<div className="text-lg font-semibold text-indigo-900 dark:text-indigo-300">
+										{isSaving ? 'Deleting Content...' : 'Save and Delete Existing Materials'}
 									</div>
-									<div className="text-left">
-										<div className="font-semibold text-indigo-900 dark:text-indigo-300">
-											{isSaving
-												? 'Deleting Content...'
-												: 'Save and Delete Existing Materials'}
-										</div>
-										<div className="text-sm text-indigo-600/80 dark:text-indigo-400/80">
-											Remove current materials to ensure they match the updated summary
-										</div>
+									<div className="text-sm text-indigo-600/80 dark:text-indigo-400/80">
+										Remove current materials to ensure they match the updated summary
 									</div>
 								</div>
-								<FontAwesomeIcon
-									icon={faArrowRight}
-									className="text-indigo-400 group-hover:translate-x-1 transition-transform"
-								/>
+								
+								{/* Arrow indicator */}
+								<div className="absolute right-5 top-1/2 -translate-y-1/2">
+									<FontAwesomeIcon 
+										icon={faArrowRight} 
+										className="text-lg text-indigo-400 group-hover:translate-x-1 transition-transform" 
+									/>
+								</div>
 							</button>
 
 							{/* Keep Option */}
 							<button
 								onClick={onSaveOnly}
 								disabled={isSaving}
-								className="w-full flex items-center justify-between p-4
-                  bg-zinc-50 hover:bg-zinc-100 
-                  dark:bg-zinc-800 dark:hover:bg-zinc-700
-                  border border-zinc-200 dark:border-zinc-700
-                  rounded-xl transition-all duration-200 group">
-								<div className="flex items-center gap-3">
-									<div
-										className="w-10 h-10 flex items-center justify-center 
-                    bg-zinc-100 dark:bg-zinc-700 rounded-lg">
-										{isSaving ? (
-											<div
-												className="w-5 h-5 border-2 border-zinc-300 border-t-zinc-600 
-                        rounded-full animate-spin"
-											/>
-										) : (
-											<FontAwesomeIcon
-												icon={faSave}
-												className="text-lg text-zinc-600 dark:text-zinc-400"
-											/>
-										)}
+								className="w-full p-5 text-left
+									bg-zinc-50 hover:bg-zinc-100 
+									dark:bg-zinc-800 dark:hover:bg-zinc-700
+									border border-zinc-200 dark:border-zinc-700
+									rounded-xl transition-all duration-200 group relative"
+							>
+								<div className="space-y-1.5">
+									<div className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+										{isSaving ? 'Saving Changes...' : 'Save and Keep Existing Materials'}
 									</div>
-									<div className="text-left">
-										<div className="font-semibold text-zinc-900 dark:text-zinc-100">
-											{isSaving
-												? 'Saving Changes...'
-												: 'Save and Keep Existing Materials'}
-										</div>
-										<div className="text-sm text-zinc-600 dark:text-zinc-400">
-											Preserve current materials even if they may not fully align
-										</div>
+									<div className="text-sm text-zinc-600 dark:text-zinc-400">
+										Preserve current materials even if they may not fully align
 									</div>
 								</div>
-								<FontAwesomeIcon
-									icon={faArrowRight}
-									className="text-zinc-400 group-hover:translate-x-1 transition-transform"
-								/>
+
+								{/* Arrow indicator */}
+								<div className="absolute right-5 top-1/2 -translate-y-1/2">
+									<FontAwesomeIcon 
+										icon={faArrowRight} 
+										className="text-lg text-zinc-400 group-hover:translate-x-1 transition-transform" 
+									/>
+								</div>
 							</button>
 						</div>
 					</div>
@@ -204,11 +138,12 @@ const SaveConfirmationModal = ({
 						<button
 							onClick={onClose}
 							disabled={isSaving}
-							className="w-full py-2.5 text-sm font-medium 
-                text-zinc-600 hover:text-zinc-900 
-                dark:text-zinc-400 dark:hover:text-zinc-200
-                disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors">
+							className="w-full py-3 text-sm font-medium 
+								text-zinc-600 hover:text-zinc-900 
+								dark:text-zinc-400 dark:hover:text-zinc-200
+									disabled:opacity-50 disabled:cursor-not-allowed
+									transition-colors"
+						>
 							Cancel
 						</button>
 					</div>

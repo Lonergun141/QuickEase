@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPause, faForward, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPause, faForward, faTimes, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import { img } from '../constants';
 
 const TimerModal = ({ time, isRunning, onStartPause, onSkip, onClose, sessionType }) => {
@@ -29,7 +29,7 @@ const TimerModal = ({ time, isRunning, onStartPause, onSkip, onClose, sessionTyp
               <FontAwesomeIcon icon={isRunning ? faPause : faPlay} />
             </button>
             <button className="p-2 dark:text-secondary" onClick={onSkip}>
-              <FontAwesomeIcon icon={faForward} />
+              <FontAwesomeIcon icon={faStepForward} />
             </button>
           </div>
         </div>

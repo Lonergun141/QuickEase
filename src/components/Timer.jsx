@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { TimerContext } from '../features/Pomodoro/TimerContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPause, faForward } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPause, faForward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import TimerModal from './timerModal';
 import alarm from '../assets/Audio/hey.mp3';
 import { useSelector } from 'react-redux';
@@ -240,7 +240,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 					onClick={handleSkip}
 					className={`${isDarkMode ? 'text-secondary' : 'text-primary'} p-1 rounded`}
 					aria-label="Skip">
-					<FontAwesomeIcon icon={faForward} />
+					<FontAwesomeIcon icon={faStepForward} />
 				</button>
 			</div>
 		</div>
@@ -277,7 +277,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 						isDarkMode ? 'text-secondary' : 'text-primary'
 					} hover:opacity-80 transition-opacity duration-300`}
 					aria-label="Skip">
-					<FontAwesomeIcon icon={faForward} size="lg" />
+					<FontAwesomeIcon icon={faStepForward} size="lg" />
 				</button>
 			</div>
 		</div>

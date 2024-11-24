@@ -780,7 +780,7 @@ export default function Notes() {
 					<span className="hidden sm:inline-block text-white font-semibold">Take a Tour</span>
 				</button>
 
-				<section className="sticky top-0 z-5 bg-white/80 dark:bg-dark/80 backdrop-blur-md border-b border-zinc-100 dark:border-zinc-800 mb-6 py-4">
+				<section className="sticky top-0 z-20 bg-white/80 dark:bg-dark/80 backdrop-blur-md border-b border-zinc-100 dark:border-zinc-800 mb-6 py-4">
 					<div className="max-w-screen-xl mx-auto px-4 flex items-center justify-between">
 						{/* Left Section - Back Button & Title */}
 						<div className="flex items-center gap-4">
