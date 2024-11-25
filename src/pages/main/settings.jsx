@@ -120,7 +120,7 @@ export default function Settings() {
 								</div>
 							</button>
 
-							{/* Deactivate Account Card */}
+							{/* Deactivate Account Card 
 							<button
 								onClick={openDeactivateModal}
 								className="group relative flex items-center gap-x-4 rounded-lg bg-white dark:bg-darken p-4 border border-zinc-200 dark:border-zinc-800 hover:border-red-200 dark:hover:borde-darkbg-darken/50 transition-all duration-200">
@@ -139,6 +139,7 @@ export default function Settings() {
 									</p>
 								</div>
 							</button>
+							*/}
 						</div>
 					</section>
 				</div>
