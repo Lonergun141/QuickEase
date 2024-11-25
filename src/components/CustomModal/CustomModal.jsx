@@ -57,7 +57,7 @@ const CustomModal = ({ isOpen, onClose, title, message, type = 'error' }) => {
                   type === 'warning' ? faExclamationCircle :
                   faInfoCircle
                 }
-                className="text-3xl"
+                className="text-3xl text-highlights dark:text-secondary"
               />
             </div>
 

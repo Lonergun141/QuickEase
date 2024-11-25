@@ -19,7 +19,8 @@ const SaveConfirmationModal = ({
 	onSaveOnly,
 	quizExists,
 	flashcardsExist,
-	isSaving,
+	isSavingWithDelete,
+	isSavingOnly,
 }) => {
 	if (!isOpen) return null;
 
@@ -78,16 +79,17 @@ const SaveConfirmationModal = ({
 							{/* Delete Option */}
 							<button
 								onClick={onSaveWithDelete}
-								disabled={isSaving}
+								disabled={isSavingWithDelete || isSavingOnly}
 								className="w-full p-5 text-left
 									bg-indigo-50 hover:bg-indigo-100 
 									dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20
 									border-2 border-indigo-200 dark:border-indigo-500/20
-									rounded-xl transition-all duration-200 group relative"
+									rounded-xl transition-all duration-200 group relative
+									disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								<div className="space-y-1.5">
 									<div className="text-lg font-semibold text-indigo-900 dark:text-indigo-300">
-										{isSaving ? 'Deleting Content...' : 'Save and Delete Existing Materials'}
+										{isSavingWithDelete ? 'Deleting Content...' : 'Save and Delete Existing Materials'}
 									</div>
 									<div className="text-sm text-indigo-600/80 dark:text-indigo-400/80">
 										Remove current materials to ensure they match the updated summary
@@ -106,16 +108,17 @@ const SaveConfirmationModal = ({
 							{/* Keep Option */}
 							<button
 								onClick={onSaveOnly}
-								disabled={isSaving}
+								disabled={isSavingWithDelete || isSavingOnly}
 								className="w-full p-5 text-left
 									bg-zinc-50 hover:bg-zinc-100 
 									dark:bg-zinc-800 dark:hover:bg-zinc-700
 									border border-zinc-200 dark:border-zinc-700
-									rounded-xl transition-all duration-200 group relative"
+									rounded-xl transition-all duration-200 group relative
+									disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								<div className="space-y-1.5">
 									<div className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-										{isSaving ? 'Saving Changes...' : 'Save and Keep Existing Materials'}
+										{isSavingOnly ? 'Saving Changes...' : 'Save and Keep Existing Materials'}
 									</div>
 									<div className="text-sm text-zinc-600 dark:text-zinc-400">
 										Preserve current materials even if they may not fully align
@@ -137,7 +140,7 @@ const SaveConfirmationModal = ({
 					<div className="px-6 py-4 border-t border-zinc-200 dark:border-zinc-800">
 						<button
 							onClick={onClose}
-							disabled={isSaving}
+							disabled={isSavingWithDelete || isSavingOnly}
 							className="w-full py-3 text-sm font-medium 
 								text-zinc-600 hover:text-zinc-900 
 								dark:text-zinc-400 dark:hover:text-zinc-200

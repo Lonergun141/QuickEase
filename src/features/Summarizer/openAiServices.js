@@ -250,7 +250,7 @@ export const generateQuizFromSummary = async (summary) => {
 		const response = await axios.post(
 			'https://api.openai.com/v1/chat/completions',
 			{
-				model: 'gpt-4o-mini',
+				model: 'gpt-4o',
 				messages: [
 					{
 						role: 'system',
@@ -259,11 +259,21 @@ export const generateQuizFromSummary = async (summary) => {
 					},
 					{
 						role: 'user',
-						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should adapt to the length and detail of the summary, with at least **15 questions** as a minimum. If the summary provides enough content, generate additional questions to cover all major points and details, ensuring an even distribution of topics. 
+						content: `Generate a multiple-choice quiz based on the given summary. The number of questions should be exactly either "15 or 20" items only. 
+						If the given summary is too short, generate 15. Else, generate 20 items if it's a long summary. 
 
-						Each question must have **1 correct answer** and **3 incorrect but realistic options**. 
-						The incorrect choices should not be obviously wrong and should resemble plausible alternatives or common misconceptions based on the content. 
-						Randomize the position of the correct answer among the four choices for each question. Format the response as a JSON array of question objects with the following structure:
+						Ensure the following:
+						- Cover all major points and details, ensure an even distribution of topics.
+						- Each question must have **1 correct answer** and **3 incorrect options (distractors)**.
+						- The distractor should be plausible and reasonable.
+						- The distractor should be realistic and relevant to the question. 
+						- Incorporate common misconceptions.
+						- Distractors should be similar in length and grammatical structure to avoid giving clues about the correct answer.
+						- At least (20-30% application-based questions) that require applying the concepts from the summary to hypothetical scenarios or problem-solving.
+						- Each question should only have one correct answer.
+
+						(VERY IMPORTANT) Randomize the position of the correct answer among the four choices for each question. 
+						(VERY IMPORTANT) Format the response as a JSON array of question objects with the following structure:
 
 						[
 							{
@@ -302,7 +312,7 @@ export const generateQuizFromSummary = async (summary) => {
 						Make sure to cover all relevant content in the summary and generate enough questions to test knowledge across all key areas. Do not provide any explanation or extra formatting outside the JSON structure.`,
 					},
 				],
-				max_tokens: 4000,
+				max_tokens: 5000,
 			},
 			{
 				headers: {

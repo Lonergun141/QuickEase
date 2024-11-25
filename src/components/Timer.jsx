@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPause, faForward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import TimerModal from './timerModal';
 import alarm from '../assets/Audio/hey.mp3';
+import alarm2 from '../assets/Audio/alarm.mp3';
 import { useSelector } from 'react-redux';
 import { useDarkMode } from '../features/Darkmode/darkmodeProvider';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +33,8 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	const sound = new Audio(alarm);
 	const audioContextRef = useRef(null);
 	const audioBufferRef = useRef(null);
+	const alarm2ContextRef = useRef(null);
+	const alarm2BufferRef = useRef(null);
 
 	const navigate = useNavigate();
 
@@ -86,15 +89,23 @@ const Timer = ({ isCollapsed, isMobile }) => {
 
 	useEffect(() => {
 		const initAudio = async () => {
-			// Create AudioContext
 			audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+			alarm2ContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
 
 			try {
-				// Fetch and decode audio file
-				const response = await fetch(alarm);
-				const arrayBuffer = await response.arrayBuffer();
-				const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
-				audioBufferRef.current = audioBuffer;
+				// Load both sounds
+				const [alarmResponse, alarm2Response] = await Promise.all([
+					fetch(alarm),
+					fetch(alarm2)
+				]);
+
+				const [alarmBuffer, alarm2Buffer] = await Promise.all([
+					alarmResponse.arrayBuffer(),
+					alarm2Response.arrayBuffer()
+				]);
+
+				audioBufferRef.current = await audioContextRef.current.decodeAudioData(alarmBuffer);
+				alarm2BufferRef.current = await alarm2ContextRef.current.decodeAudioData(alarm2Buffer);
 			} catch (error) {
 				console.error('Failed to load audio:', error);
 			}
@@ -105,6 +116,9 @@ const Timer = ({ isCollapsed, isMobile }) => {
 		return () => {
 			if (audioContextRef.current?.state !== 'closed') {
 				audioContextRef.current?.close();
+			}
+			if (alarm2ContextRef.current?.state !== 'closed') {
+				alarm2ContextRef.current?.close();
 			}
 		};
 	}, []);
@@ -129,6 +143,23 @@ const Timer = ({ isCollapsed, isMobile }) => {
 		}
 	}, []);
 
+	const playAlarm2 = useCallback(() => {
+		if (alarm2ContextRef.current && alarm2BufferRef.current) {
+			try {
+				if (alarm2ContextRef.current.state === 'suspended') {
+					alarm2ContextRef.current.resume();
+				}
+
+				const source = alarm2ContextRef.current.createBufferSource();
+				source.buffer = alarm2BufferRef.current;
+				source.connect(alarm2ContextRef.current.destination);
+				source.start(0);
+			} catch (error) {
+				console.error('Error playing alarm2:', error);
+			}
+		}
+	}, []);
+
 	useEffect(() => {
 		changeQuote();
 		quoteIntervalRef.current = setInterval(changeQuote, 8000);
@@ -143,10 +174,10 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	// Modify your existing time effect to include notification
 	useEffect(() => {
 		if (currentTime === 1) {
-			playSound();
+			playAlarm2();
 			showLocalNotification();
 		}
-	}, [currentTime, playSound, showLocalNotification]);
+	}, [currentTime, playAlarm2, showLocalNotification]);
 
 	const handleStartPause = () => {
 		if (isRunning) {

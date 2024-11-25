@@ -383,14 +383,13 @@ export default function Notes() {
 		}
 	};
 
-	// Add these state variables near your other states
+
 	const [initialTitle, setInitialTitle] = useState('');
 	const [initialSummary, setInitialSummary] = useState('');
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [showUnsavedModal, setShowUnsavedModal] = useState(false);
 	const [pendingNavigation, setPendingNavigation] = useState(null);
 
-	// Update handleEdit to store initial values
 	const handleEdit = () => {
 		if (note) {
 			const normalizedTitle = normalizeContent(note.notetitle);
@@ -405,7 +404,6 @@ export default function Notes() {
 		}
 	};
 
-	// Update the useEffect that tracks changes
 	useEffect(() => {
 		if (isEditing) {
 			const normalizedEditedTitle = normalizeContent(editedTitle);
@@ -440,7 +438,7 @@ export default function Notes() {
 		}
 	};
 
-	// Add this new state near your other state declarations
+
 	const [showSaveConfirmModal, setShowSaveConfirmModal] = useState(false);
 	const [pendingSaveData, setPendingSaveData] = useState(null);
 
@@ -453,18 +451,22 @@ export default function Notes() {
 			formData.append('notecontents', note.notecontents);
 			formData.append('user', userInfo.id);
 
-			// Check if quiz or flashcards exist
-			if (quizExists || flashcardsExist) {
+			// Check if there are actual changes to the content
+			const hasContentChanges = 
+				normalizeContent(editedTitle) !== normalizeContent(note.notetitle) ||
+				normalizeContent(editedSummary) !== normalizeContent(note.notesummary);
+
+			// Only show confirmation modal if there are changes AND quiz/flashcards exist
+			if (hasContentChanges && (quizExists || flashcardsExist)) {
 				setPendingSaveData(formData);
 				setShowSaveConfirmModal(true);
 			} else {
-				// If no quiz or flashcards exist, save directly
+				// Save directly if no changes or no quiz/flashcards exist
 				await saveChanges(formData);
 			}
 		}
 	};
 
-	// Add this new function to handle the actual saving
 	const saveChanges = async (formData) => {
 		try {
 			const updatedNote = await updateNote(id, formData);
@@ -490,12 +492,12 @@ export default function Notes() {
 		}
 	};
 
-	// Add new state for save/delete loading
-	const [isSavingChanges, setIsSavingChanges] = useState(false);
+	const [isSavingWithDelete, setIsSavingWithDelete] = useState(false);
+	const [isSavingOnly, setIsSavingOnly] = useState(false);
 
 	// Update handleSaveWithDelete function
 	const handleSaveWithDelete = async () => {
-		setIsSavingChanges(true);
+		setIsSavingWithDelete(true);
 		try {
 			// Delete quiz if it exists
 			if (quizExists) {
@@ -536,18 +538,18 @@ export default function Notes() {
 				type: 'error'
 			});
 		} finally {
-			setIsSavingChanges(false);
+			setIsSavingWithDelete(false);
 		}
 	};
 
 	// Update handleSaveOnly function
 	const handleSaveOnly = async () => {
-		setIsSavingChanges(true);
+		setIsSavingOnly(true);
 		try {
 			await saveChanges(pendingSaveData);
 			setShowSaveConfirmModal(false);
 		} finally {
-			setIsSavingChanges(false);
+			setIsSavingOnly(false);
 		}
 	};
 
@@ -1131,7 +1133,8 @@ export default function Notes() {
 					onSaveOnly={handleSaveOnly}
 					quizExists={quizExists}
 					flashcardsExist={flashcardsExist}
-					isSaving={isSavingChanges}
+					isSavingWithDelete={isSavingWithDelete}
+					isSavingOnly={isSavingOnly}
 				/>
 			</main>
 		</div>
