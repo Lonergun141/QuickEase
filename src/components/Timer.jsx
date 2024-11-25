@@ -35,6 +35,8 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	const audioBufferRef = useRef(null);
 	const alarm2ContextRef = useRef(null);
 	const alarm2BufferRef = useRef(null);
+	const activeSourcesRef = useRef([]);
+	const timeoutsRef = useRef([]);
 
 	const navigate = useNavigate();
 
@@ -150,14 +152,40 @@ const Timer = ({ isCollapsed, isMobile }) => {
 					alarm2ContextRef.current.resume();
 				}
 
-				const source = alarm2ContextRef.current.createBufferSource();
-				source.buffer = alarm2BufferRef.current;
-				source.connect(alarm2ContextRef.current.destination);
-				source.start(0);
+				const duration = alarm2BufferRef.current.duration;
+				activeSourcesRef.current = []; // Reset active sources
+				timeoutsRef.current = []; // Reset timeouts
+
+				for (let i = 0; i < 4; i++) {
+					const timeout = setTimeout(() => {
+						const source = alarm2ContextRef.current.createBufferSource();
+						source.buffer = alarm2BufferRef.current;
+						source.connect(alarm2ContextRef.current.destination);
+						source.start(0);
+						activeSourcesRef.current.push(source);
+					}, i * (duration * 1000));
+					timeoutsRef.current.push(timeout);
+				}
 			} catch (error) {
 				console.error('Error playing alarm2:', error);
 			}
 		}
+	}, []);
+
+	const stopAllSounds = useCallback(() => {
+		// Clear all pending timeouts
+		timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+		timeoutsRef.current = [];
+
+		// Stop all active sources
+		activeSourcesRef.current.forEach(source => {
+			try {
+				source.stop();
+			} catch (error) {
+				// Ignore errors if sound is already stopped
+			}
+		});
+		activeSourcesRef.current = [];
 	}, []);
 
 	useEffect(() => {
@@ -180,6 +208,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	}, [currentTime, playAlarm2, showLocalNotification]);
 
 	const handleStartPause = () => {
+		stopAllSounds(); // Stop any playing sounds
 		if (isRunning) {
 			pauseTimer();
 			playSound();
@@ -207,6 +236,7 @@ const Timer = ({ isCollapsed, isMobile }) => {
 	};
 
 	const handleSkip = () => {
+		stopAllSounds(); // Stop any playing sounds
 		skipSession();
 	};
 
