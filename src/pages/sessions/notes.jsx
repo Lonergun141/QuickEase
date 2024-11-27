@@ -22,7 +22,7 @@ import {
 	generateQuizFromSummary,
 } from '../../features/Summarizer/openAiServices';
 import { createQuiz, fetchQuiz } from '../../features/Quiz/quizServices';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { createFlashcards, fetchSetFlashcards, fetchFlashcardsForNote, deleteFlashcard } from '../../features/Flashcard/flashCard';
 import NotesLoadingScreen from '../../components/Loaders/loader';
 import ReactQuill from 'react-quill';
@@ -41,6 +41,7 @@ import { useDarkMode } from '../../features/Darkmode/darkmodeProvider';
 import CustomModal from '../../components/CustomModal/CustomModal';
 import SaveConfirmationModal from '../../components/SaveConfirmationModal/SaveConfirmationModal';
 import { deleteQuiz } from '../../features/Quiz/quizServices';
+import { resetTimer } from '../../features/Pomodoro/pomodoroSlice';
 
 const renderMath = (math, displayMode = false) => {
 	try {
@@ -156,6 +157,7 @@ export default function Notes() {
 
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const { userInfo } = useSelector((state) => state.auth);
 
 	const [run, setRun] = useState(false);
@@ -330,9 +332,11 @@ export default function Notes() {
 	const handleQuiz = async () => {
 		setIsLoadingQ(true);
 		if (quizExists) {
+			dispatch(resetTimer());
 			navigate(`/Review/${id}`);
 		} else {
 			setIsGeneratingQuiz(true);
+			dispatch(resetTimer());
 			try {
 				const generatedQuiz = await generateQuizFromSummary(note.notesummary);
 				await createQuiz(id, generatedQuiz);
@@ -594,6 +598,7 @@ export default function Notes() {
 
 	const handleQuizClick = () => {
 		if (quizExists) {
+			dispatch(resetTimer());
 			navigate(`/Review/${id}`);
 		} else {
 			setModalAction('quiz');

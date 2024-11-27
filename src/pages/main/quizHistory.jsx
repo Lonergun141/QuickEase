@@ -3,7 +3,7 @@ import Sidebar from '../../components/sidebar';
 import { fetchAllQuiz, deleteQuiz } from '../../features/Quiz/quizServices';
 import { fetchNote } from '../../features/Summarizer/openAiServices';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Pagination from '../../components/UI/Pagination';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -16,6 +16,7 @@ import {
 	faTrash,
 	faSearch,
 } from '@fortawesome/free-solid-svg-icons';
+import { resetTimer } from '../../features/Pomodoro/pomodoroSlice';
 
 export default function QuizHistory() {
 	const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -32,7 +33,7 @@ export default function QuizHistory() {
 	const user = useSelector((state) => state.auth.user);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
-
+	const dispatch = useDispatch();
 	useEffect(() => {
 		if (user) {
 			fetchQuizzes();
@@ -88,6 +89,7 @@ export default function QuizHistory() {
 
 	const handleQuizClick = (quizNote) => {
 		if (quizNote) {
+			dispatch(resetTimer());
 			navigate(`/Review/${quizNote}`);
 		} else {
 			console.error('Quiz note ID is undefined:', quizNote);
