@@ -53,7 +53,7 @@ const Quiz = () => {
 
 	const steps = [
 		{
-			target: '.sidebar',
+			target: window.innerWidth < 768 ? '.mobile-menu-icon' : '.sidebar',
 			content: (
 				<div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm p-2 sm:p-4">
 					<FontAwesomeIcon icon={faBars} className="text-xl sm:text-2xl" />
@@ -85,7 +85,7 @@ const Quiz = () => {
 					</div>
 				</div>
 			),
-			placement: 'bottom',
+			placement: 'left',
 			disableBeacon: true,
 			disableScrolling: false,
 		},
@@ -328,7 +328,7 @@ const Quiz = () => {
 
 			{/* Enhanced Sidebar */}
 			<div
-				className={`fixed sidebar inset-y-0 left-0 z-30 w-72 bg-white dark:bg-darken border-r 
+				className={`fixed  inset-y-0 left-0 z-30 w-72 bg-white dark:bg-darken border-r 
 				border-zinc-200 dark:border-zinc-800 transition-transform duration-300 ease-in-out transform 
 				${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 				{/* Sidebar Header */}
@@ -349,7 +349,7 @@ const Quiz = () => {
 				</div>
 
 				{/* Question Navigation */}
-				<div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
+				<div className="p-6 border-b sidebar border-zinc-200 dark:border-zinc-800">
 					<div className="grid grid-cols-4 gap-3">
 						{questions.map((quizItem, index) => (
 							<button
@@ -414,7 +414,7 @@ const Quiz = () => {
 						<div className="p-4 flex items-center">
 							<button
 								onClick={handleToggleSidebar}
-								className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
+								className="p-2 hover:bg-zinc-100  mobile-menu-icon dark:hover:bg-zinc-800 rounded-lg">
 								<FontAwesomeIcon
 									icon={faBars}
 									className="text-zinc-600 dark:text-zinc-400"
@@ -507,11 +507,10 @@ const Quiz = () => {
 			<button
 				onClick={handleResetTour}
 				className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 
-					rounded-full bg-highlights dark:bg-darkS text-white  xs:hidden
-					
+					rounded-full bg-highlights dark:bg-darkS text-white
 					hover:opacity-90 transition-all">
 				<FontAwesomeIcon icon={faRoute} className="text-sm" />
-				<span className="text-sm font-pmedium">Take a Tour</span>
+				<span className="hidden text-sm font-pmedium md:inline">Take a Tour</span>
 			</button>
 		</div>
 	);

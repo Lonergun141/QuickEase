@@ -623,12 +623,12 @@ export default function Home() {
 											<div className="h-full flex flex-col items-center justify-center">
 												<FontAwesomeIcon
 													icon={faUpload}
-													className="text-3xl text-zinc-400 mb-4"
+													className="text-lg sm:text-4xl md:text-3xl text-zinc-400 mb-4"
 												/>
-												<h1 className="text-lg font-medium mb-2 dark:text-zinc-300">
+												<h4 className="text-lg sm:text-base md:text-lg lg:text-xl font-medium mb-2 dark:text-zinc-300">
 													Upload or drag {activeTab} here
-												</h1>
-												<p className="text-sm text-zinc-500 mb-2">
+												</h4>
+												<p className="text-xs text-zinc-500 mb-2">
 													Supported types:{' '}
 													{activeTab === 'images'
 														? 'jpg, jpeg, png'
