@@ -14,7 +14,14 @@ export const BadgeProvider = ({ children }) => {
 	const [shownAchievements, setShownAchievements] = useState(new Set());
 
 	const { userInfo } = useSelector((state) => state.auth);
-	const { flashcardCount, notesCount, averageScore, perfectQuizAchieved, statsLoaded, perfectQuizCount } = useUserStats();
+	const {
+		flashcardCount,
+		notesCount,
+		averageScore,
+		perfectQuizAchieved,
+		statsLoaded,
+		perfectQuizCount,
+	} = useUserStats();
 
 	const badgeDefinitions = {
 		NOTE_TAKER: {
@@ -50,25 +57,25 @@ export const BadgeProvider = ({ children }) => {
 			image: img.Badge5,
 			title: 'Noterer',
 			description: 'Generate 5 notes',
-			condition: (stats) => stats.notesCount >= 5
+			condition: (stats) => stats.notesCount >= 5,
 		},
 		DOUBLE_PERFECT: {
 			id: '4c951ccc-6da7-4ba9-8dd9-957f4db206d0',
-			image: img.Badge6, 
+			image: img.Badge6,
 			title: 'What a Nice',
 			description: 'Achieved two perfect scores on quizzes!',
 			condition: (stats) => stats.perfectQuizCount >= 2,
 		},
 		HMMM: {
 			id: '57788c51-93a2-4686-9c65-50905d05cfe1',
-			image: img.Badge7, 
+			image: img.Badge7,
 			title: 'Accidental Genius Award',
 			description: 'Achieved three perfect scores on quizzes!',
 			condition: (stats) => stats.perfectQuizCount >= 3,
 		},
 		PORTAYMS: {
 			id: 'b4fbb53e-fff3-492b-b983-9d538e7dadcd',
-			image: img.Badge8, 
+			image: img.Badge8,
 			title: 'I Believe You Now',
 			description: 'Achieved four perfect scores on quizzes!',
 			condition: (stats) => stats.perfectQuizCount >= 4,
@@ -85,12 +92,19 @@ export const BadgeProvider = ({ children }) => {
 					flashcardCount,
 					averageScore,
 					perfectQuizAchieved,
-					perfectQuizCount
+					perfectQuizCount,
 				});
 			}
 		};
 		fetchAndCheckAchievements();
-	}, [statsLoaded, notesCount, flashcardCount, averageScore, perfectQuizAchieved, perfectQuizCount]);
+	}, [
+		statsLoaded,
+		notesCount,
+		flashcardCount,
+		averageScore,
+		perfectQuizAchieved,
+		perfectQuizCount,
+	]);
 
 	const checkAchievements = async (stats) => {
 		try {
@@ -105,13 +119,16 @@ export const BadgeProvider = ({ children }) => {
 								newAchievements.push(badge);
 								setAchievements((prevAchievements) => {
 									const updatedAchievements = [...prevAchievements, response];
-									updateLocalStorage(stats.userId, updatedAchievements); 
+									updateLocalStorage(stats.userId, updatedAchievements);
 									return updatedAchievements;
 								});
 								setShownAchievements((prev) => new Set([...prev, badge.id]));
 							}
 						} catch (error) {
-							console.error('Error creating achievement:', error);
+							if (error.response?.status === 400) {
+								return null;
+							}
+							throw error;
 						}
 					}
 				}
@@ -121,7 +138,10 @@ export const BadgeProvider = ({ children }) => {
 				setAchievementQueue((prevQueue) => [...prevQueue, ...newAchievements]);
 			}
 		} catch (error) {
-			console.error('Error checking achievements:', error, stats);
+			if (error.response?.status === 400) {
+				return null;
+			}
+			throw error;
 		}
 	};
 
@@ -137,9 +157,12 @@ export const BadgeProvider = ({ children }) => {
 		try {
 			const data = await fetchUserAchievements(userId);
 			setAchievements(data);
-			updateLocalStorage(userId, data); 
+			updateLocalStorage(userId, data);
 		} catch (error) {
-			console.error('Error fetching achievements:', error);
+			if (error.response?.status === 400) {
+				return null;
+			}
+			throw error;
 		}
 	};
 

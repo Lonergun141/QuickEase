@@ -36,7 +36,6 @@ export const UserStatsProvider = ({ children }) => {
 
 			setStatsLoaded(true);
 		} catch (error) {
-			console.error('Error loading user data:', error);
 			setStatsLoaded(true);
 		}
 	};
@@ -45,8 +44,7 @@ export const UserStatsProvider = ({ children }) => {
 		let totalScore = 0;
 		let totalQuizzes = 0;
 		let perfectScoreAchieved = false;
-    let perfectQuizCount = 0;
-
+		let perfectQuizCount = 0;
 
 		quizData.forEach((quiz) => {
 			if (quiz.TestScore && quiz.TestTotalScore) {

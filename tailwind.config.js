@@ -40,21 +40,21 @@ export default {
 				},
 				'pulse-scale': {
 					'0%, 100%': { transform: 'scale(1)' },
-					'50%': { transform: 'scale(1.1)' }, 
+					'50%': { transform: 'scale(1.1)' },
 				},
 				'pulse-bg': {
 					'0%, 100%': { backgroundSize: '100%' },
-					'50%': { backgroundSize: '105%' }, 
+					'50%': { backgroundSize: '105%' },
 				},
 				'float-gentle': {
-					'0%, 100%': { 
+					'0%, 100%': {
 						transform: 'translateY(0) scale(1)',
 					},
-					'50%': { 
+					'50%': {
 						transform: 'translateY(-20px) scale(1.01)',
 					},
 				},
-				'slide': {
+				slide: {
 					'0%': { transform: 'translateX(-100%)' },
 					'100%': { transform: 'translateX(100%)' },
 				},
@@ -71,11 +71,17 @@ export default {
 				modalShow: {
 					'0%': { transform: 'scale(0.95)', opacity: 0 },
 					'100%': { transform: 'scale(1)', opacity: 1 },
-				  },
-				  iconBounce: {
+				},
+				iconBounce: {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' },
-				  }
+				},
+				blob: {
+					'0%': { transform: 'translate(0px, 0px) scale(1)' },
+					'33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+					'66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+					'100%': { transform: 'translate(0px, 0px) scale(1)' },
+				},
 			},
 			animation: {
 				float: 'float 3s ease-in-out infinite',
@@ -86,6 +92,7 @@ export default {
 				'float-gentle': 'float-gentle 6s ease-in-out infinite',
 				'slide-slow': 'slide 15s linear infinite',
 				'float-particle': 'float-particle 8s ease-in-out infinite',
+				blob: 'blob 7s infinite',
 			},
 			boxShadow: {
 				neumorphism:
@@ -100,6 +107,9 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+			},
+			textShadow: {
+				md: '0 4px 6px rgba(0, 0, 0, 0.1)',
 			},
 			modalShow: 'modalShow 0.3s ease-out',
 			iconBounce: 'iconBounce 2s ease-in-out infinite',
