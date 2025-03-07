@@ -86,21 +86,6 @@ yarn preview
 
 This will start a local server to serve the production build.
 
-## Linting
-
-To lint the codebase and ensure code quality:
-
-Using npm:
-
-```bash
-npm run lint
-```
-
-Or using Yarn:
-
-```bash
-yarn lint
-```
 
 This command will run ESLint based on the configurations specified in the project.
 
