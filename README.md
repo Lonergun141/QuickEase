@@ -1,4 +1,3 @@
-QuickEase
 QuickEase is a web application built with React and Vite, designed to provide a seamless user experience. This guide will help you set up and run the project locally.
 
 Prerequisites
