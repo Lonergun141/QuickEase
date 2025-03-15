@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BACKEND_DOMAIN = `https://quickease.xyz/quickease/api/v1/pomodoro/`;
+const BACKEND_DOMAIN = `https://d4ngk.pythonanywhere.com/quickease/api/v1/pomodoro/`;
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_DOMAIN,
